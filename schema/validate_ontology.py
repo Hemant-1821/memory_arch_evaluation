@@ -12,7 +12,11 @@ VALID_ATTR_TYPES = {"string", "enum", "date", "ref", "list_of_refs"}
 def load_ontology(path: str = "schema/ontology.yaml") -> dict:
     with open(path) as f:
         ontology = yaml.safe_load(f)
+    _validate(ontology)
+    return ontology
 
+
+def _validate(ontology: dict) -> None:
     entity_types = ontology["entity_types"]
     relation_types = ontology["relation_types"]
 
@@ -47,8 +51,6 @@ def load_ontology(path: str = "schema/ontology.yaml") -> dict:
                 f"is not a declared entity type"
             )
 
-    return ontology
-
 
 if __name__ == "__main__":
     # Self-check: the real ontology loads cleanly...
@@ -69,10 +71,7 @@ if __name__ == "__main__":
         "replaceable": False,
     }
     try:
-        for rel_name, rel_def in broken["relation_types"].items():
-            for source_type in rel_def["source_types"]:
-                if source_type not in broken["entity_types"]:
-                    raise ValueError("caught")
+        _validate(broken)
         raise AssertionError("validator failed to catch a bad source type")
     except ValueError:
         pass
