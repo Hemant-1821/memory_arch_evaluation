@@ -13,10 +13,13 @@ import yaml
 from schema.validate_ontology import load_ontology
 from generation.seeding import derive_seed
 
-_REPLACEMENT_VALUES = {
-    "status": ["proposed", "active", "completed", "on_hold"],
-    "availability": ["available", "in_use", "maintenance"],
-}
+
+def _attr_def_for(predicate: str, ontology: dict) -> dict | None:
+    for entity_def in ontology["entity_types"].values():
+        attr_def = entity_def["attributes"].get(predicate)
+        if attr_def is not None:
+            return attr_def
+    return None
 
 
 def _load_episode_config(pilot: bool) -> tuple[int, float]:
@@ -30,16 +33,16 @@ def _load_episode_config(pilot: bool) -> tuple[int, float]:
 def _is_replaceable(predicate: str, ontology: dict) -> bool:
     if predicate in ontology["relation_types"]:
         return ontology["relation_types"][predicate]["replaceable"]
-    for entity_def in ontology["entity_types"].values():
-        attr_def = entity_def["attributes"].get(predicate)
-        if attr_def is not None:
-            return bool(attr_def.get("replaceable"))
-    return False
+    attr_def = _attr_def_for(predicate, ontology)
+    return bool(attr_def and attr_def.get("replaceable"))
 
 
-def _replacement_object(predicate: str, current_object, rng: random.Random, all_ids_by_predicate: dict):
-    if predicate in _REPLACEMENT_VALUES:
-        choices = [v for v in _REPLACEMENT_VALUES[predicate] if v != current_object]
+def _replacement_object(predicate: str, current_object, rng: random.Random, ontology: dict, all_ids_by_predicate: dict):
+    if predicate not in ontology["relation_types"]:
+        # Literal attribute (e.g. Project.status) - reuse the enum's own
+        # values from the ontology rather than a second, unsynced copy here.
+        attr_def = _attr_def_for(predicate, ontology)
+        choices = [v for v in attr_def["values"] if v != current_object]
         return rng.choice(choices) if choices else current_object
     candidates = [o for o in all_ids_by_predicate.get(predicate, []) if o != current_object]
     return rng.choice(candidates) if candidates else current_object
@@ -66,7 +69,7 @@ def split_into_episodes(triples: list[dict], seed: int, pilot: bool = False) -> 
             continue
         later_episode = rng.randint(original["episode_id"] + 1, episode_count - 1)
         original["superseded_in_episode"] = later_episode
-        new_object = _replacement_object(original["predicate"], original["object"], rng, all_ids_by_predicate)
+        new_object = _replacement_object(original["predicate"], original["object"], rng, ontology, all_ids_by_predicate)
         new_triples.append({
             "subject": original["subject"], "predicate": original["predicate"],
             "object": new_object,
