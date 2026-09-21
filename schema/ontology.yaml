@@ -1,0 +1,95 @@
+version: 1
+
+entity_types:
+  Person:
+    attributes:
+      name: {type: string, required: true}
+      role: {type: enum, required: true, values: [researcher, senior_researcher, engineer, team_lead, program_manager, technician]}
+      seniority: {type: enum, required: true, values: [junior, mid, senior, principal]}
+      join_date: {type: date, required: true}
+      location: {type: ref, required: true, via_relation: based_in}
+
+  Team:
+    attributes:
+      name: {type: string, required: true}
+      department: {type: enum, required: true, values: [robotics, materials_science, ai_systems, bioengineering, energy_systems, operations]}
+      focus_area: {type: string, required: true}
+      location: {type: ref, required: true, via_relation: based_in}
+
+  Project:
+    attributes:
+      name: {type: string, required: true}
+      # replaceable: true -> stored as a supersedable attribute-triple, not a static field
+      # (reference doc §4/§6: "project changes status" is the worked example of episodic change)
+      status: {type: enum, required: true, replaceable: true, values: [proposed, active, completed, on_hold]}
+      start_date: {type: date, required: true}
+      end_date: {type: date, required: false}
+      required_skills: {type: list_of_refs, required: true, via_relation: requires_skill}
+      budget_tier: {type: enum, required: true, values: [small, medium, large]}
+      sponsor_org: {type: ref, required: false, via_relation: sponsors}
+
+  Skill:
+    attributes:
+      name: {type: string, required: true}
+      category: {type: enum, required: true, values: [software, hardware, data_science, domain_science, management]}
+
+  Location:
+    attributes:
+      city: {type: string, required: true}
+      country: {type: string, required: true}
+      region: {type: enum, required: true, values: [north_atlantic, central_europe, east_asia_pacific, south_asia, oceania]}
+      timezone: {type: string, required: true}
+
+  PartnerOrganization:
+    attributes:
+      name: {type: string, required: true}
+      country: {type: string, required: true}
+      collaboration_type: {type: enum, required: true, values: [funding, research, infrastructure, data_sharing]}
+
+  Publication:
+    attributes:
+      title: {type: string, required: true}
+      date: {type: date, required: true}
+      authors: {type: list_of_refs, required: true, via_relation: authored}
+      related_project: {type: ref, required: false, via_relation: depends_on}
+
+  Equipment:
+    attributes:
+      name: {type: string, required: true}
+      type: {type: enum, required: true, values: [compute_cluster, lab_instrument, fabrication_tool, sensor_rig]}
+      location: {type: ref, required: true, via_relation: located_at}
+      availability: {type: enum, required: true, replaceable: true, values: [available, in_use, maintenance]}
+
+  Meeting:
+    attributes:
+      date: {type: date, required: true}
+      participants: {type: list_of_refs, required: true, via_relation: attends}
+      # Meeting.project has no dedicated relation in the reference doc's 15-relation
+      # list, so it gets its own relation (concerns) rather than overloading
+      # depends_on with an unrelated meaning - see relation_types.concerns below.
+      project: {type: ref, required: false, via_relation: concerns}
+      location: {type: ref, required: true, via_relation: located_at}
+
+relation_types:
+  member_of:      {source_types: [Person], target_type: Team, cardinality: "N:1", replaceable: true}
+  works_at:       {source_types: [Person], target_type: Project, cardinality: "N:M", replaceable: true}
+  leads:          {source_types: [Person], target_type: Project, cardinality: "N:1", replaceable: true}
+  has_skill:      {source_types: [Person], target_type: Skill, cardinality: "N:M", replaceable: false}
+  requires_skill: {source_types: [Project], target_type: Skill, cardinality: "N:M", replaceable: false}
+  based_in:       {source_types: [Person, Team], target_type: Location, cardinality: "N:1", replaceable: true}
+  partners_with:  {source_types: [Project], target_type: PartnerOrganization, cardinality: "N:M", replaceable: false}
+  authored:       {source_types: [Person], target_type: Publication, cardinality: "N:M", replaceable: false}
+  cites:          {source_types: [Publication], target_type: Publication, cardinality: "N:M", replaceable: false}
+  # Generic "is associated with a project" link, covering Project-depends-on-Project
+  # planning chains and Publication.related_project.
+  depends_on:     {source_types: [Project, Publication], target_type: Project, cardinality: "N:M", replaceable: false}
+  attends:        {source_types: [Person], target_type: Meeting, cardinality: "N:M", replaceable: false}
+  reports_to:     {source_types: [Person], target_type: Person, cardinality: "N:1", replaceable: true}
+  uses_resource:  {source_types: [Project], target_type: Equipment, cardinality: "N:M", replaceable: false}
+  located_at:     {source_types: [Meeting, Equipment], target_type: Location, cardinality: "N:1", replaceable: true}
+  # Added to back Project.sponsor_org, which had no relation in the reference doc's
+  # list (14 written out, 15 claimed) - agreed with user as the fix for that gap.
+  sponsors:       {source_types: [PartnerOrganization], target_type: Project, cardinality: "1:N", replaceable: false}
+  # Added to back Meeting.project - kept separate from depends_on so a meeting
+  # "being about" a project is never confused with a real project dependency chain.
+  concerns:       {source_types: [Meeting], target_type: Project, cardinality: "N:1", replaceable: false}

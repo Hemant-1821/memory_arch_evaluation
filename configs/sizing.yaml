@@ -1,0 +1,36 @@
+# Sizing targets for full dataset generation (reference doc §3.1)
+full:
+  Person: {min: 120, max: 180}
+  Team: {min: 15, max: 20}
+  Project: {min: 40, max: 60}
+  Skill: {min: 30, max: 40}
+  Location: {min: 15, max: 20}
+  PartnerOrganization: {min: 15, max: 20}
+  Publication: {min: 80, max: 120}
+  Equipment: {min: 30, max: 40}
+  Meeting: {min: 100, max: 150}
+
+# ~20 entities total, distributed proportionally to the full-mode ratios,
+# for fast iteration (reference doc §5: "do not skip a pilot run")
+pilot:
+  Person: 8
+  Team: 3
+  Project: 4
+  Skill: 6
+  Location: 3
+  PartnerOrganization: 2
+  Publication: 3
+  Equipment: 2
+  Meeting: 3
+
+# Name-pool headroom: no LLM yet to measure real verification attrition
+# (backbone-leakage + real-person checks), so this is a placeholder guess -
+# revisit once verification is live and the real rejection rate is known.
+name_pool_overgeneration_factor: 1.3
+
+episodes:
+  full: 6
+  pilot: 3
+  # fraction of entities carrying a replaceable relation/attribute that get
+  # a simulated change in a later episode
+  replacement_fraction: 0.15
