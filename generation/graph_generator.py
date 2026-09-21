@@ -6,10 +6,12 @@ entity/relation names or counts.
 Run as a module: python -m generation.graph_generator
 """
 import json
+import pickle
 import random
 from datetime import date, timedelta
 from pathlib import Path
 
+import networkx as nx
 import yaml
 
 from schema.validate_ontology import load_ontology
@@ -182,12 +184,31 @@ def generate_graph(seed: int, pilot: bool = False) -> tuple[list[dict], dict]:
     return triples, entities
 
 
+def _build_networkx_graph(triples: list[dict], entities: dict) -> nx.MultiDiGraph:
+    """NetworkX-native serialization of the entity-to-entity edges (spec §3:
+    "both a NetworkX-native serialization ... and a portable triples.json").
+    Literal attribute-triples (object is a value, not an entity id) have no
+    second node to connect to, so they stay in triples.json only - the graph
+    captures structure, triples.json remains the complete fact record."""
+    g = nx.MultiDiGraph()
+    for entity_id, attrs in entities.items():
+        g.add_node(entity_id, **attrs)
+    for t in triples:
+        obj = t["object"]
+        if isinstance(obj, str) and obj in entities:
+            g.add_edge(t["subject"], obj, predicate=t["predicate"])
+    return g
+
+
 def save_graph(triples: list[dict], entities: dict, out_dir: str = "data/kg") -> None:
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     with open(f"{out_dir}/triples.json", "w") as f:
         json.dump(triples, f, indent=2)
     with open(f"{out_dir}/entities.json", "w") as f:
         json.dump(entities, f, indent=2)
+    graph = _build_networkx_graph(triples, entities)
+    with open(f"{out_dir}/graph.gpickle", "wb") as f:
+        pickle.dump(graph, f)
 
 
 if __name__ == "__main__":
@@ -225,4 +246,10 @@ if __name__ == "__main__":
     )
 
     save_graph(t1, e1, out_dir="data/kg_pilot")
-    print(f"generation/graph_generator.py: OK ({len(e1)} entities, {len(t1)} triples, pilot graph saved to data/kg_pilot/)")
+
+    # NetworkX-native serialization round-trips and matches entity/edge counts.
+    with open("data/kg_pilot/graph.gpickle", "rb") as f:
+        reloaded = pickle.load(f)
+    assert reloaded.number_of_nodes() == len(e1), "gpickle node count mismatch"
+
+    print(f"generation/graph_generator.py: OK ({len(e1)} entities, {len(t1)} triples, pilot graph + graph.gpickle saved to data/kg_pilot/)")
