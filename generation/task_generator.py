@@ -134,6 +134,16 @@ if __name__ == "__main__":
     last_episode = max(t["episode_id"] for t in episoded)
     live = current_state(episoded, as_of_episode=last_episode)
 
+    # compute_hops on the real pilot graph: a member_of edge is 1 hop, an
+    # unrelated/unreachable pair is None. Named as a produced interface in
+    # the plan's Interfaces block but not otherwise exercised - covering it
+    # directly instead of leaving it as an untested deliverable.
+    member_of_pair = next(
+        (t["subject"], t["object"]) for t in live if t["predicate"] == "member_of"
+    )
+    assert compute_hops(live, *member_of_pair) == 1
+    assert compute_hops(live, "NoSuchEntity_0000", member_of_pair[1]) is None
+
     # Hand-picked classification examples.
     assert classify_complexity(hops=1, constraint_count=0) == "low"
     assert classify_complexity(hops=2, constraint_count=1) == "medium"
