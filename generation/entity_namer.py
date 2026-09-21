@@ -23,6 +23,24 @@ _PUB_SUBJECT_WORDS = ["sensor fusion", "materials synthesis", "swarm control",
                        "thermal regulation", "signal compression"]
 
 
+def _unique_until(rng: random.Random, count: int, make_candidate) -> list[str]:
+    """Generates candidates via make_candidate(rng) until `count` unique ones
+    are collected, in generation order. Deduping with a set() and then doing
+    list(some_set)[:count] would silently break determinism: Python randomizes
+    string hash seeds per process by default, so a set's iteration order (and
+    therefore which names survive the slice) differs between runs even with
+    an identical `seed`. A list in generation order + a set used only for O(1)
+    membership testing avoids that entirely."""
+    ordered: list[str] = []
+    seen: set[str] = set()
+    while len(ordered) < count:
+        candidate = make_candidate(rng)
+        if candidate not in seen:
+            seen.add(candidate)
+            ordered.append(candidate)
+    return ordered
+
+
 def _syllable(rng: random.Random) -> str:
     s = rng.choice(_CONSONANTS) + rng.choice(_VOWELS)
     if rng.random() < 0.4:
@@ -36,86 +54,81 @@ def _invented_word(rng: random.Random, syllables: int) -> str:
 
 
 def _generate_person_names(rng: random.Random, count: int) -> list[str]:
-    names = set()
-    while len(names) < count:
+    def candidate(rng):
         given = _invented_word(rng, rng.choice([2, 3]))
         family = _invented_word(rng, rng.choice([2, 3]))
-        names.add(f"{given} {family}")
-    return list(names)[:count]
+        return f"{given} {family}"
+    return _unique_until(rng, count, candidate)
 
 
 def _generate_team_names(rng: random.Random, count: int) -> list[str]:
     # _TEAM_FOCUS_WORDS alone gives only len(_TEAM_FOCUS_WORDS) combinations -
     # too few once count exceeds it. Pairing with an invented word keeps the
     # Solstice flavor while making the pool effectively unbounded.
-    names = set()
-    while len(names) < count:
-        names.add(f"{rng.choice(_TEAM_FOCUS_WORDS)} {_invented_word(rng, 2)} Group")
-    return list(names)[:count]
+    def candidate(rng):
+        return f"{rng.choice(_TEAM_FOCUS_WORDS)} {_invented_word(rng, 2)} Group"
+    return _unique_until(rng, count, candidate)
 
 
 def _generate_project_names(rng: random.Random, count: int) -> list[str]:
-    names = set()
-    while len(names) < count:
-        names.add(f"{rng.choice(_PROJECT_PREFIXES)} {rng.choice(_PROJECT_SUFFIXES)}")
-    return list(names)[:count]
+    def candidate(rng):
+        return f"{rng.choice(_PROJECT_PREFIXES)} {rng.choice(_PROJECT_SUFFIXES)}"
+    return _unique_until(rng, count, candidate)
 
 
 def _generate_org_names(rng: random.Random, count: int) -> list[str]:
-    names = set()
-    while len(names) < count:
-        names.add(f"{_invented_word(rng, 2)} {rng.choice(_ORG_SUFFIXES)}")
-    return list(names)[:count]
+    def candidate(rng):
+        return f"{_invented_word(rng, 2)} {rng.choice(_ORG_SUFFIXES)}"
+    return _unique_until(rng, count, candidate)
 
 
 def _generate_publication_titles(rng: random.Random, count: int) -> list[str]:
     # _PUB_TOPIC_WORDS x _PUB_SUBJECT_WORDS alone gives only 35 combinations -
     # too few for full-scale sizing (up to 120 publications). An invented
     # qualifier keeps the pool effectively unbounded.
-    titles = set()
-    while len(titles) < count:
-        titles.add(
+    def candidate(rng):
+        return (
             f"Towards {rng.choice(_PUB_TOPIC_WORDS).capitalize()} "
             f"{rng.choice(_PUB_SUBJECT_WORDS)}: A {_invented_word(rng, 2)} Approach"
         )
-    return list(titles)[:count]
+    return _unique_until(rng, count, candidate)
 
 
 def _generate_location_names(rng: random.Random, count: int) -> list[str]:
     # Invented city names (reference doc principle #2 applies to every entity
     # type, including Location - a real city could leak real timezone/region
     # facts the backbone model already knows).
-    names = set()
-    while len(names) < count:
-        names.add(_invented_word(rng, rng.choice([2, 3])))
-    return list(names)[:count]
+    def candidate(rng):
+        return _invented_word(rng, rng.choice([2, 3]))
+    return _unique_until(rng, count, candidate)
 
 
 def _generate_skill_names(rng: random.Random, count: int) -> list[str]:
-    words = ["Cryogenic Control", "Swarm Coordination", "Photonic Design",
-             "Bio-Fabrication", "Grid Modeling", "Adaptive Materials",
-             "Signal Processing", "Thermal Systems", "Sensor Fusion",
-             "Distributed Control"]
-    rng.shuffle(words)
-    names = set(words)
-    while len(names) < count:
-        names.add(f"{_invented_word(rng, 2)} Engineering")
-    return list(names)[:count]
+    fixed_words = ["Cryogenic Control", "Swarm Coordination", "Photonic Design",
+                   "Bio-Fabrication", "Grid Modeling", "Adaptive Materials",
+                   "Signal Processing", "Thermal Systems", "Sensor Fusion",
+                   "Distributed Control"]
+    rng.shuffle(fixed_words)  # order depends only on rng, not hash seed - safe
+    pool = iter(fixed_words)
+
+    def candidate(rng):
+        fixed = next(pool, None)
+        return fixed if fixed is not None else f"{_invented_word(rng, 2)} Engineering"
+    return _unique_until(rng, count, candidate)
 
 
 def _generate_equipment_names(rng: random.Random, count: int) -> list[str]:
-    names = set()
-    while len(names) < count:
-        names.add(f"{_invented_word(rng, 2)}-{rng.randint(100, 999)}")
-    return list(names)[:count]
+    def candidate(rng):
+        return f"{_invented_word(rng, 2)}-{rng.randint(100, 999)}"
+    return _unique_until(rng, count, candidate)
 
 
 def _generate_meeting_labels(rng: random.Random, count: int) -> list[str]:
     kinds = ["Sync", "Review", "Planning Session", "Retrospective", "Kickoff"]
-    labels = set()
-    while len(labels) < count:
-        labels.add(f"{rng.choice(kinds)} {rng.randint(1, 9999)}")
-    return list(labels)[:count]
+
+    def candidate(rng):
+        return f"{rng.choice(kinds)} {rng.randint(1, 9999)}"
+    return _unique_until(rng, count, candidate)
 
 
 _GENERATORS = {
@@ -181,6 +194,31 @@ if __name__ == "__main__":
 
     # Different seeds -> different pools (sanity, not a hard determinism check).
     assert generate_names_raw("Person", 10, seed=1) != generate_names_raw("Person", 10, seed=2)
+
+    # Cross-PROCESS determinism, not just cross-call: Python randomizes string
+    # hash seeds per process by default, so a bug that leaks set() iteration
+    # order into the output (found and fixed during this task) passes an
+    # in-process check but breaks across real invocations. Two subprocesses
+    # with different PYTHONHASHSEED values must still agree.
+    import json
+    import os
+    import subprocess
+    code = (
+        "import json; from generation.entity_namer import generate_names_raw; "
+        "print(json.dumps(generate_names_raw('Person', 10, seed=42)))"
+    )
+    outputs = []
+    for hash_seed in ("0", "1"):
+        result = subprocess.run(
+            ["python3", "-c", code],
+            cwd=__file__.rsplit("/generation/", 1)[0],
+            env={**os.environ, "PYTHONHASHSEED": hash_seed},
+            capture_output=True, text=True, check=True,
+        )
+        outputs.append(json.loads(result.stdout))
+    assert outputs[0] == outputs[1], (
+        "cross-process determinism broken: output differs across PYTHONHASHSEED values"
+    )
 
     # The verification gate is wired up (raises), not silently bypassed.
     try:
