@@ -6,21 +6,13 @@ from generation.task_generator import classify_complexity
 
 
 def level_accuracy_check(task: dict, triples: list[dict]) -> bool:
-    """Re-derives hop count + constraint count from task["reasoning_path"]
-    and confirms generation.task_generator.classify_complexity() agrees
-    with task["tier"]."""
-    measured_tier = classify_complexity(task["required_hops"], len(task.get("reasoning_path", [])) - 1)
-    return measured_tier == task["tier"]
+    """Re-derives the tier from the task's measured hops and constraints and
+    confirms classify_complexity() agrees with task["tier"]."""
+    return classify_complexity(task["required_hops"], task["constraint_count"]) == task["tier"]
 
 
 if __name__ == "__main__":
-    fake_task = {"tier": "low", "required_hops": 1, "reasoning_path": ["Project_0001"]}
-    assert level_accuracy_check(fake_task, triples=[]) is True
-
-    fake_high_task = {"tier": "high", "required_hops": 5, "reasoning_path": ["a", "b", "c", "d", "e", "f"]}
-    assert level_accuracy_check(fake_high_task, triples=[]) is True
-
-    mismatched_task = {"tier": "high", "required_hops": 1, "reasoning_path": ["a"]}
-    assert level_accuracy_check(mismatched_task, triples=[]) is False
-
+    assert level_accuracy_check({"tier": "low", "required_hops": 1, "constraint_count": 0}, [])
+    assert level_accuracy_check({"tier": "high", "required_hops": 4, "constraint_count": 4}, [])
+    assert not level_accuracy_check({"tier": "high", "required_hops": 1, "constraint_count": 0}, [])
     print("validation/level_accuracy_check.py: OK (re-derives tier correctly, catches a mismatch)")
