@@ -141,8 +141,15 @@ def _enrich_for_staffing_queries(triples: list[dict], entities: dict, rng: rando
     if len(active_projects) < 2 or len(people) < 4 or len(skills) < 2 or not orgs:
         return  # pilot graph too small for this enrichment - fine, not required
 
-    # Force skill overlap: two active projects share 2 required skills.
-    shared_skills = rng.sample(skills, min(2, len(skills)))
+    # Force skill overlap: two active projects share 2 required skills - chosen
+    # from skills 2+ people actually hold, else nobody could ever staff them.
+    holders = {s: {t["subject"] for t in triples if t["predicate"] == "has_skill" and t["object"] == s}
+               for s in skills}
+    held = [s for s in skills if len(holders[s]) >= 2]
+    shared_skills = rng.sample(held, 2) if len(held) >= 2 else rng.sample(skills, 2)
+    for skill_id in shared_skills:
+        for person_id in rng.sample(people, max(0, 2 - len(holders[skill_id]))):
+            triples.append({"subject": person_id, "predicate": "has_skill", "object": skill_id})
     for project_id in rng.sample(active_projects, 2):
         for skill_id in shared_skills:
             triples.append({
@@ -167,13 +174,30 @@ def _enrich_for_staffing_queries(triples: list[dict], entities: dict, rng: rando
     triples.append({"subject": sponsor, "predicate": "sponsors", "object": coi_project_a})
     triples.append({"subject": sponsor, "predicate": "sponsors", "object": coi_project_b})
     conflicted_person = rng.choice(people)
+    # `leads` is N:1 - move any existing leadership rather than add a second one.
+    triples[:] = [t for t in triples if not (t["subject"] == conflicted_person and t["predicate"] == "leads")]
     triples.append({"subject": conflicted_person, "predicate": "leads", "object": coi_project_a})
+
+
+MIN_ACTIVE_PROJECTS = 3  # enrichment needs 2 (the COI pair); +1 spare in case one changes status later
+
+
+def _ensure_active_projects(entities: dict, rng: random.Random) -> None:
+    """Guarantees the precondition of _enrich_for_staffing_queries. Random
+    statuses alone can leave no project active (it happened on the seed-7
+    pilot), which silently removes every high-complexity staffing task."""
+    projects = _ids_of_type(entities, "Project")
+    inactive = [p for p in projects if entities[p]["status"] != "active"]
+    shortfall = MIN_ACTIVE_PROJECTS - (len(projects) - len(inactive))
+    for p in rng.sample(inactive, max(0, min(shortfall, len(inactive)))):
+        entities[p]["status"] = "active"
 
 
 def generate_graph(seed: int, pilot: bool = False) -> tuple[list[dict], dict]:
     ontology = load_ontology()
     sizing = _load_sizing(pilot)
     entities = _generate_entities(ontology, sizing, seed, pilot)
+    _ensure_active_projects(entities, random.Random(derive_seed(seed, "active_projects")))
 
     triples: list[dict] = []
     rel_rng = random.Random(derive_seed(seed, "relations"))
@@ -183,6 +207,10 @@ def generate_graph(seed: int, pilot: bool = False) -> tuple[list[dict], dict]:
     _add_replaceable_attribute_triples(triples, entities, ontology)
     _enrich_for_staffing_queries(triples, entities, random.Random(derive_seed(seed, "enrichment")))
 
+    # Enrichment can re-add a fact the random wiring already made; a duplicate
+    # would double-count workload in the staffing checker. Keep first occurrence.
+    unique = {(t["subject"], t["predicate"], t["object"]): t for t in reversed(triples)}
+    triples = [t for t in triples if unique.get((t["subject"], t["predicate"], t["object"])) is t]
     return triples, entities
 
 
@@ -236,14 +264,19 @@ if __name__ == "__main__":
         if isinstance(obj, str) and "_" in obj and obj.split("_")[-1].isdigit():
             assert obj in e1, f"dangling reference: {triple} -> missing {obj}"
 
-    # At least one manually-answerable high-complexity-style staffing query
-    # exists in the pilot graph: some active project has >=2 required skills
-    # and >=1 person already staffed on it.
-    active_projects = [eid for eid, a in e1.items() if a["entity_type"] == "Project" and a.get("status") == "active"]
-    staffed_projects = {t["object"] for t in t1 if t["predicate"] == "works_at"}
-    assert any(p in staffed_projects for p in active_projects) or not active_projects, (
-        "no staffable active project found in pilot graph"
-    )
+    assert len({(t["subject"], t["predicate"], t["object"]) for t in t1}) == len(t1), "duplicate facts"
+
+    # The staffing enrichment actually ran (it silently skips itself when fewer
+    # than 2 projects are active - no escape clause here): enough active
+    # projects, one with >=2 required skills, and a real derived COI.
+    from generation.task_generator import has_conflict_of_interest
+    active_projects = [eid for eid, a in e1.items() if a["entity_type"] == "Project" and a["status"] == "active"]
+    assert len(active_projects) >= MIN_ACTIVE_PROJECTS, "not enough active projects"
+    assert any(sum(t["predicate"] == "requires_skill" and t["subject"] == p for t in t1) >= 2
+               for p in active_projects), "no active project needs 2+ skills"
+    people = [eid for eid, a in e1.items() if a["entity_type"] == "Person"]
+    assert any(has_conflict_of_interest(x, p, e1, t1) for x in people for p in active_projects), \
+        "enrichment did not create a derivable conflict of interest"
 
     # Temp dir: scripts/run_pilot.py is the only writer of data/kg_pilot/.
     import tempfile
