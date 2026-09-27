@@ -76,7 +76,10 @@ def split_into_episodes(triples: list[dict], seed: int, pilot: bool = False) -> 
             "episode_id": later_episode, "superseded_in_episode": None,
         })
 
-    return result + new_triples
+    final = result + new_triples
+    for i, t in enumerate(final):
+        t["fact_id"] = f"fact_{i:04d}"
+    return final
 
 
 def current_state(triples: list[dict], as_of_episode: int) -> list[dict]:
@@ -96,6 +99,8 @@ if __name__ == "__main__":
     e1 = split_into_episodes(triples, seed=7, pilot=True)
     e2 = split_into_episodes(triples, seed=7, pilot=True)
     assert e1 == e2, "episode splitting is not deterministic"
+    ids = [t["fact_id"] for t in e1]
+    assert len(ids) == len(set(ids)), "fact_ids must be unique"
 
     # At least one real superseded-triple example exists (not just scaffolded).
     superseded = [t for t in e1 if t["superseded_in_episode"] is not None]
