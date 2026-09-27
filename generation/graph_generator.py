@@ -5,7 +5,6 @@ entity/relation names or counts.
 
 Run as a module: python -m generation.graph_generator
 """
-import json
 import pickle
 import random
 from datetime import date, timedelta
@@ -17,6 +16,7 @@ import yaml
 from schema.validate_ontology import load_ontology
 from generation.entity_namer import generate_names_raw
 from generation.seeding import derive_seed
+from generation.dataset_io import save_json
 
 _START_DATE = date(2021, 1, 1)
 _END_DATE = date(2026, 1, 1)
@@ -58,10 +58,12 @@ def _generate_entities(ontology: dict, sizing: dict, seed: int, pilot: bool) -> 
             # "entity_type", not "type" - Equipment has its own domain
             # attribute literally named "type" (compute_cluster, etc.),
             # which would otherwise collide with this bookkeeping key.
-            attrs = {"entity_type": entity_type}
+            # display_name = the generated name, used whenever a fact is written
+            # as text. Meeting has no name attribute, so this is its only label.
+            attrs = {"entity_type": entity_type, "display_name": name}
             for attr_name, attr_def in entity_def["attributes"].items():
                 if attr_def["type"] == "string":
-                    attrs[attr_name] = name if attr_name in ("name", "title") else _invented_string(rng)
+                    attrs[attr_name] = name if attr_name in ("name", "title", "city") else _invented_string(rng)
                 elif attr_def["type"] == "enum":
                     attrs[attr_name] = rng.choice(attr_def["values"])
                 elif attr_def["type"] == "date":
@@ -202,10 +204,8 @@ def _build_networkx_graph(triples: list[dict], entities: dict) -> nx.MultiDiGrap
 
 def save_graph(triples: list[dict], entities: dict, out_dir: str = "data/kg") -> None:
     Path(out_dir).mkdir(parents=True, exist_ok=True)
-    with open(f"{out_dir}/triples.json", "w") as f:
-        json.dump(triples, f, indent=2)
-    with open(f"{out_dir}/entities.json", "w") as f:
-        json.dump(entities, f, indent=2)
+    save_json(f"{out_dir}/triples.json", triples)
+    save_json(f"{out_dir}/entities.json", entities)
     graph = _build_networkx_graph(triples, entities)
     with open(f"{out_dir}/graph.gpickle", "wb") as f:
         pickle.dump(graph, f)
@@ -245,11 +245,13 @@ if __name__ == "__main__":
         "no staffable active project found in pilot graph"
     )
 
-    save_graph(t1, e1, out_dir="data/kg_pilot")
-
-    # NetworkX-native serialization round-trips and matches entity/edge counts.
-    with open("data/kg_pilot/graph.gpickle", "rb") as f:
+    # Temp dir: scripts/run_pilot.py is the only writer of data/kg_pilot/.
+    import tempfile
+    tmp = tempfile.mkdtemp()
+    save_graph(t1, e1, out_dir=tmp)
+    with open(f"{tmp}/graph.gpickle", "rb") as f:
         reloaded = pickle.load(f)
     assert reloaded.number_of_nodes() == len(e1), "gpickle node count mismatch"
+    assert all("display_name" in a for a in e1.values()), "every entity needs a display_name"
 
-    print(f"generation/graph_generator.py: OK ({len(e1)} entities, {len(t1)} triples, pilot graph + graph.gpickle saved to data/kg_pilot/)")
+    print(f"generation/graph_generator.py: OK ({len(e1)} entities, {len(t1)} triples)")
