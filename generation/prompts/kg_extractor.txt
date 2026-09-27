@@ -1,0 +1,17 @@
+Extract a knowledge graph from the document below, using only this vocabulary.
+
+Entity types: {entity_types}
+
+Relations (subject type -> object type):
+{relations}
+
+Attributes whose value is a plain word: {attributes}
+
+Rules:
+- Extract only facts the document states explicitly. Do not infer or guess.
+- Write each name exactly and in full as the document writes it.
+- Keep the relation direction as listed: subject first.
+- For an attribute, the object is the value (for example the word active) and its type is Value.
+
+Document ({period}):
+{document}
