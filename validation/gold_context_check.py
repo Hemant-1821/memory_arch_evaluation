@@ -1,10 +1,13 @@
-"""Gold-context ceiling check (reference doc §3.1 validation table).
-Threshold: backbone must pass when given the correct facts directly - works
-with closed_book_check to distinguish "needs memory" from "solvable at all".
-"""
+"""Gold-context ceiling check (decision 2.19): Sonnet gets the question plus the
+needed facts as plain code-written statements, 3 times; the task is kept if at
+least 2 answers are correct."""
+from generation.facts import fact_to_statement
+from validation.grading import answer_question, grade
 
-def gold_context_check(task: dict, backbone_client) -> bool:
-    """Runs the backbone once with task["reasoning_path"]'s facts injected
-    directly into context (no retrieval) and checks it produces
-    task["ground_truth_answer"]. Returns True if it passes."""
-    raise NotImplementedError("requires backbone LLM access")
+
+def gold_context_check(task, entities, triples, samples=3) -> dict:
+    by_id = {t["fact_id"]: t for t in triples}
+    facts = [fact_to_statement(by_id[f], entities) for f in task["reasoning_path"]]
+    answers = [answer_question(task["question"], facts, "gold_context", i) for i in range(samples)]
+    correct = [grade(task, a["answer"], entities, triples) for a in answers]
+    return {"passed": sum(correct) >= 2, "correct": correct, "answers": answers}
