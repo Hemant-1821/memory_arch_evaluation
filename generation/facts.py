@@ -35,10 +35,9 @@ def period_label(episode: int) -> str:
     return f"Period {episode + 1}"
 
 
-def fact_to_statement(triple, entities, with_period=False) -> str:
-    text = PREDICATE_TEMPLATES[triple["predicate"]].format(
+def fact_to_statement(triple, entities) -> str:
+    return PREDICATE_TEMPLATES[triple["predicate"]].format(
         s=display_name(triple["subject"], entities), o=display_name(triple["object"], entities))
-    return f"As of {period_label(triple['episode_id'])}: {text}" if with_period else text
 
 
 def normalise_name(name: str) -> str:
@@ -70,5 +69,5 @@ if __name__ == "__main__":
     ents = {"Person_0000": {"display_name": "Kivo Ranet"}, "Team_0000": {"display_name": "Photonic Sensing Group"}}
     t = {"subject": "Person_0000", "predicate": "member_of", "object": "Team_0000", "episode_id": 2}
     assert fact_to_statement(t, ents) == "Kivo Ranet is a member of the Photonic Sensing Group team."
-    assert fact_to_statement(t, ents, with_period=True).startswith("As of Period 3:")
+    assert period_label(2) == "Period 3"
     print("generation/facts.py: OK")
