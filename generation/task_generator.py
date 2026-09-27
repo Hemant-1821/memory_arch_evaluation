@@ -11,6 +11,7 @@ import networkx as nx
 
 from generation.episode_splitter import current_state
 from generation.facts import display_name
+from generation.llm_client import call_llm, load_prompt
 from generation.seeding import derive_seed
 
 
@@ -221,10 +222,16 @@ def generate_tasks(triples, entities, seed, per_level) -> list[dict]:
             + _high(live, entities, rng, per_level, as_of))
 
 
-def phrase_task_as_question(candidate: dict) -> str:
-    """Stub: turning a validated (entities, path, constraints) tuple into a
-    natural-language question is an LLM step."""
-    raise NotImplementedError("requires the generation-model LLM - see reference doc §3.1 step 7")
+PHRASE_SCHEMA = {"type": "object", "properties": {"question": {"type": "string"}},
+                 "required": ["question"], "additionalProperties": False}
+
+
+def phrase_task_as_question(task: dict, attempt: int = 0) -> str:
+    """Haiku turns the code-written meaning into a natural question. It never
+    sees the answer (decision 2.11)."""
+    return call_llm("generation", "question_phrasing", "You write clear, natural workplace questions.",
+                    load_prompt("question_phraser").format(meaning=task["meaning"]),
+                    schema=PHRASE_SCHEMA, sample=attempt)["json"]["question"]
 
 
 if __name__ == "__main__":
@@ -299,6 +306,12 @@ if __name__ == "__main__":
         for o in old:
             if o["object"] != fact["object"]:
                 assert task["ground_truth_answer"] != [display_name(o["object"], entities)], "stale answer"
+
+    import os
+    if os.environ.get("MEMARCH_LLM_DIR"):
+        q = phrase_task_as_question(tasks[0])
+        assert q.strip().endswith("?") and all(n not in q for n in tasks[0]["ground_truth_answer"])
+        print(f"  phrased: {q}")
 
     counts = Counter(t["tier"] for t in tasks)
     print(f"generation/task_generator.py: OK (low {counts['low']}, medium {counts['medium']}, high {counts['high']})")
