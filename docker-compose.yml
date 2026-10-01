@@ -1,0 +1,19 @@
+# Memory stores for the vector and graph conditions (reference doc 3.3: self-hosted,
+# free). Ports bind to localhost only. Data lives in named volumes; wipe with
+# `docker compose down -v`.
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.19.1
+    ports: ["127.0.0.1:6333:6333"]
+    volumes: [qdrant_data:/qdrant/storage]
+
+  neo4j:
+    image: neo4j:5.26-community
+    ports: ["127.0.0.1:7474:7474", "127.0.0.1:7687:7687"]
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-memarch-local}
+    volumes: [neo4j_data:/data]
+
+volumes:
+  qdrant_data:
+  neo4j_data:
