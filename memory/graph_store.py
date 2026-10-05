@@ -56,9 +56,9 @@ class GraphMemory:
     def _run(self, query, **params):
         return [r.data() for r in self.driver.execute_query(query, params, dataset=self.dataset).records]
 
-    def load(self, kg, ontology=None) -> int:
+    def load(self, kg) -> int:
         """Replaces this dataset's graph. Attribute values (e.g. status 'active') become Value nodes."""
-        edges = build_edges(kg["triples"], _single_valued(ontology or load_ontology()))
+        edges = build_edges(kg["triples"], _single_valued(load_ontology()))
         nodes = [{"id": n["node_id"], "name": n["name"], "type": n["entity_type"]} for n in kg["nodes"]]
         known = {n["id"] for n in nodes}
         nodes += [{"id": f"val_{o}", "name": o, "type": "Value"} for o in {e["object"] for e in edges} - known]
@@ -74,8 +74,8 @@ class GraphMemory:
 
     # --- the four agent tools; as_of_episode is set by the harness, not the agent ---
 
-    def find_entity(self, name: str, as_of_episode: int) -> list[dict]:
-        """Entities whose name contains the given text (as_of kept for a uniform tool signature)."""
+    def find_entity(self, name: str) -> list[dict]:
+        """Entities whose name contains the given text."""
         return self._run("MATCH (n:Node {dataset: $dataset}) WHERE n.type <> 'Value' AND n.norm CONTAINS $q "
                          "RETURN n.name AS name, n.type AS type ORDER BY size(n.norm) LIMIT 10",
                          q=normalise_name(name))
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     g = GraphMemory("selfcheck")
     try:
         assert g.load(kg) == 5
-        assert g.find_entity("kivo", 0) == [{"name": "Dr. Kivo Ranet", "type": "Person"}]
+        assert g.find_entity("kivo") == [{"name": "Dr. Kivo Ranet", "type": "Person"}]
         assert g.filter_by_attribute("Project", "status", "Proposed", as_of_episode=1) == ["Lumen Vault"]
         assert g.filter_by_attribute("Project", "status", "proposed", as_of_episode=2) == [], "old status must expire"
         assert g.follow_relation("Lumen Vault", "status", as_of_episode=2) == ["active"]

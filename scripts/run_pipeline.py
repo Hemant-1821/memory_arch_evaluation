@@ -1,10 +1,13 @@
-"""Week-2 pilot, end to end (decision 2.21 scope): graph -> episodes -> documents
+"""Dataset pipeline, end to end (decision 2.21 scope): graph -> episodes -> documents
 -> fidelity -> KG extraction -> tasks -> phrasing/ambiguity -> closed-book /
 gold-context -> human review sheets. Rerunning is free for anything cached.
 
-Run: python -m scripts.run_pilot   (needs ANTHROPIC_API_KEY in .env)
+Run: python -m scripts.run_pipeline [--full]   (needs ANTHROPIC_API_KEY in .env)
+Pilot (~34 entities) writes data/kg_pilot; --full (~550 entities, 6 episodes,
+30 tasks per level) writes data/kg_full - raise budget.cap_usd first.
 """
 import csv
+import sys
 from pathlib import Path
 
 import yaml
@@ -26,7 +29,8 @@ from validation.extraction_quality import evaluate_extraction
 from validation.gold_context_check import gold_context_check
 from validation.level_accuracy_check import level_accuracy_check
 
-OUT = Path("data/kg_pilot")
+PILOT = "--full" not in sys.argv
+OUT = Path("data/kg_pilot" if PILOT else "data/kg_full")
 SEED = 7
 
 
@@ -55,9 +59,12 @@ def run_task_checks(task, entities, triples) -> None:
 
 
 def write_review_sheets(docs, fidelity, tasks, triples, entities) -> None:
+    if (OUT / "review").exists():  # never overwrite human review work
+        print(f"{OUT}/review exists - left untouched (delete it to regenerate the sheets)")
+        return
     by_id = {t["fact_id"]: t for t in triples}
     checks = {r["doc_id"]: r for r in fidelity}
-    (OUT / "review").mkdir(parents=True, exist_ok=True)
+    (OUT / "review").mkdir(parents=True)
     with open(OUT / "review/questions.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["task_id", "tier", "status", "question", "really_asking", "correct_answer",
@@ -87,8 +94,8 @@ def write_review_sheets(docs, fidelity, tasks, triples, entities) -> None:
 
 def main() -> None:
     ontology = load_ontology()
-    triples, entities = generate_graph(SEED, pilot=True)
-    episoded = split_into_episodes(triples, SEED, pilot=True)
+    triples, entities = generate_graph(SEED, pilot=PILOT)
+    episoded = split_into_episodes(triples, SEED, pilot=PILOT)
     save_graph(episoded, entities, out_dir=str(OUT))
 
     docs, fidelity = write_documents(plan_documents(episoded, entities, SEED), episoded, entities)
@@ -102,7 +109,7 @@ def main() -> None:
     save_json(OUT / "extraction_quality.json", quality)
 
     with open("configs/sizing.yaml") as f:
-        per_level = yaml.safe_load(f)["tasks"]["per_level_pilot"]
+        per_level = yaml.safe_load(f)["tasks"]["per_level_pilot" if PILOT else "per_level_full"]
     tasks = generate_tasks(episoded, entities, SEED, per_level)
     for task in tasks:
         run_task_checks(task, entities, episoded)
