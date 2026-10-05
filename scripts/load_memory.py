@@ -14,7 +14,8 @@ from memory.vector_store import VectorMemory
 
 def main(dataset_dir="data/kg_pilot") -> None:
     data, name = Path(dataset_dir), Path(dataset_dir).name
-    chunks = VectorMemory(name).load(load_json(data / "documents.json"))
+    vector = VectorMemory(name)
+    chunks = vector.load(load_json(data / "documents.json"))
     graph = GraphMemory(name)
     edges = graph.load(load_json(data / "extracted_kg.json"))
     print(f"{name}: {chunks} chunks in Qdrant, {edges} edges in Neo4j")
@@ -22,11 +23,10 @@ def main(dataset_dir="data/kg_pilot") -> None:
     # smoke test: one real task's entities must be findable in both stores
     task = next(t for t in load_json(data / "tasks.json") if t["status"] == "kept")
     print("task:", task["question"])
-    for hit in VectorMemory(name).search_memory(task["question"], task["as_of_episode"], k=2):
+    for hit in vector.search_memory(task["question"], task["as_of_episode"], k=2):
         print(f"  vector  {hit['score']}  {hit['text'][:90]}")
-    for entity in task["source_entities"][:1]:
-        name_ = load_json(data / "entities.json")[entity]["display_name"]
-        print(f"  graph   {name_}: {graph.get_neighbours(name_, task['as_of_episode'])[:4]}")
+    entity = load_json(data / "entities.json")[task["source_entities"][0]]["display_name"]
+    print(f"  graph   {entity}: {graph.get_neighbours(entity, task['as_of_episode'])[:4]}")
     graph.driver.close()
 
 
