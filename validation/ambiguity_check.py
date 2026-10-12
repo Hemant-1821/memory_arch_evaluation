@@ -1,11 +1,21 @@
-"""Ambiguity check (reference doc §3.1 validation table).
-Threshold: 100% - one answer for low/medium tier tasks; checker-program
-correctness for high tier tasks.
-"""
+"""Automatic phrasing guard (decision 2.12): Sonnet confirms the phrased question
+means exactly what the code-written meaning says. Human review comes after."""
+from generation.llm_client import call_llm, load_prompt
 
-def ambiguity_check(task: dict, entities: dict, triples: list[dict]) -> bool:
-    """For low/medium tier: confirms exactly one entity/value satisfies
-    task["reasoning_path"]. For high tier: confirms the constraint checker
-    (generation.task_generator.check_staffing_candidate) itself is correct
-    against task["ground_truth_answer"]. Returns True if unambiguous/correct."""
-    raise NotImplementedError("requires LLM-phrased question text to check against")
+SCHEMA = {"type": "object",
+          "properties": {"faithful": {"type": "boolean"}, "issue": {"type": "string"}},
+          "required": ["faithful", "issue"], "additionalProperties": False}
+
+
+def ambiguity_check(task: dict, question: str, attempt: int = 0) -> dict:
+    r = call_llm("backbone", "ambiguity_check", "You review questions for exact meaning.",
+                 load_prompt("ambiguity_checker").format(meaning=task["meaning"], question=question),
+                 schema=SCHEMA, sample=attempt)["json"]
+    return {"passed": r["faithful"], "issue": r["issue"]}
+
+
+if __name__ == "__main__":
+    task = {"meaning": "Which team is Kivo Ranet currently a member of?"}
+    assert ambiguity_check(task, "Which team is Kivo Ranet on these days?")["passed"]
+    assert not ambiguity_check(task, "Which project does Kivo Ranet lead?")["passed"]
+    print("validation/ambiguity_check.py: OK")

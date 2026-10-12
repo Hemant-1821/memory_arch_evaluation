@@ -1,10 +1,9 @@
-"""Closed-book leakage check (reference doc §3.1 validation table).
-Threshold: backbone answers at-or-near chance with no memory access, 3 samples.
-"""
+"""Closed-book leakage check (decision 2.15): Sonnet answers the bare question 3
+times with no documents; the task is kept only if all 3 answers are wrong."""
+from validation.grading import answer_question, grade
 
-def closed_book_check(task: dict, backbone_client, samples: int = 3) -> bool:
-    """Runs the backbone `samples` times with no memory/tool access on
-    task["question"] and checks its accuracy is at-or-near chance.
-    Returns True (passes) if the task is safe to include - i.e. the backbone
-    could NOT already answer it from parametric knowledge alone."""
-    raise NotImplementedError("requires backbone LLM access")
+
+def closed_book_check(task, entities, triples, samples=3) -> dict:
+    answers = [answer_question(task["question"], None, "closed_book", i) for i in range(samples)]
+    correct = [grade(task, a["answer"], entities, triples) for a in answers]
+    return {"passed": not any(correct), "correct": correct, "answers": answers}

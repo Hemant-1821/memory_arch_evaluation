@@ -34,3 +34,13 @@ episodes:
   # fraction of entities carrying a replaceable relation/attribute that get
   # a simulated change in a later episode
   replacement_fraction: 0.15
+
+documents:
+  min_facts_per_doc: 3        # decision 2.4 (documents of ~3-8 facts)
+  max_facts_per_doc: 8
+  max_extra_mentions: 2       # decision 2.6
+  distractor_fraction: 0.22   # decision 2.5 (~20-25% of the corpus)
+
+tasks:
+  per_level_pilot: 5          # decision 2.10
+  per_level_full: 30
