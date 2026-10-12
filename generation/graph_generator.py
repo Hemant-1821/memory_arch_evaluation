@@ -278,7 +278,7 @@ if __name__ == "__main__":
     assert any(has_conflict_of_interest(x, p, e1, t1) for x in people for p in active_projects), \
         "enrichment did not create a derivable conflict of interest"
 
-    # Temp dir: scripts/run_pipeline.py is the only writer of data/kg_pilot/.
+    # Temp dir: scripts/run_pilot.py is the only writer of data/kg_pilot/.
     import tempfile
     tmp = tempfile.mkdtemp()
     save_graph(t1, e1, out_dir=tmp)
