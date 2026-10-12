@@ -18,6 +18,12 @@ local `bge-small` embeddings, old chunks never removed) and Neo4j (graph
 condition: extracted KG where a newer fact invalidates the old edge, queried via
 four fixed tools). The pipeline also runs at full size with `--full`.
 
+Week 4: the experiment agent - one ReAct loop for all three conditions (only the
+tool list changes; the hybrid agent picks vector or graph tools per step), max 10
+steps, backbone GPT-6.1 Sol on Azure. Each run records correctness, steps, tokens
+(incl. cached), latency and fact recall. End-to-end pilot test (3 tasks x 3
+conditions): results in `results/e2e_pilot/`.
+
 ## Setup
 
 ```bash
@@ -34,6 +40,19 @@ docker compose up -d                          # Qdrant :6333, Neo4j :7474/:7687 
 ./venv/bin/python -m memory.graph_store
 ./venv/bin/python -m scripts.load_memory data/kg_pilot
 ```
+
+## Running the experiment
+
+Needs the memory stores (`docker compose up -d`) and `AZURE_OPENAI_ENDPOINT` /
+`AZURE_OPENAI_API_KEY` in `.env` (deployment names live in `configs/llm_config.yaml`).
+
+```bash
+./venv/bin/python -m agent.react                                   # self-check, no API calls
+./venv/bin/python -m scripts.run_experiment --name e2e_pilot --per-tier 1 --seeds 1 --max-usd 0.5
+```
+
+Runs are seed-major and replay from the cache for free; `--max-usd` stops early if
+the projected cost of the whole run is too high.
 
 ## Running the pipeline
 
