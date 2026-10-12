@@ -148,7 +148,7 @@ def call_azure(step, input_items, tools=None, schema=None, sample=0, model=None)
     if hit := _cached(key):
         return hit
     _check_budget()
-    azure_spent = spent_usd(set(CONFIG["azure"]["models"]))
+    azure_spent = spent_usd({CONFIG["azure"]["backbone"], CONFIG["azure"]["dev"]})
     if azure_spent >= CONFIG["budget"]["azure_cap_usd"]:
         raise BudgetExceeded(f"Azure spend ${azure_spent:.3f} >= cap ${CONFIG['budget']['azure_cap_usd']}")
 
