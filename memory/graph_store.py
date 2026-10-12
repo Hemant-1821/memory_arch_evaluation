@@ -67,6 +67,9 @@ class GraphMemory:
         self._run("MATCH (n:Node {dataset: $dataset}) DETACH DELETE n")
         self._run("UNWIND $nodes AS n CREATE (:Node {dataset: $dataset, id: n.id, name: n.name, "
                   "norm: n.norm, type: n.type})", nodes=[dict(n, norm=normalise_name(n["name"])) for n in nodes])
+        for t in {n["type"] for n in nodes}:  # display-only label, so Neo4j Browser colours each type
+            assert t.isidentifier(), t  # labels can't be query parameters
+            self._run(f"MATCH (n:Node {{dataset: $dataset, type: $t}}) SET n:{t}", t=t)
         self._run("UNWIND $edges AS e MATCH (s:Node {dataset: $dataset, id: e.subject}), "
                   "(o:Node {dataset: $dataset, id: e.object}) CREATE (s)-[:REL {predicate: e.predicate, "
                   "valid_from: e.valid_from, invalid_from: e.invalid_from, doc_ids: e.doc_ids}]->(o)", edges=edges)
