@@ -11,10 +11,12 @@ Set MEMARCH_LLM_DIR to redirect cache + log (self-checks use private/llm_selfche
 import hashlib
 import json
 import os
+import time
 from pathlib import Path
 
 import anthropic
 import yaml
+from openai import OpenAI
 
 from generation.dataset_io import CANARY
 
@@ -39,6 +41,7 @@ LOG_PATH = LLM_DIR / "llm_calls.jsonl"
 PROMPT_DIR = Path("generation/prompts")
 
 _client = None
+_azure = None
 
 
 class BudgetExceeded(RuntimeError):
@@ -53,6 +56,33 @@ def spent_usd() -> float:
     if not LOG_PATH.exists():
         return 0.0
     return sum(json.loads(line)["cost_usd"] for line in LOG_PATH.read_text().splitlines() if line.strip())
+
+
+def _cache_key(params, sample) -> str:
+    return hashlib.sha256(json.dumps({**params, "sample": sample}, sort_keys=True).encode()).hexdigest()
+
+
+def _cached(key):
+    path = CACHE_DIR / f"{key}.json"
+    return {**json.loads(path.read_text()), "cached": True} if path.exists() else None
+
+
+def _check_budget() -> None:
+    if spent_usd() >= CONFIG["budget"]["cap_usd"]:
+        raise BudgetExceeded(f"logged spend ${spent_usd():.2f} >= cap ${CONFIG['budget']['cap_usd']}")
+
+
+def _log(entry) -> None:
+    """Every billed call is logged - including failed ones - so the budget cap sees all spend."""
+    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(LOG_PATH, "a") as f:
+        f.write(json.dumps(entry) + "\n")
+
+
+def _save(key, result) -> dict:
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    (CACHE_DIR / f"{key}.json").write_text(json.dumps(result, indent=2))
+    return {**result, "cached": False}
 
 
 def call_llm(role, step, system, prompt, schema=None, sample=0, max_tokens=None) -> dict:
@@ -72,25 +102,19 @@ def call_llm(role, step, system, prompt, schema=None, sample=0, max_tokens=None)
     if output_config:
         params["output_config"] = output_config
 
-    key = hashlib.sha256(json.dumps({**params, "sample": sample}, sort_keys=True).encode()).hexdigest()
-    path = CACHE_DIR / f"{key}.json"
-    if path.exists():
-        return {**json.loads(path.read_text()), "cached": True}
-
-    if spent_usd() >= CONFIG["budget"]["cap_usd"]:
-        raise BudgetExceeded(f"logged spend ${spent_usd():.2f} >= cap ${CONFIG['budget']['cap_usd']}")
+    key = _cache_key(params, sample)
+    if hit := _cached(key):
+        return hit
+    _check_budget()
 
     _client = _client or anthropic.Anthropic()
     response = _client.messages.create(**params)
     usage = response.usage
     price = CONFIG["prices_usd_per_mtok"][model]
     cost = round((usage.input_tokens * price["input"] + usage.output_tokens * price["output"]) / 1e6, 6)
-    # Log every billed call - including failed ones - so the budget cap sees all spend.
-    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(LOG_PATH, "a") as f:
-        f.write(json.dumps({"cache_key": key, "step": step, "model": model, "sample": sample,
-                            "input_tokens": usage.input_tokens, "output_tokens": usage.output_tokens,
-                            "cost_usd": cost, "stop_reason": response.stop_reason}) + "\n")
+    _log({"cache_key": key, "step": step, "model": model, "sample": sample,
+          "input_tokens": usage.input_tokens, "output_tokens": usage.output_tokens,
+          "cost_usd": cost, "stop_reason": response.stop_reason})
     if response.stop_reason in ("max_tokens", "refusal"):
         raise RuntimeError(f"{step}: stop_reason={response.stop_reason}, not parsing partial output")
 
@@ -102,9 +126,52 @@ def call_llm(role, step, system, prompt, schema=None, sample=0, max_tokens=None)
         "input_tokens": usage.input_tokens, "output_tokens": usage.output_tokens,
         "cost_usd": cost, "request_id": response._request_id,
     }
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(result, indent=2))
-    return {**result, "cached": False}
+    return _save(key, result)
+
+
+def call_azure(step, input_items, tools=None, schema=None, sample=0, model=None) -> dict:
+    """Backbone calls on Azure (decision 4.1): the Responses API, the only Azure API
+    that combines tool calling with reasoning on GPT-6.x. Stateless (store=False) with
+    encrypted reasoning passed back, so a conversation replays exactly from the cache.
+    Only the new output items are cached; earlier turns live in their own entries."""
+    global _azure
+    model = model or CONFIG["azure"]["backbone"]
+    params = {"provider": "azure", "model": model, "input": input_items, "store": False,
+              "include": ["reasoning.encrypted_content"], "reasoning": {"effort": CONFIG["effort"][step]},
+              "max_output_tokens": CONFIG["max_tokens"]}
+    if tools:
+        params["tools"] = tools
+    if schema:
+        params["text"] = {"format": {"type": "json_schema", "name": "output", "schema": schema, "strict": True}}
+    key = _cache_key(params, sample)
+    if hit := _cached(key):
+        return hit
+    _check_budget()
+
+    host = os.environ["AZURE_OPENAI_ENDPOINT"].split("/")[2]
+    _azure = _azure or OpenAI(base_url=f"https://{host}/openai/v1/", api_key=os.environ["AZURE_OPENAI_API_KEY"])
+    start = time.perf_counter()
+    response = _azure.responses.create(**{k: v for k, v in params.items() if k != "provider"})
+    latency = round(time.perf_counter() - start, 3)
+    usage = response.usage
+    cached_in = usage.input_tokens_details.cached_tokens or 0
+    price = CONFIG["prices_usd_per_mtok"][model]
+    cost = round(((usage.input_tokens - cached_in) * price["input"] + cached_in * price["cached_input"]
+                  + usage.output_tokens * price["output"]) / 1e6, 6)
+    _log({"cache_key": key, "step": step, "model": model, "sample": sample,
+          "input_tokens": usage.input_tokens, "cached_tokens": cached_in, "output_tokens": usage.output_tokens,
+          "cost_usd": cost, "latency_s": latency, "stop_reason": response.status})
+    if response.status != "completed":
+        raise RuntimeError(f"{step}: status={response.status} ({response.incomplete_details}), not parsing")
+
+    result = {
+        "canary": CANARY, "step": step, "model": model, "sample": sample,
+        "output": [item.model_dump(exclude_none=True) for item in response.output],
+        "text": response.output_text, "json": json.loads(response.output_text) if schema else None,
+        "input_tokens": usage.input_tokens, "cached_tokens": cached_in, "output_tokens": usage.output_tokens,
+        "cost_usd": cost, "latency_s": latency, "request_id": response.id,
+    }
+    return _save(key, result)
 
 
 if __name__ == "__main__":
@@ -144,5 +211,13 @@ if __name__ == "__main__":
         pass
     finally:
         CONFIG["budget"]["cap_usd"] = cap
+
+    # Azure route: replay is free, logs nothing, and keeps the original latency.
+    pong = [{"role": "user", "content": "Reply with exactly: pong"}]
+    az = call_azure("experiment_agent", pong)
+    lines_before = len(LOG_PATH.read_text().splitlines())
+    replay = call_azure("experiment_agent", pong)
+    assert replay["cached"] and replay["latency_s"] == az["latency_s"] and "pong" in replay["text"].lower()
+    assert len(LOG_PATH.read_text().splitlines()) == lines_before
 
     print(f"generation/llm_client.py: OK (self-check spend so far ${spent_usd():.4f})")

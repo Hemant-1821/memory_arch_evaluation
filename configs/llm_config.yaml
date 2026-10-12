@@ -1,6 +1,12 @@
 # Real values for week 2 (decisions 2.2, 2.3, 2.21). Model IDs are exact - no date suffixes.
 generation_model: claude-haiku-4-5    # writes documents, phrases questions
-backbone_model: claude-sonnet-5       # extraction, validation checks, experiment agent
+backbone_model: claude-sonnet-5       # extraction, validation checks (Claude route)
+
+# Experiment backbone on Azure (decision 4.1). Deployment names, not secrets;
+# endpoint and key come from .env. Version auto-update must stay OFF in Foundry.
+azure:
+  backbone: gpt-6.1-sol     # Global Standard
+  dev: gpt-6-luna           # cheap development runs (not deployed yet)
 
 max_tokens: 16000
 
@@ -15,8 +21,10 @@ effort:
   experiment_agent: high
 
 budget:
-  cap_usd: 2.50          # hard stop on logged spend; raise when more credit is added
+  cap_usd: 4.00          # hard stop on logged spend (all providers, USD); raise when more credit is added
 
 prices_usd_per_mtok:     # Anthropic first-party rates (verified 2026-09-27)
   claude-haiku-4-5: {input: 1.00, output: 5.00}
   claude-sonnet-5: {input: 2.00, output: 10.00}
+  gpt-6.1-sol: {input: 2.00, cached_input: 0.10, output: 10.00}   # Azure Global (2026-10-12)
+  gpt-6-luna: {input: 0.10, cached_input: 0.01, output: 0.50}
