@@ -7,6 +7,8 @@ backbone_model: claude-sonnet-5       # extraction, validation checks (Claude ro
 azure:
   backbone: gpt-6.1-sol     # Global Standard
   dev: gpt-6-luna           # cheap development runs (not deployed yet)
+  models: [gpt-6.1-sol, gpt-6-luna]
+  max_output_tokens: 4000   # per call, incl. reasoning - no single call can run away
 
 max_tokens: 16000
 
@@ -22,6 +24,8 @@ effort:
 
 budget:
   cap_usd: 4.00          # hard stop on logged spend (all providers, USD); raise when more credit is added
+  azure_cap_usd: 1.00    # hard stop on logged Azure spend (week-4 limit agreed with the user)
+  max_call_usd: 0.05     # any single call above this stops the run
 
 prices_usd_per_mtok:     # Anthropic first-party rates (verified 2026-09-27)
   claude-haiku-4-5: {input: 1.00, output: 5.00}

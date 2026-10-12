@@ -52,10 +52,11 @@ def load_prompt(name: str) -> str:
     return (PROMPT_DIR / f"{name}.txt").read_text()
 
 
-def spent_usd() -> float:
+def spent_usd(models=None) -> float:
     if not LOG_PATH.exists():
         return 0.0
-    return sum(json.loads(line)["cost_usd"] for line in LOG_PATH.read_text().splitlines() if line.strip())
+    rows = [json.loads(line) for line in LOG_PATH.read_text().splitlines() if line.strip()]
+    return sum(r["cost_usd"] for r in rows if models is None or r["model"] in models)
 
 
 def _cache_key(params, sample) -> str:
@@ -138,7 +139,7 @@ def call_azure(step, input_items, tools=None, schema=None, sample=0, model=None)
     model = model or CONFIG["azure"]["backbone"]
     params = {"provider": "azure", "model": model, "input": input_items, "store": False,
               "include": ["reasoning.encrypted_content"], "reasoning": {"effort": CONFIG["effort"][step]},
-              "max_output_tokens": CONFIG["max_tokens"]}
+              "max_output_tokens": CONFIG["azure"]["max_output_tokens"]}
     if tools:
         params["tools"] = tools
     if schema:
@@ -147,6 +148,9 @@ def call_azure(step, input_items, tools=None, schema=None, sample=0, model=None)
     if hit := _cached(key):
         return hit
     _check_budget()
+    azure_spent = spent_usd(set(CONFIG["azure"]["models"]))
+    if azure_spent >= CONFIG["budget"]["azure_cap_usd"]:
+        raise BudgetExceeded(f"Azure spend ${azure_spent:.3f} >= cap ${CONFIG['budget']['azure_cap_usd']}")
 
     host = os.environ["AZURE_OPENAI_ENDPOINT"].split("/")[2]
     _azure = _azure or OpenAI(base_url=f"https://{host}/openai/v1/", api_key=os.environ["AZURE_OPENAI_API_KEY"])
@@ -161,6 +165,8 @@ def call_azure(step, input_items, tools=None, schema=None, sample=0, model=None)
     _log({"cache_key": key, "step": step, "model": model, "sample": sample,
           "input_tokens": usage.input_tokens, "cached_tokens": cached_in, "output_tokens": usage.output_tokens,
           "cost_usd": cost, "latency_s": latency, "stop_reason": response.status})
+    if cost > CONFIG["budget"]["max_call_usd"]:
+        raise BudgetExceeded(f"{step}: one call cost ${cost} > ${CONFIG['budget']['max_call_usd']} - stopping")
     if response.status != "completed":
         raise RuntimeError(f"{step}: status={response.status} ({response.incomplete_details}), not parsing")
 
