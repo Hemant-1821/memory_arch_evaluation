@@ -179,25 +179,40 @@ def _enrich_for_staffing_queries(triples: list[dict], entities: dict, rng: rando
     triples.append({"subject": conflicted_person, "predicate": "leads", "object": coi_project_a})
 
 
-MIN_ACTIVE_PROJECTS = 3  # enrichment needs 2 (the COI pair); +1 spare in case one changes status later
+def _min_active_projects(pilot: bool) -> int:
+    """Pilot: 3 (the COI pair + 1 spare). Full: one high-tier staffing task per active
+    project needs >= 30 of them, plus spares for status changes (decision 4.2)."""
+    with open("configs/sizing.yaml") as f:
+        return yaml.safe_load(f)["min_active_projects"]["pilot" if pilot else "full"]
 
 
-def _ensure_active_projects(entities: dict, rng: random.Random) -> None:
+def _ensure_active_projects(entities: dict, rng: random.Random, minimum: int) -> None:
     """Guarantees the precondition of _enrich_for_staffing_queries. Random
     statuses alone can leave no project active (it happened on the seed-7
     pilot), which silently removes every high-complexity staffing task."""
     projects = _ids_of_type(entities, "Project")
     inactive = [p for p in projects if entities[p]["status"] != "active"]
-    shortfall = MIN_ACTIVE_PROJECTS - (len(projects) - len(inactive))
+    shortfall = minimum - (len(projects) - len(inactive))
     for p in rng.sample(inactive, max(0, min(shortfall, len(inactive)))):
         entities[p]["status"] = "active"
+
+
+def _ensure_required_skills(triples: list[dict], entities: dict, rng: random.Random) -> None:
+    """Project.required_skills is `required: true` in the ontology, but the 50%-keep
+    N:M wiring leaves ~29% of projects with none - and a project needing no skill
+    has no staffing task (decision 4.2). Give each such project one held skill."""
+    held = sorted({t["object"] for t in triples if t["predicate"] == "has_skill"})
+    with_skill = {t["subject"] for t in triples if t["predicate"] == "requires_skill"}
+    for p in _ids_of_type(entities, "Project"):
+        if p not in with_skill and held:
+            triples.append({"subject": p, "predicate": "requires_skill", "object": rng.choice(held)})
 
 
 def generate_graph(seed: int, pilot: bool = False) -> tuple[list[dict], dict]:
     ontology = load_ontology()
     sizing = _load_sizing(pilot)
     entities = _generate_entities(ontology, sizing, seed, pilot)
-    _ensure_active_projects(entities, random.Random(derive_seed(seed, "active_projects")))
+    _ensure_active_projects(entities, random.Random(derive_seed(seed, "active_projects")), _min_active_projects(pilot))
 
     triples: list[dict] = []
     rel_rng = random.Random(derive_seed(seed, "relations"))
@@ -206,6 +221,8 @@ def generate_graph(seed: int, pilot: bool = False) -> tuple[list[dict], dict]:
 
     _add_replaceable_attribute_triples(triples, entities, ontology)
     _enrich_for_staffing_queries(triples, entities, random.Random(derive_seed(seed, "enrichment")))
+    # After enrichment, so graphs where every project already needs a skill (the pilot) are untouched.
+    _ensure_required_skills(triples, entities, random.Random(derive_seed(seed, "required_skills")))
 
     # Enrichment can re-add a fact the random wiring already made; a duplicate
     # would double-count workload in the staffing checker. Keep first occurrence.
@@ -271,7 +288,7 @@ if __name__ == "__main__":
     # projects, one with >=2 required skills, and a real derived COI.
     from generation.task_generator import has_conflict_of_interest
     active_projects = [eid for eid, a in e1.items() if a["entity_type"] == "Project" and a["status"] == "active"]
-    assert len(active_projects) >= MIN_ACTIVE_PROJECTS, "not enough active projects"
+    assert len(active_projects) >= _min_active_projects(pilot=True), "not enough active projects"
     assert any(sum(t["predicate"] == "requires_skill" and t["subject"] == p for t in t1) >= 2
                for p in active_projects), "no active project needs 2+ skills"
     people = [eid for eid, a in e1.items() if a["entity_type"] == "Person"]
