@@ -24,6 +24,15 @@ steps, backbone GPT-6.1 Sol on Azure. Each run records correctness, steps, token
 (incl. cached), latency and fact recall. End-to-end pilot test (3 tasks x 3
 conditions): results in `results/e2e_pilot/`.
 
+Week 5: the closed-book and gold-context checks now run on the backbone (Sol), so
+they test the same model as the agent (pilot: 12/12 questions kept). Full pilot run,
+12 tasks x 3 conditions, in `results/pilot_full/`: accuracy vector 11/12, graph
+12/12, hybrid 12/12; average cost per run vector $0.022, graph $0.007, hybrid
+$0.008. The graph tools `follow_relation` and `filter_by_attribute` now return
+whole links (subject, predicate, object), so fact recall sees both names of a fact.
+Full-size estimate (729 documents, 90 tasks): about $12 Claude for the dataset,
+about $4 Azure per seed for the experiment.
+
 ## Setup
 
 ```bash
@@ -48,7 +57,7 @@ Needs the memory stores (`docker compose up -d`) and `AZURE_OPENAI_ENDPOINT` /
 
 ```bash
 ./venv/bin/python -m agent.react                                   # self-check, no API calls
-./venv/bin/python -m scripts.run_experiment --name e2e_pilot --per-tier 1 --seeds 1 --max-usd 0.5
+./venv/bin/python -m scripts.run_experiment --name pilot_full --per-tier 30 --seeds 1 --max-usd 1.0
 ```
 
 Runs are seed-major and replay from the cache for free; `--max-usd` stops early if

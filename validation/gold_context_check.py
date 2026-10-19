@@ -1,4 +1,4 @@
-"""Gold-context ceiling check (decision 2.19): Sonnet gets the question plus the
+"""Gold-context ceiling check (decision 2.19): the backbone (Sol) gets the question plus the
 needed facts as plain code-written statements, 3 times; the task is kept if at
 least 2 answers are correct."""
 from generation.facts import fact_to_statement
