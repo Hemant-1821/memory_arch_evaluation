@@ -1,6 +1,6 @@
 # Real values for week 2 (decisions 2.2, 2.3, 2.21). Model IDs are exact - no date suffixes.
 generation_model: claude-haiku-4-5    # writes documents, phrases questions
-backbone_model: claude-sonnet-5       # extraction, validation checks (Claude route)
+backbone_model: claude-sonnet-5       # extraction, fidelity + ambiguity checks (Claude route)
 
 # Experiment backbone on Azure (decision 4.1). Deployment names, not secrets;
 # endpoint and key come from .env. Version auto-update must stay OFF in Foundry.
@@ -23,7 +23,7 @@ effort:
 
 budget:
   cap_usd: 4.00          # hard stop on logged spend (all providers, USD); raise when more credit is added
-  azure_cap_usd: 1.00    # hard stop on logged Azure spend (week-4 limit agreed with the user)
+  azure_cap_usd: 2.00    # hard stop on logged Azure spend (week-5 limit agreed with the user)
   max_call_usd: 0.05     # any single call above this stops the run
 
 prices_usd_per_mtok:     # Anthropic first-party rates (verified 2026-09-27)

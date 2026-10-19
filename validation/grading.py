@@ -4,7 +4,7 @@ high tier is scored by the staffing checker. `explanation` is kept for human
 review (decision 2.14)."""
 from generation.episode_splitter import current_state
 from generation.facts import normalise_name
-from generation.llm_client import call_llm, load_prompt
+from generation.llm_client import call_azure, load_prompt
 from generation.task_generator import check_staffing_candidate
 
 SCHEMA = {"type": "object",
@@ -16,9 +16,10 @@ SCHEMA = {"type": "object",
 def answer_question(question, facts, step, sample) -> dict:
     context = ("Known facts:\n" + "\n".join(f"- {f}" for f in facts)) if facts else \
         "You have no documents or notes about this organisation."
-    return call_llm("backbone", step, "You answer questions about an organisation.",
-                    load_prompt("answer").format(context=context, question=question),
-                    schema=SCHEMA, sample=sample)["json"]
+    # same model as the experiment agent, so the gates measure what the agent can know (decision 5.1)
+    items = [{"role": "system", "content": "You answer questions about an organisation."},
+             {"role": "user", "content": load_prompt("answer").format(context=context, question=question)}]
+    return call_azure(step, items, schema=SCHEMA, sample=sample)["json"]
 
 
 def grade(task, answer_names, entities, triples) -> bool:
