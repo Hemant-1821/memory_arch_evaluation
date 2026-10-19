@@ -88,19 +88,21 @@ class GraphMemory:
                          f"AND {VALID} RETURN s.name AS subject, r.predicate AS predicate, o.name AS object "
                          f"ORDER BY predicate, object", q=normalise_name(name), as_of=as_of_episode)
 
-    def follow_relation(self, name: str, predicate: str, as_of_episode: int, direction: str = "out") -> list[str]:
-        start, end = ("s", "o") if direction == "out" else ("o", "s")
-        rows = self._run(f"MATCH (s:Node {{dataset: $dataset}})-[r:REL {{predicate: $p}}]->(o:Node) "
-                         f"WHERE {start}.norm = $q AND {VALID} RETURN DISTINCT {end}.name AS name ORDER BY name",
+    # Both tools below return whole links like get_neighbours, so every tool output
+    # names both ends of a fact and recall uses one rule for all conditions (decision 5.2).
+    def follow_relation(self, name: str, predicate: str, as_of_episode: int, direction: str = "out") -> list[dict]:
+        start = "s" if direction == "out" else "o"
+        return self._run(f"MATCH (s:Node {{dataset: $dataset}})-[r:REL {{predicate: $p}}]->(o:Node) "
+                         f"WHERE {start}.norm = $q AND {VALID} RETURN DISTINCT s.name AS subject, "
+                         f"r.predicate AS predicate, o.name AS object ORDER BY subject, object",
                          q=normalise_name(name), p=predicate, as_of=as_of_episode)
-        return [r["name"] for r in rows]
 
-    def filter_by_attribute(self, entity_type: str, predicate: str, value: str, as_of_episode: int) -> list[str]:
+    def filter_by_attribute(self, entity_type: str, predicate: str, value: str, as_of_episode: int) -> list[dict]:
         """Entities of a type linked by `predicate` to `value`, e.g. ('Project', 'status', 'active')."""
-        rows = self._run(f"MATCH (s:Node {{dataset: $dataset, type: $t}})-[r:REL {{predicate: $p}}]->(o:Node) "
-                         f"WHERE o.norm = $v AND {VALID} RETURN DISTINCT s.name AS name ORDER BY name",
+        return self._run(f"MATCH (s:Node {{dataset: $dataset, type: $t}})-[r:REL {{predicate: $p}}]->(o:Node) "
+                         f"WHERE o.norm = $v AND {VALID} RETURN DISTINCT s.name AS subject, "
+                         f"r.predicate AS predicate, o.name AS object ORDER BY subject",
                          t=entity_type, p=predicate, v=normalise_name(value), as_of=as_of_episode)
-        return [r["name"] for r in rows]
 
 
 if __name__ == "__main__":
@@ -123,11 +125,15 @@ if __name__ == "__main__":
     try:
         assert g.load(kg) == 5
         assert g.find_entity("kivo") == [{"name": "Dr. Kivo Ranet", "type": "Person"}]
-        assert g.filter_by_attribute("Project", "status", "Proposed", as_of_episode=1) == ["Lumen Vault"]
+        assert g.filter_by_attribute("Project", "status", "Proposed", as_of_episode=1) == \
+            [{"subject": "Lumen Vault", "predicate": "status", "object": "proposed"}]
         assert g.filter_by_attribute("Project", "status", "proposed", as_of_episode=2) == [], "old status must expire"
-        assert g.follow_relation("Lumen Vault", "status", as_of_episode=2) == ["active"]
-        assert g.follow_relation("Lumen Vault", "leads", 0, direction="in") == ["Dr. Kivo Ranet"]
-        assert g.follow_relation("Lumen Vault", "status", as_of_episode=0) == ["proposed"], "future facts must be hidden"
+        assert g.follow_relation("Lumen Vault", "status", as_of_episode=2) == \
+            [{"subject": "Lumen Vault", "predicate": "status", "object": "active"}]
+        assert g.follow_relation("Lumen Vault", "leads", 0, direction="in") == \
+            [{"subject": "Dr. Kivo Ranet", "predicate": "leads", "object": "Lumen Vault"}], "both ends must be named"
+        assert [r["object"] for r in g.follow_relation("Lumen Vault", "status", as_of_episode=0)] == ["proposed"], \
+            "future facts must be hidden"
         assert len(g.get_neighbours("kivo ranet", 0)) == 2
     finally:
         g._run("MATCH (n:Node {dataset: $dataset}) DETACH DELETE n")
