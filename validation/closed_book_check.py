@@ -1,4 +1,4 @@
-"""Closed-book leakage check (decision 2.15): Sonnet answers the bare question 3
+"""Closed-book leakage check (decision 2.15): the backbone (Sol) answers the bare question 3
 times with no documents; the task is kept only if all 3 answers are wrong."""
 from validation.grading import answer_question, grade
 
