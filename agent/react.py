@@ -83,7 +83,7 @@ def run_task(task, condition, vector, graph, entities, triples, seed, model) -> 
     outputs = []
     for step in range(MAX_STEPS):
         if claude:  # append-only: every block, thinking included, goes back unchanged
-            r = call_agent("experiment_agent", system, history, tools, sample=seed)
+            r = call_agent("experiment_agent", model, system, history, tools, sample=seed)
             history.append({"role": "assistant", "content": r["content"]})
             calls = [(b["id"], b["name"], b["input"]) for b in r["content"] if b["type"] == "tool_use"]
         else:  # incl. encrypted reasoning, so the next turn continues the same thought

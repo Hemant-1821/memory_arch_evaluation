@@ -94,12 +94,13 @@ def _claude(step, params, sample, fields) -> dict:
     if hit := _cached(key):
         return hit
     _check_budget()
+    price = CONFIG["prices_usd_per_mtok"][params["model"]]  # an unpriced model fails before it bills
 
     _client = _client or anthropic.Anthropic()
     start = time.perf_counter()
     response = _client.messages.create(**params)
     latency = round(time.perf_counter() - start, 3)
-    u, price = response.usage, CONFIG["prices_usd_per_mtok"][params["model"]]
+    u = response.usage
     tokens = {"input": u.input_tokens, "cache_write": u.cache_creation_input_tokens or 0,
               "cache_read": u.cache_read_input_tokens or 0, "output": u.output_tokens}
     usage = {"input_tokens": tokens["input"] + tokens["cache_write"] + tokens["cache_read"],  # all input, as on Azure
@@ -132,12 +133,12 @@ def call_llm(role, step, system, prompt, schema=None, sample=0, max_tokens=None)
     return _claude(step, params, sample, fields)
 
 
-def call_agent(step, system, messages, tools, sample=0) -> dict:
+def call_agent(step, model, system, messages, tools, sample=0) -> dict:
     """One turn of the experiment agent on Claude (decision 6.5). The caller appends the
     returned `content` (every block, thinking signatures included) unchanged, so the
     history is append-only and a run replays exactly from the cache. Top-level
     cache_control caches the growing prefix, so later turns read earlier ones cheaply."""
-    params = {"model": CONFIG["backbone_model"], "max_tokens": CONFIG["max_tokens"], "system": system,
+    params = {"model": model, "max_tokens": CONFIG["max_tokens"], "system": system,
               "messages": messages, "tools": tools, "output_config": {"effort": CONFIG["effort"][step]},
               "cache_control": {"type": "ephemeral"}}
     r = _claude(step, params, sample,
@@ -215,13 +216,13 @@ if __name__ == "__main__":
                              "required": ["word"], "additionalProperties": False}}
     system = "Call lookup once, then reply with its result.\n" + "\n".join(f"Note {i}: unused." for i in range(400))
     msgs = [{"role": "user", "content": "Look up the word 'river'."}]
-    t1 = call_agent("experiment_agent", system, msgs, [tool])
+    t1 = call_agent("experiment_agent", CONFIG["backbone_model"], system, msgs, [tool])
     uses = [blk for blk in t1["content"] if blk["type"] == "tool_use"]
     assert uses and t1["cache_write_tokens"] > 0, t1
     msgs += [{"role": "assistant", "content": t1["content"]},
              {"role": "user", "content": [{"type": "tool_result", "tool_use_id": u["id"], "content": "flows"}
                                           for u in uses]}]
-    t2 = call_agent("experiment_agent", system, msgs, [tool])
+    t2 = call_agent("experiment_agent", CONFIG["backbone_model"], system, msgs, [tool])
     assert t2["cached_tokens"] > 0 and any(blk["type"] == "text" for blk in t2["content"]), t2
 
     # Review Focus: an identical call is served from cache with no new log line.
