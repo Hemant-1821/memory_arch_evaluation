@@ -10,7 +10,7 @@
         "Kunlapet"
       ],
       "reasoning_path": [
-        "fact_0109"
+        "fact_0108"
       ],
       "required_hops": 1,
       "constraint_count": 0,
@@ -90,19 +90,19 @@
     {
       "task_id": "low_01",
       "tier": "low",
-      "meaning": "Where is Vamtu Lathe currently located?",
-      "question": "Where is Vamtu Lathe currently located?",
+      "meaning": "What is the current status of project Corran Bridge?",
+      "question": "What's the current status of the Corran Bridge project?",
       "ground_truth_answer": [
-        "Tapdiho"
+        "active"
       ],
       "reasoning_path": [
-        "fact_0113"
+        "fact_0106"
       ],
       "required_hops": 1,
       "constraint_count": 0,
       "constraint_type": "single_fact",
       "source_entities": [
-        "Equipment_0001"
+        "Project_0003"
       ],
       "as_of_episode": 2,
       "project": null,
@@ -124,19 +124,19 @@
               "answer": [
                 "Unknown"
               ],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium or anyone named Vamtu Lathe, so I cannot verify this person's location. Without any information, I cannot offer a reliable guess, and I would rather say so than invent a place."
+              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I cannot verify the current status of the Corran Bridge project. I have no information on whether it is planned, in progress, completed, or on hold. If a best guess is required, the status is most likely 'In progress', but this is speculation and not based on any evidence."
             },
             {
               "answer": [
                 "Unknown"
               ],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, and I have no reliable knowledge of a person named Vamtu Lathe or where they are currently located. I cannot determine the location, so I am not offering a specific guess that would be fabricated."
+              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I cannot verify the status of the Corran Bridge project. I don't know what it is or how far along it is. My best guess is a placeholder, 'Unknown', rather than a status I would be inventing. For an accurate answer I would need project records or a recent update from the consortium."
             },
             {
               "answer": [
                 "Unknown"
               ],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, and I have no reliable information about a person named Vamtu Lathe or where they are currently located. I can't verify a location, so I am not able to give a confident answer; 'Unknown' is the most honest response rather than a fabricated guess."
+              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I can't verify the current status of the Corran Bridge project. I don't know whether it is planned, in progress, completed, or on hold. Because a best guess is requested, I'm giving 'Unknown' rather than inventing a status; please share project records or updates for a reliable answer."
             }
           ]
         },
@@ -150,21 +150,21 @@
           "answers": [
             {
               "answer": [
-                "Tapdiho"
+                "active"
               ],
-              "explanation": "The known facts state directly that Vamtu Lathe is located in Tapdiho. No other information suggests a change in location, so Tapdiho is the answer."
+              "explanation": "The known facts state that the status of project Corran Bridge, part of the Solstice Research Consortium, is active, so that is its current status."
             },
             {
               "answer": [
-                "Tapdiho"
+                "active"
               ],
-              "explanation": "The known facts state directly that Vamtu Lathe is located in Tapdiho, so that is the current location based on the information provided."
+              "explanation": "The known facts state directly that the status of project Corran Bridge is active, so that is its current status."
             },
             {
               "answer": [
-                "Tapdiho"
+                "active"
               ],
-              "explanation": "The known facts state directly that Vamtu Lathe is located in Tapdiho. No other information suggests a change, so Tapdiho is the current location."
+              "explanation": "The known facts state directly that the status of project Corran Bridge is active, so that is its current status."
             }
           ]
         },
@@ -176,99 +176,13 @@
     {
       "task_id": "low_02",
       "tier": "low",
-      "meaning": "Where is Photonic Sensing Gime Group currently based?",
-      "question": "Where is the Photonic Sensing Gime Group currently based?",
-      "ground_truth_answer": [
-        "Hedto"
-      ],
-      "reasoning_path": [
-        "fact_0112"
-      ],
-      "required_hops": 1,
-      "constraint_count": 0,
-      "constraint_type": "single_fact",
-      "source_entities": [
-        "Team_0000"
-      ],
-      "as_of_episode": 2,
-      "project": null,
-      "checks": {
-        "level_accuracy": true,
-        "ambiguity": {
-          "passed": true,
-          "issue": ""
-        },
-        "closed_book": {
-          "passed": true,
-          "correct": [
-            false,
-            false,
-            false
-          ],
-          "answers": [
-            {
-              "answer": [
-                "Unknown"
-              ],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I cannot verify where the Photonic Sensing Gime Group is based. The group's name may also be misspelled or fictional, which makes a reliable guess impossible. I am giving 'Unknown' rather than inventing a location."
-            },
-            {
-              "answer": [
-                "Unknown - not enough information"
-              ],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, and I have no reliable knowledge of a group called the 'Photonic Sensing Gime Group' (the name may also contain a typo). I cannot determine its location, so I am not able to give a confident answer. If forced to guess, I could only speculate, and any specific location would be unfounded."
-            },
-            {
-              "answer": [
-                "Unknown - no information available"
-              ],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, and I have no verifiable knowledge of a group called the 'Photonic Sensing Gime Group' (the name may also contain a typo). I cannot determine its current location, so I am not able to give a reliable answer; please provide source material or confirm the group's exact name."
-            }
-          ]
-        },
-        "gold_context": {
-          "passed": true,
-          "correct": [
-            true,
-            true,
-            true
-          ],
-          "answers": [
-            {
-              "answer": [
-                "Hedto"
-              ],
-              "explanation": "The known facts state directly that the Photonic Sensing Gime Group is based in Hedto. No information suggests it has moved, so Hedto is the current base."
-            },
-            {
-              "answer": [
-                "Hedto"
-              ],
-              "explanation": "The known facts state directly that the Photonic Sensing Gime Group is based in Hedto. No other information suggests a move or a different location, so Hedto is the current base."
-            },
-            {
-              "answer": [
-                "Hedto"
-              ],
-              "explanation": "The known facts state directly that the Photonic Sensing Gime Group is based in Hedto. No other location or relocation is mentioned, so Hedto is the current base."
-            }
-          ]
-        },
-        "human_review": null
-      },
-      "status": "kept",
-      "drop_reason": null
-    },
-    {
-      "task_id": "low_03",
-      "tier": "low",
       "meaning": "Who does Saru Surobov currently report to?",
       "question": "Who does Saru Surobov currently report to?",
       "ground_truth_answer": [
-        "Saru Surobov"
+        "Bulve Dutubus"
       ],
       "reasoning_path": [
-        "fact_0111"
+        "fact_0105"
       ],
       "required_hops": 1,
       "constraint_count": 0,
@@ -322,21 +236,21 @@
           "answers": [
             {
               "answer": [
-                "Saru Surobov"
+                "Bulve Dutubus"
               ],
-              "explanation": "The only known fact states that Saru Surobov reports to Saru Surobov, so based on the information given, the answer is Saru Surobov. This is unusual, since it implies self-reporting (possibly a top-level role such as head of the organisation or a data quirk), but it is the only available information."
+              "explanation": "The known facts state directly that Saru Surobov reports to Bulve Dutubus. No other information suggests a change, so this is the current reporting line."
             },
             {
               "answer": [
-                "Saru Surobov"
+                "Bulve Dutubus"
               ],
-              "explanation": "The only known fact states that Saru Surobov reports to Saru Surobov, so based on the information provided, the answer is Saru Surobov. This is a self-referential reporting line, which may indicate a top-level role or a data quirk, but no other information is available to suggest a different answer."
+              "explanation": "The known facts state directly that Saru Surobov reports to Bulve Dutubus. No other information suggests a change, so this is the current reporting line."
             },
             {
               "answer": [
-                "Saru Surobov"
+                "Bulve Dutubus"
               ],
-              "explanation": "The only known fact states that Saru Surobov reports to Saru Surobov, so based on the information given, the answer is Saru Surobov. This is unusual, since it implies a self-report, which may indicate a top-level role such as head of the organisation or a data quirk, but no other information is available to contradict it."
+              "explanation": "The known facts state directly that Saru Surobov reports to Bulve Dutubus. No other information indicates a change, so this is the current reporting line."
             }
           ]
         },
@@ -346,21 +260,21 @@
       "drop_reason": null
     },
     {
-      "task_id": "low_04",
+      "task_id": "low_03",
       "tier": "low",
-      "meaning": "Who does Bulve Dutubus currently report to?",
-      "question": "Who does Bulve Dutubus currently report to?",
+      "meaning": "Where is Review 5259 currently located?",
+      "question": "Where is Review 5259 currently located?",
       "ground_truth_answer": [
-        "Nikatum Gamevet"
+        "Kunlapet"
       ],
       "reasoning_path": [
-        "fact_0110"
+        "fact_0104"
       ],
       "required_hops": 1,
       "constraint_count": 0,
       "constraint_type": "single_fact",
       "source_entities": [
-        "Person_0002"
+        "Meeting_0000"
       ],
       "as_of_episode": 2,
       "project": null,
@@ -382,19 +296,19 @@
               "answer": [
                 "Unknown"
               ],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, and I have no reliable information about who Bulve Dutubus is or who they report to. I can't identify a supervisor without guessing, so I'm giving 'Unknown' rather than inventing a name."
+              "explanation": "I have no documents or records about the Solstice Research Consortium, so I cannot verify where Review 5259 is located. Nothing identifies what Review 5259 is (a document, a peer review, a case file) or where it is held. Any specific location would be a fabrication, so I am giving 'Unknown' as my best answer."
             },
             {
               "answer": [
                 "Unknown"
               ],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I cannot verify who Bulve Dutubus reports to. The name does not match any information I can rely on, and any specific name I gave would be a guess. I am therefore giving 'Unknown' rather than inventing a person."
+              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I cannot verify where Review 5259 is located. Nothing in the question indicates whether it is a document, a case file, or a review process, or whether it has a location at all. I cannot give a grounded location, so 'Unknown' is my best answer rather than an invented one."
             },
             {
               "answer": [
                 "Unknown"
               ],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, and I have no reliable knowledge of anyone named Bulve Dutubus or of that person's reporting line. I cannot name a manager without guessing at random, so 'Unknown' is my best answer. If you can share an org chart or staff directory, I can answer properly."
+              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I cannot determine where Review 5259 is located. Nothing is available to identify this review or its location, and any specific place I named would be a guess with no evidence behind it."
             }
           ]
         },
@@ -408,21 +322,107 @@
           "answers": [
             {
               "answer": [
-                "Nikatum Gamevet"
+                "Kunlapet"
               ],
-              "explanation": "The known facts state that Bulve Dutubus reports to Nikatum Gamevet, and no other information indicates a change, so this is the current reporting line."
+              "explanation": "The known facts state directly that Review 5259 is located in Kunlapet. No other information suggests it has moved, so Kunlapet is the current location."
             },
             {
               "answer": [
-                "Nikatum Gamevet"
+                "Kunlapet"
               ],
-              "explanation": "The known facts state directly that Bulve Dutubus reports to Nikatum Gamevet. No other information indicates a change, so this is the current reporting line."
+              "explanation": "The known facts state directly that Review 5259 is located in Kunlapet. No other information suggests it has moved, so Kunlapet is the current location."
             },
             {
               "answer": [
-                "Nikatum Gamevet"
+                "Kunlapet"
               ],
-              "explanation": "The known facts state directly that Bulve Dutubus reports to Nikatum Gamevet. No other information suggests a change, so this is the current reporting line."
+              "explanation": "The known facts state directly that Review 5259 is located in Kunlapet. No other information suggests it has moved, so Kunlapet is the current location."
+            }
+          ]
+        },
+        "human_review": null
+      },
+      "status": "kept",
+      "drop_reason": null
+    },
+    {
+      "task_id": "low_04",
+      "tier": "low",
+      "meaning": "Which project does Gelpenbe Ketehot currently lead?",
+      "question": "Which project is Gelpenbe Ketehot currently leading?",
+      "ground_truth_answer": [
+        "Ferrix Array"
+      ],
+      "reasoning_path": [
+        "fact_0103"
+      ],
+      "required_hops": 1,
+      "constraint_count": 0,
+      "constraint_type": "single_fact",
+      "source_entities": [
+        "Person_0006"
+      ],
+      "as_of_episode": 2,
+      "project": null,
+      "checks": {
+        "level_accuracy": true,
+        "ambiguity": {
+          "passed": true,
+          "issue": ""
+        },
+        "closed_book": {
+          "passed": true,
+          "correct": [
+            false,
+            false,
+            false
+          ],
+          "answers": [
+            {
+              "answer": [
+                "Unknown"
+              ],
+              "explanation": "I have no documents or notes about the Solstice Research Consortium, and I have no information about Gelpenbe Ketehot or any project they lead. I can't identify the project, so 'Unknown' is a placeholder rather than a guess based on evidence."
+            },
+            {
+              "answer": [
+                "Unknown"
+              ],
+              "explanation": "I have no documents or notes about the Solstice Research Consortium, and I have no reliable knowledge of anyone named Gelpenbe Ketehot or the projects they lead. I can't identify the project, so 'Unknown' is a placeholder rather than a real guess."
+            },
+            {
+              "answer": [
+                "Unknown"
+              ],
+              "explanation": "I have no documents or notes about the Solstice Research Consortium, and I have no reliable knowledge of a person named Gelpenbe Ketehot or of any project they lead. I can't identify the project without guessing, so 'Unknown' is a placeholder rather than a real answer."
+            }
+          ]
+        },
+        "gold_context": {
+          "passed": true,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "answers": [
+            {
+              "answer": [
+                "Ferrix Array"
+              ],
+              "explanation": "The known facts state that Gelpenbe Ketehot leads project Ferrix Array, so that is the project they are currently leading. No other projects are mentioned."
+            },
+            {
+              "answer": [
+                "Ferrix Array"
+              ],
+              "explanation": "The known facts state that Gelpenbe Ketehot leads project Ferrix Array, so that is the project they are currently leading."
+            },
+            {
+              "answer": [
+                "Ferrix Array"
+              ],
+              "explanation": "The known facts state that Gelpenbe Ketehot leads project Ferrix Array, so that is the project they are currently leading."
             }
           ]
         },
@@ -434,8 +434,8 @@
     {
       "task_id": "medium_00",
       "tier": "medium",
-      "meaning": "List every person currently working on project Lumen Forge who has the skill Bio-Fabrication.",
-      "question": "Which people are currently working on the Lumen Forge project and have the Bio-Fabrication skill?",
+      "meaning": "List every person currently working on project Lumen Forge who has the skill Bio-Fabrication, not counting the project's lead.",
+      "question": "Which people currently working on the Lumen Forge project have the Bio-Fabrication skill, apart from the project's lead?",
       "ground_truth_answer": [
         "Befkon Mehamhe",
         "Kata Saho"
@@ -443,7 +443,8 @@
       "reasoning_path": [
         "fact_0010",
         "fact_0011",
-        "fact_0104",
+        "fact_0100",
+        "fact_0107",
         "fact_0021",
         "fact_0024"
       ],
@@ -471,15 +472,15 @@
           "answers": [
             {
               "answer": [],
-              "explanation": "I have no documents or records about the Solstice Research Consortium, including its Lumen Forge project, staff assignments, or skills such as Bio-Fabrication. I can't identify any names without making them up, so I'm returning an empty list rather than guessing. If you can share the project roster or skills data, I can work out the answer."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, the Lumen Forge project, its team members, or their skills, so I cannot identify who has the Bio-Fabrication skill. I won't invent names. The empty list reflects that no names can be supported; if you can share the project roster and skills records, I can answer properly."
             },
             {
               "answer": [],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I cannot identify who works on the Lumen Forge project or who has the Bio-Fabrication skill. I do not want to invent names. An empty list is my best guess, and it reflects missing information rather than confirmation that nobody fits."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, the Lumen Forge project, its team members, or their skills, so I cannot identify who has the Bio-Fabrication skill. I won't invent names; the empty list reflects that I have no basis for a guess. Providing the project roster and skills records would let me answer."
             },
             {
               "answer": [],
-              "explanation": "I have no documents or records about the Solstice Research Consortium, its Lumen Forge project, or its staff skills, so I can't identify anyone who works on Lumen Forge and has Bio-Fabrication skill. I won't invent names. The empty list means no names can be given from the information available, not that nobody matches."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, the Lumen Forge project, its team members, or their skills, so I cannot identify who has the Bio-Fabrication skill. I won't invent names. The empty list reflects that no names can be supported; if you provide the project roster and skills, I can answer precisely."
             }
           ]
         },
@@ -493,24 +494,24 @@
           "answers": [
             {
               "answer": [
-                "Kata Saho",
-                "Befkon Mehamhe"
+                "Befkon Mehamhe",
+                "Kata Saho"
               ],
-              "explanation": "Kata Saho, Pihnal Batun, and Befkon Mehamhe all work on Lumen Forge. Of these, only Befkon Mehamhe and Kata Saho have the Bio-Fabrication skill. Pihnal Batun is not listed with that skill."
+              "explanation": "The known facts do not say who leads Lumen Forge, so the lead cannot be excluded with certainty. Four people work on the project: Kata Saho, Pihnal Batun, Befkon Mehamhe and Valode Zihuki. Of these, only Befkon Mehamhe and Kata Saho have Bio-Fabrication. If the lead is one of them, that person should be removed from the list, but nothing identifies the lead, so my best guess is to list both."
             },
             {
               "answer": [
-                "Kata Saho",
-                "Befkon Mehamhe"
+                "Befkon Mehamhe",
+                "Kata Saho"
               ],
-              "explanation": "Three people work on Lumen Forge: Kata Saho, Pihnal Batun, and Befkon Mehamhe. Of these, only Befkon Mehamhe and Kata Saho are listed with the Bio-Fabrication skill. Pihnal Batun has no listed Bio-Fabrication skill, so is excluded."
+              "explanation": "The known facts do not say who leads Lumen Forge, so I could not exclude anyone. Four people work on the project: Kata Saho, Pihnal Batun, Befkon Mehamhe and Valode Zihuki. Of these, only Befkon Mehamhe and Kata Saho have Bio-Fabrication. If one of them is the lead, they would be excluded, but nothing says so. My best guess is to list both."
             },
             {
               "answer": [
-                "Kata Saho",
-                "Befkon Mehamhe"
+                "Befkon Mehamhe",
+                "Kata Saho"
               ],
-              "explanation": "Kata Saho, Pihnal Batun, and Befkon Mehamhe work on Lumen Forge. Of these, only Befkon Mehamhe and Kata Saho have the Bio-Fabrication skill. Pihnal Batun has no listed Bio-Fabrication skill, so he is excluded."
+              "explanation": "The known facts do not say who leads Lumen Forge, so I could not exclude anyone. Four people work on the project: Kata Saho, Pihnal Batun, Befkon Mehamhe and Valode Zihuki. Of these, only Befkon Mehamhe and Kata Saho have the Bio-Fabrication skill. If one of them is the lead, they would be excluded, but nothing says so. My best guess is to list both."
             }
           ]
         },
@@ -522,8 +523,8 @@
     {
       "task_id": "medium_01",
       "tier": "medium",
-      "meaning": "List every person currently working on project Ferrix Array who has the skill Thermal Systems.",
-      "question": "Which people are currently working on the Ferrix Array project and have the Thermal Systems skill?",
+      "meaning": "List every person currently working on project Ferrix Array who has the skill Thermal Systems, not counting the project's lead.",
+      "question": "Which people currently working on the Ferrix Array project have the Thermal Systems skill, apart from the project lead?",
       "ground_truth_answer": [
         "Befkon Mehamhe"
       ],
@@ -556,15 +557,15 @@
           "answers": [
             {
               "answer": [],
-              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, its Ferrix Array project, or its staff skills, so I cannot identify anyone who works on that project and has Thermal Systems skills. I would be inventing names if I gave any, so I am returning an empty list rather than a guess."
+              "explanation": "I have no documents or records about the Solstice Research Consortium, so I cannot identify who works on the Ferrix Array project or who has the Thermal Systems skill. Any names I gave would be invented. The empty list means I could not determine an answer, not that no one qualifies."
             },
             {
               "answer": [],
-              "explanation": "I have no documents or records about the Solstice Research Consortium, so I cannot identify who is working on the Ferrix Array project or who has the Thermal Systems skill. I can't name anyone without inventing names, so the list is empty. Staff assignment data or a skills directory would be needed to answer this."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, the Ferrix Array project, its team members, or their skills, so I cannot identify anyone with the Thermal Systems skill. Any names I gave would be invented. I am returning an empty list rather than guessing, and would need the project roster and skills records to answer."
             },
             {
               "answer": [],
-              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, its Ferrix Array project, or its staff skills, so I cannot identify anyone who is working on that project and has the Thermal Systems skill. Any names I gave would be invented, so I am returning an empty list rather than guessing."
+              "explanation": "I have no documents or records about the Solstice Research Consortium, including the Ferrix Array project, its team members, or their skills. I cannot identify anyone with the Thermal Systems skill without that data, so I am not able to name anyone and am returning an empty list rather than inventing names."
             }
           ]
         },
@@ -580,19 +581,19 @@
               "answer": [
                 "Befkon Mehamhe"
               ],
-              "explanation": "Nikatum Gamevet and Befkon Mehamhe both work on Ferrix Array. Only Befkon Mehamhe is stated to have the Thermal Systems skill. Nothing is stated about Nikatum Gamevet having that skill, so only Befkon Mehamhe matches both conditions."
+              "explanation": "Two people work on Ferrix Array: Nikatum Gamevet and Befkon Mehamhe. Only Befkon Mehamhe is known to have the Thermal Systems skill. The project lead is not identified in the known facts, so I cannot confirm whether Befkon is the lead. Nothing says Nikatum has the skill. Best guess: Befkon Mehamhe, assuming the project lead is someone else or not among these people."
             },
             {
               "answer": [
                 "Befkon Mehamhe"
               ],
-              "explanation": "Nikatum Gamevet and Befkon Mehamhe both work on Ferrix Array. Only Befkon Mehamhe is known to have the Thermal Systems skill. Nothing is stated about Nikatum Gamevet having that skill, so only Befkon Mehamhe qualifies based on the known facts."
+              "explanation": "Two people work on Ferrix Array: Nikatum Gamevet and Befkon Mehamhe. Only Befkon Mehamhe is known to have the Thermal Systems skill. The project lead is not identified in the known facts, so I assumed the lead is not Befkon Mehamhe, which makes this a best guess. If Befkon were the lead, no one would qualify."
             },
             {
               "answer": [
                 "Befkon Mehamhe"
               ],
-              "explanation": "Nikatum Gamevet and Befkon Mehamhe both work on Ferrix Array. Only Befkon Mehamhe is stated to have the Thermal Systems skill. Nothing says Nikatum Gamevet has it, so only Befkon Mehamhe is confirmed."
+              "explanation": "Two people work on Ferrix Array: Nikatum Gamevet and Befkon Mehamhe. Only Befkon Mehamhe is known to have Thermal Systems. The facts do not say who the project lead is, so I cannot exclude anyone on that basis. Nothing indicates that Befkon Mehamhe is the lead, so the best answer is Befkon Mehamhe."
             }
           ]
         },
@@ -604,15 +605,16 @@
     {
       "task_id": "medium_02",
       "tier": "medium",
-      "meaning": "List every person currently working on project Lumen Forge who has the skill Thermal Systems.",
-      "question": "Which people are currently working on the Lumen Forge project and have the Thermal Systems skill?",
+      "meaning": "List every person currently working on project Lumen Forge who has the skill Thermal Systems, not counting the project's lead.",
+      "question": "Which people currently working on Lumen Forge have the Thermal Systems skill, apart from the project lead?",
       "ground_truth_answer": [
         "Befkon Mehamhe"
       ],
       "reasoning_path": [
         "fact_0010",
         "fact_0011",
-        "fact_0104",
+        "fact_0100",
+        "fact_0107",
         "fact_0020"
       ],
       "required_hops": 2,
@@ -639,15 +641,15 @@
           "answers": [
             {
               "answer": [],
-              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, including its Lumen Forge project, its staff assignments, or their skills. Without that information I cannot identify anyone who is both working on Lumen Forge and has the Thermal Systems skill, and I will not invent names. The empty list reflects that I have no basis for naming anyone; the project's staffing records or skills directory would be needed to answer this."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, the Lumen Forge project, its staff, or their skills, so I cannot identify who works on it or who has the Thermal Systems skill. Any names I gave would be fabricated. The empty list reflects that I have no information, not that no such people exist."
             },
             {
               "answer": [],
-              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, including its Lumen Forge project, its staff assignments, or their skills. I cannot identify anyone who both works on Lumen Forge and has the Thermal Systems skill without inventing names, so I am returning an empty list rather than guessing."
+              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I cannot identify who works on Lumen Forge, who leads it, or who has the Thermal Systems skill. Any names I gave would be invented. The empty list means I could not determine an answer, not that no such people exist."
             },
             {
               "answer": [],
-              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, including its Lumen Forge project, its staff assignments, or their skills. I cannot identify anyone who works on Lumen Forge and has the Thermal Systems skill without inventing names, so I am returning an empty list rather than a fabricated guess."
+              "explanation": "I have no documents or records about the Solstice Research Consortium, its Lumen Forge project, its staff, or their skills, so I cannot identify anyone with the Thermal Systems skill. Any names I gave would be fabricated, so I am returning an empty list rather than guessing."
             }
           ]
         },
@@ -663,19 +665,19 @@
               "answer": [
                 "Befkon Mehamhe"
               ],
-              "explanation": "Kata Saho, Pihnal Batun, and Befkon Mehamhe work on Lumen Forge. Only Befkon Mehamhe is stated to have the Thermal Systems skill. The facts give no Thermal Systems skill for the other two, so only Befkon Mehamhe is confirmed."
+              "explanation": "Four people work on Lumen Forge: Kata Saho, Pihnal Batun, Befkon Mehamhe and Valode Zihuki. The only one known to have Thermal Systems is Befkon Mehamhe. The facts do not say who the project lead is, so I cannot exclude anyone on that basis. If Befkon were the lead, the answer would be empty, but nothing says so. My best guess is that Befkon Mehamhe is the answer."
             },
             {
               "answer": [
                 "Befkon Mehamhe"
               ],
-              "explanation": "Kata Saho, Pihnal Batun and Befkon Mehamhe all work on Lumen Forge. Only Befkon Mehamhe is listed with the Thermal Systems skill. The facts don't say whether the other two have that skill, so Befkon Mehamhe is the only one I can confirm."
+              "explanation": "Four people work on Lumen Forge: Kata Saho, Pihnal Batun, Befkon Mehamhe and Valode Zihuki. The only one known to have Thermal Systems is Befkon Mehamhe. The project lead is not named in the facts, so I cannot exclude anyone for that reason. Befkon Mehamhe is the only candidate, so this is my best guess, and it assumes he is not the project lead."
             },
             {
               "answer": [
                 "Befkon Mehamhe"
               ],
-              "explanation": "Kata Saho, Pihnal Batun, and Befkon Mehamhe all work on Lumen Forge. Only Befkon Mehamhe is listed with the Thermal Systems skill. The facts say nothing about skills for the other two, so Befkon Mehamhe is the only confirmed match."
+              "explanation": "Four people work on Lumen Forge: Kata Saho, Pihnal Batun, Befkon Mehamhe and Valode Zihuki. The only one with a known Thermal Systems skill is Befkon Mehamhe. The project lead is not identified in the facts, so I cannot confirm whether Befkon is the lead. Since the only person known to have the skill is Befkon, my best guess is that Befkon is not the lead and is the answer."
             }
           ]
         },
@@ -774,8 +776,8 @@
     {
       "task_id": "medium_04",
       "tier": "medium",
-      "meaning": "List every person currently working on project Ferrix Array who has the skill Signal Processing.",
-      "question": "Which people are currently working on the Ferrix Array project and have the Signal Processing skill?",
+      "meaning": "List every person currently working on project Ferrix Array who has the skill Signal Processing, not counting the project's lead.",
+      "question": "Which people currently working on the Ferrix Array project have the Signal Processing skill, excluding the project's lead?",
       "ground_truth_answer": [
         "Nikatum Gamevet"
       ],
@@ -808,15 +810,15 @@
           "answers": [
             {
               "answer": [],
-              "explanation": "I have no documents or records about the Solstice Research Consortium, including its staff, the Ferrix Array project, or anyone's skills. I cannot identify anyone who works on the project and has Signal Processing skills, and I won't invent names. The empty list reflects missing information, not a confirmed absence of such people."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, the Ferrix Array project, its team members, their skills, or its lead. Without that information I cannot identify who currently works on the project and has Signal Processing skills. I won't invent names, so the list is empty. If you can share the project roster and skills data, I can answer properly."
             },
             {
               "answer": [],
-              "explanation": "I have no documents or records about the Solstice Research Consortium, including its Ferrix Array project, staff assignments, or skills. I cannot identify anyone who works on that project and has Signal Processing skills, so I am returning an empty list rather than inventing names."
+              "explanation": "I have no documents, notes, or records about the Solstice Research Consortium, the Ferrix Array project, its team roster, its lead, or anyone's skills. I therefore cannot identify any people with the Signal Processing skill. I am not going to invent names, so the list is empty. This is a best guess given no data; a staff or project database would be needed to answer properly."
             },
             {
               "answer": [],
-              "explanation": "I have no documents or records about the Solstice Research Consortium, including its staff, the Ferrix Array project, or anyone's skills. I can't identify anyone who works on that project and has Signal Processing skills without inventing names, so I'm returning an empty list rather than guessing. A staff directory or project roster with skill tags would be needed to answer this."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, its Ferrix Array project, its team members, their skills, or who leads the project. I cannot identify anyone with the Signal Processing skill on that project, so I cannot name specific people without inventing them. The empty list reflects that no names can be supported; I would need the project roster, skills records, and lead designation to answer."
             }
           ]
         },
@@ -832,19 +834,19 @@
               "answer": [
                 "Nikatum Gamevet"
               ],
-              "explanation": "Nikatum Gamevet and Befkon Mehamhe both work on Ferrix Array. Only Nikatum Gamevet is known to have the Signal Processing skill. Nothing is stated about Befkon Mehamhe having that skill, so only Nikatum Gamevet qualifies based on the known facts."
+              "explanation": "Two people work on Ferrix Array: Nikatum Gamevet and Befkon Mehamhe. Only Nikatum Gamevet is known to have Signal Processing. The facts do not say who leads the project, so I can't confirm whether Nikatum is the lead. Befkon has no recorded Signal Processing skill, so the exclusion changes nothing for them. My best guess is that Nikatum Gamevet is the answer, on the assumption that he is not the lead."
             },
             {
               "answer": [
                 "Nikatum Gamevet"
               ],
-              "explanation": "Nikatum Gamevet and Befkon Mehamhe both work on Ferrix Array. Only Nikatum Gamevet is known to have the Signal Processing skill. No fact states that Befkon Mehamhe has that skill, so the answer is Nikatum Gamevet."
+              "explanation": "Two people work on Ferrix Array: Nikatum Gamevet and Befkon Mehamhe. Only Nikatum Gamevet is known to have Signal Processing. The facts do not say who leads the project, so I could not confirm whether Nikatum is the lead. Nothing in the facts says Nikatum is the lead, so my best guess is that Nikatum is included. If Nikatum is the lead, the answer would be empty."
             },
             {
               "answer": [
                 "Nikatum Gamevet"
               ],
-              "explanation": "Nikatum Gamevet and Befkon Mehamhe both work on Ferrix Array. Only Nikatum Gamevet is known to have the Signal Processing skill. Nothing is stated about Befkon Mehamhe having that skill, so the best answer is Nikatum Gamevet."
+              "explanation": "Two people are known to work on Ferrix Array: Nikatum Gamevet and Befkon Mehamhe. Only Nikatum Gamevet is known to have Signal Processing. The facts do not say who leads the project, so I could not confirm whether Nikatum is the lead. Nothing indicates that Nikatum is the lead, so my best guess is that Nikatum is not the lead and should be included. If Nikatum were the lead, the list would be empty."
             }
           ]
         },
@@ -856,10 +858,125 @@
     {
       "task_id": "high_00",
       "tier": "high",
-      "meaning": "Propose a team of at most 4 people for project Ashen Initiative that together covers all of the project's required skills, where nobody is already working on more than 2 active projects, and nobody has a conflict of interest (a person has one if they already lead a different active project that shares a sponsor with Ashen Initiative). List the members of that team.",
-      "question": "Which four or fewer people could we staff on the Ashen Initiative so that together they cover all of the project's required skills, none of them is already working on more than two active projects, and none of them leads a different active project that shares a sponsor with Ashen Initiative?",
+      "meaning": "Propose a team of at most 4 people for project Corran Bridge that together covers all of the project's required skills, where nobody is already working on more than 2 active projects (leading a project does not count as working on it), and nobody has a conflict of interest (a person has one if they already lead a different active project that shares a sponsor with Corran Bridge). List the members of that team.",
+      "question": "Which people could we put together as a team of at most four for Corran Bridge that collectively cover all of the project's required skills, where nobody is already working on more than two active projects (leading a project doesn't count as working on it), and nobody has a conflict of interest, meaning they already lead a different active project that shares a sponsor with Corran Bridge?",
       "ground_truth_answer": [
-        "Nikatum Gamevet"
+        "Gelpenbe Ketehot"
+      ],
+      "reasoning_path": [
+        "fact_0031",
+        "fact_0032",
+        "fact_0004",
+        "fact_0005",
+        "fact_0006",
+        "fact_0007",
+        "fact_0009",
+        "fact_0010",
+        "fact_0011",
+        "fact_0012",
+        "fact_0013",
+        "fact_0014",
+        "fact_0015",
+        "fact_0016",
+        "fact_0017",
+        "fact_0018",
+        "fact_0019",
+        "fact_0020",
+        "fact_0021",
+        "fact_0022",
+        "fact_0023",
+        "fact_0024",
+        "fact_0025",
+        "fact_0026",
+        "fact_0027",
+        "fact_0028",
+        "fact_0087",
+        "fact_0091",
+        "fact_0092",
+        "fact_0093",
+        "fact_0100",
+        "fact_0101",
+        "fact_0102",
+        "fact_0103",
+        "fact_0106",
+        "fact_0107"
+      ],
+      "required_hops": 4,
+      "constraint_count": 4,
+      "constraint_type": "staffing_with_conflict_of_interest",
+      "source_entities": [
+        "Project_0003"
+      ],
+      "as_of_episode": 2,
+      "project": "Project_0003",
+      "checks": {
+        "level_accuracy": true,
+        "ambiguity": {
+          "passed": true,
+          "issue": "none"
+        },
+        "closed_book": {
+          "passed": true,
+          "correct": [
+            false,
+            false,
+            false
+          ],
+          "answers": [
+            {
+              "answer": [],
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, so I cannot see the Corran Bridge project's required skills, its sponsors, staff skills, project assignments, or who leads which projects. Without that information I cannot identify a valid team of up to four people, and any names I gave would be invented. To answer, I would need the project's skill requirements and sponsors, each person's skills, their active project assignments (excluding projects they lead), and the leaders and sponsors of other active projects. With that I would exclude anyone working on more than two active projects, exclude anyone leading another active project that shares a sponsor with Corran Bridge, then find a set of at most four remaining people whose skills cover all requirements."
+            },
+            {
+              "answer": [],
+              "explanation": "I have no documents, notes or data about the Solstice Research Consortium, so I cannot see the Corran Bridge project's required skills, its sponsors, staff skill sets, project assignments, or which people lead other active projects. Without that information I cannot identify real people who cover the skills, stay within the two-active-project limit, and avoid sponsor conflicts. Rather than invent names, I am returning an empty list. To answer, I would need: the required skills and sponsors for Corran Bridge, each person's skills, each person's current active project assignments (excluding projects they lead), and which active projects each person leads along with those projects' sponsors."
+            },
+            {
+              "answer": [],
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, so I cannot see the Corran Bridge project's required skills, its sponsors, staff skills, workloads, or which projects people lead. Without that information I cannot responsibly name a team of up to four people who cover all required skills, work on at most two active projects, and have no sponsor-sharing conflict of interest. Any names I gave would be fabricated, so I am returning an empty list. To answer, I would need the project's skill requirements and sponsors, each person's skills, their active project assignments, and the projects they lead along with those projects' sponsors."
+            }
+          ]
+        },
+        "gold_context": {
+          "passed": true,
+          "correct": [
+            true,
+            true,
+            true
+          ],
+          "answers": [
+            {
+              "answer": [
+                "Gelpenbe Ketehot"
+              ],
+              "explanation": "Corran Bridge requires Adaptive Materials and Signal Processing. Gelpenbe Ketehot is the only person with Adaptive Materials, and also has Signal Processing, so he covers both required skills alone. He works on no projects (he only leads Ferrix Array, which doesn't count), so he is within the two-project limit. Corran Bridge has no listed sponsor, so no one can have a sponsor-sharing conflict of interest. Nikatum Gamevet is excluded anyway, as he works on three active projects. A team of one satisfies the 'at most four' limit."
+            },
+            {
+              "answer": [
+                "Gelpenbe Ketehot"
+              ],
+              "explanation": "Corran Bridge requires Adaptive Materials and Signal Processing. Only Gelpenbe Ketehot has Adaptive Materials, and he also has Signal Processing, so he alone covers both skills. His workload is fine: he works on no projects, and leading Ferrix Array doesn't count. Corran Bridge has no listed sponsor, so nobody has a sponsor-sharing conflict, including Gelpenbe, whose Ferrix Array is sponsored by Zehu Systems. A team of one is within the limit of four. Nikatum Gamevet is excluded because he works on three active projects. Others could be added up to four members, but they aren't needed."
+            },
+            {
+              "answer": [
+                "Gelpenbe Ketehot"
+              ],
+              "explanation": "Adaptive Materials is held only by Gelpenbe Ketehot, so Gelpenbe must be on the team. Gelpenbe also has Signal Processing, so Gelpenbe alone covers both required skills (Adaptive Materials and Signal Processing). Gelpenbe works on no projects; leading Ferrix Array doesn't count, so the two-project limit is met. Corran Bridge has no listed sponsor, so no one can share a sponsor with it, and nobody has a conflict of interest. Other people with Signal Processing could be added (Valode Zihuki, Kata Saho, Pihnal Batun), but they aren't needed. Nikatum Gamevet is excluded because he works on three active projects. The smallest valid team is therefore Gelpenbe Ketehot alone."
+            }
+          ]
+        },
+        "human_review": null
+      },
+      "status": "kept",
+      "drop_reason": null
+    },
+    {
+      "task_id": "high_01",
+      "tier": "high",
+      "meaning": "Propose a team of at most 4 people for project Ashen Initiative that together covers all of the project's required skills, where nobody is already working on more than 2 active projects (leading a project does not count as working on it), and nobody has a conflict of interest (a person has one if they already lead a different active project that shares a sponsor with Ashen Initiative). List the members of that team.",
+      "question": "Which four or fewer people should we put on the Ashen Initiative team so that together they cover all of the project's required skills, none of them is already working on more than 2 active projects (leading a project doesn't count as working on it), and none of them has a conflict of interest, meaning they already lead a different active project that shares a sponsor with Ashen Initiative?",
+      "ground_truth_answer": [
+        "Valode Zihuki"
       ],
       "reasoning_path": [
         "fact_0029",
@@ -887,16 +1004,16 @@
         "fact_0026",
         "fact_0027",
         "fact_0028",
+        "fact_0087",
         "fact_0091",
-        "fact_0095",
-        "fact_0096",
-        "fact_0097",
-        "fact_0098",
-        "fact_0104",
-        "fact_0105",
+        "fact_0092",
+        "fact_0093",
+        "fact_0100",
+        "fact_0101",
+        "fact_0102",
+        "fact_0103",
         "fact_0106",
-        "fact_0107",
-        "fact_0108"
+        "fact_0107"
       ],
       "required_hops": 4,
       "constraint_count": 4,
@@ -910,7 +1027,7 @@
         "level_accuracy": true,
         "ambiguity": {
           "passed": true,
-          "issue": "The question preserves the project name, the limit of at most four people, full skill coverage, the cap of two active projects, and the conflict-of-interest condition. It still asks for a list of people and does not give away the answer."
+          "issue": ""
         },
         "closed_book": {
           "passed": true,
@@ -922,15 +1039,15 @@
           "answers": [
             {
               "answer": [],
-              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, so I cannot identify its people, the Ashen Initiative's required skills, staff workloads, project sponsors, or who leads which projects. Any names I gave would be invented. To answer, I would need the Ashen Initiative's required skills and sponsor(s), a roster with each person's skills, their count of active projects, and the projects they lead along with those projects' sponsors. With that, I would filter out anyone on more than two active projects or leading another active project sharing a sponsor with Ashen, then pick a set of at most four of the remaining people whose skills cover all requirements. I am returning an empty list because I cannot responsibly guess names."
+              "explanation": "I have no documents, rosters, or project records for the Solstice Research Consortium. That means I don't know the Ashen Initiative's required skills or sponsors, who the candidates are, what skills they have, how many active projects each is working on, or which projects they lead. Any names I gave would be invented, so I can't responsibly pick a team. To answer, I would need: (1) Ashen Initiative's required skills and sponsors, (2) each person's skills, (3) their active project assignments and the projects they lead, and (4) the sponsors of those projects. With that data, I would exclude anyone working on more than 2 active projects (not counting projects they lead) and anyone who leads another active project sharing a sponsor with Ashen Initiative. Then I would find a set of at most four of the remaining people whose skills cover all requirements."
             },
             {
               "answer": [],
-              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, so I cannot identify the Ashen Initiative's required skills, its sponsors, staff members' skills, their active project loads, or which projects they lead. Any names I gave would be invented. To answer, I would need the project's skill requirements and sponsors, a staff roster with skills, each person's active project count, and the list of active projects with their leads and sponsors. With that, I could filter out anyone on more than two active projects or leading another active project with a shared sponsor, then find a team of four or fewer covering all required skills. Best guess given the lack of information: an empty list."
+              "explanation": "I have no documents, rosters, or project data for the Solstice Research Consortium. That means I don't know the Ashen Initiative's required skills, its sponsors, who leads which active projects, each person's skills, or how many active projects each person is working on. Any names I gave would be invented, so I'm returning an empty list. To answer this, I would need the project's skill requirements and sponsors, a list of staff with their skills, their current project assignments, and which projects they lead. With that, I could screen out people who work on more than 2 active projects or who lead a different active project with a shared sponsor, then find a team of four or fewer that covers all required skills."
             },
             {
               "answer": [],
-              "explanation": "I have no documents or data about the Solstice Research Consortium, so I cannot identify its staff, the Ashen Initiative's required skills, sponsors, or anyone's current project loads. Any names I gave would be fabricated. To answer, I would need the project's required skills list, each person's skills, their active project counts, which active projects they lead, and the sponsors of each project. With that, I would filter out anyone on more than two active projects or leading another active project with a shared sponsor, then find a set of four or fewer remaining people whose skills cover all requirements. My best guess is an empty list because no valid team can be determined from the information provided."
+              "explanation": "I have no documents, rosters, or project data for the Solstice Research Consortium. That means I don't know the Ashen Initiative's required skills or sponsors, who is available, how many active projects each person works on, or which projects they lead. Any names I gave would be invented, so I can't responsibly pick a team of four or fewer. To answer, I would need the Ashen Initiative's skill requirements and sponsors, each person's skills, their active project assignments, and the projects they lead with those projects' sponsors. With that I could screen out anyone on more than 2 active projects (not counting projects they lead) or leading another active project with a shared sponsor, then find a team of at most four people who together cover every required skill."
             }
           ]
         },
@@ -944,27 +1061,21 @@
           "answers": [
             {
               "answer": [
-                "Valode Zihuki",
-                "Kata Saho",
-                "Pihnal Batun",
-                "Nikatum Gamevet"
+                "Kata Saho"
               ],
-              "explanation": "Ashen Initiative requires only Signal Processing. People with that skill are Nikatum Gamevet, Valode Zihuki, Kata Saho, Gelpenbe Ketehot and Pihnal Batun. Gelpenbe Ketehot is excluded because he leads Ferrix Array, an active project that shares the sponsor Zehu Systems with Ashen Initiative. The active projects are Lumen Forge, Ashen Initiative and Ferrix Array; Corran Bridge is only proposed. Nikatum Gamevet is on 2 active projects (Ferrix Array and Ashen Initiative), Kata Saho and Pihnal Batun are on 1 (Lumen Forge), and Valode Zihuki is on 0. The projects Kata, Pihnal and Valode lead are all Corran Bridge, which is proposed, so none of them leads a conflicting active project. The four remaining people therefore all qualify, and any one of them would cover the required skill, so this is the full set of eligible candidates."
+              "explanation": "Ashen Initiative requires only Signal Processing. People with that skill are Nikatum Gamevet, Valode Zihuki, Kata Saho, Gelpenbe Ketehot and Pihnal Batun. Gelpenbe Ketehot leads Ferrix Array, which is active and sponsored by Zehu Systems, the same sponsor as Ashen Initiative, so that is a conflict of interest. Nikatum Gamevet works on 3 active projects (Corran Bridge, Ferrix Array, Ashen Initiative), which is more than 2. Valode Zihuki (works on 2), Kata Saho (works on 1) and Pihnal Batun (works on 1) are all eligible, since Corran Bridge has no listed sponsor and so creates no conflict. One person covers the only required skill, so a team of one is enough. Kata Saho is a valid choice, and Pihnal Batun or Valode Zihuki would also satisfy the constraints."
             },
             {
               "answer": [
-                "Valode Zihuki"
+                "Kata Saho"
               ],
-              "explanation": "Ashen Initiative requires only Signal Processing, so one person with that skill covers it. Zehu Systems sponsors Ashen Initiative, Ferrix Array and Lumen Forge, which are the active projects. Gelpenbe Ketehot leads Ferrix Array, a different active project with the same sponsor, so he is excluded. Valode Zihuki has Signal Processing and works only on Corran Bridge, which is merely proposed. That means zero active projects, and the Corran Bridge leadership does not conflict because that project is not active. Valode therefore meets every constraint. Other valid choices are Kata Saho and Pihnal Batun, who each work on one active project. Nikatum Gamevet also qualifies on skills and workload, but is already on Ashen Initiative."
+              "explanation": "Ashen Initiative requires only Signal Processing and is sponsored by Zehu Systems. Zehu also sponsors Ferrix Array and Lumen Forge, so anyone leading either of those has a conflict of interest. That rules out Gelpenbe Ketehot, who leads Ferrix Array. Nikatum Gamevet already works on 3 active projects (Corran Bridge, Ferrix Array, Ashen Initiative), so is excluded. The remaining Signal Processing candidates are Valode Zihuki (works on 2 projects), Kata Saho (works on 1) and Pihnal Batun (works on 1). All three lead Corran Bridge, which has no listed sponsor, so none has a conflict. One of them is enough to cover the only required skill. I chose Kata Saho, who has a light workload and no conflict. Pihnal Batun or Valode Zihuki would also satisfy the constraints."
             },
             {
               "answer": [
-                "Nikatum Gamevet",
-                "Valode Zihuki",
-                "Kata Saho",
-                "Pihnal Batun"
+                "Kata Saho"
               ],
-              "explanation": "Ashen Initiative requires only Signal Processing. The people with that skill are Nikatum Gamevet, Valode Zihuki, Kata Saho, Gelpenbe Ketehot and Pihnal Batun. The active projects are Lumen Forge, Ashen Initiative and Ferrix Array; Corran Bridge is only proposed, so it does not count. Zehu Systems sponsors Ashen, Ferrix Array and Lumen Forge. Gelpenbe Ketehot leads Ferrix Array, which is active and shares the sponsor Zehu Systems with Ashen, so he is excluded. Nikatum Gamevet is on two active projects (Ferrix Array and Ashen), which is within the limit of two. Valode Zihuki has no active projects, and Kata Saho and Pihnal Batun each have only Lumen Forge. They lead only the proposed Corran Bridge, so none of them leads a conflicting active project. All four are eligible and any one of them covers the required skill, so any subset of up to four of them is a valid team."
+              "explanation": "Ashen Initiative requires only Signal Processing and is sponsored by Zehu Systems, which also sponsors Ferrix Array and Lumen Forge. Gelpenbe Ketehot leads Ferrix Array, so he has a conflict of interest. Nikatum Gamevet already works on 3 active projects (Corran Bridge, Ferrix Array and Ashen Initiative), so he is excluded. Corran Bridge has no listed sponsor, so leading it causes no conflict. Kata Saho has Signal Processing, works on only 1 active project (Lumen Forge) and leads only Corran Bridge, so she has no conflict. She alone covers the required skill. Valode Zihuki and Pihnal Batun would also be valid single choices."
             }
           ]
         },
@@ -974,17 +1085,17 @@
       "drop_reason": null
     },
     {
-      "task_id": "high_01",
+      "task_id": "high_02",
       "tier": "high",
-      "meaning": "Propose a team of at most 4 people for project Ferrix Array that together covers all of the project's required skills, where nobody is already working on more than 2 active projects, and nobody has a conflict of interest (a person has one if they already lead a different active project that shares a sponsor with Ferrix Array). List the members of that team.",
-      "question": "Which people could we put together on a team of no more than four for the Ferrix Array project so that every required skill is covered, leaving out anyone already working on more than two active projects or anyone who leads a different active project that shares a sponsor with Ferrix Array?",
+      "meaning": "Propose a team of at most 4 people for project Ferrix Array that together covers all of the project's required skills, where nobody is already working on more than 2 active projects (leading a project does not count as working on it), and nobody has a conflict of interest (a person has one if they already lead a different active project that shares a sponsor with Ferrix Array). List the members of that team.",
+      "question": "Which team of at most four people could cover all of the required skills for Project Ferrix Array, using only people who are already working on no more than two active projects (leading a project doesn't count toward that total) and who don't have a conflict of interest, meaning they don't already lead a different active project that shares a sponsor with Ferrix Array?",
       "ground_truth_answer": [
         "Saru Surobov",
         "Gelpenbe Ketehot"
       ],
       "reasoning_path": [
         "fact_0030",
-        "fact_0103",
+        "fact_0099",
         "fact_0004",
         "fact_0005",
         "fact_0006",
@@ -1009,16 +1120,16 @@
         "fact_0026",
         "fact_0027",
         "fact_0028",
+        "fact_0087",
         "fact_0091",
-        "fact_0095",
-        "fact_0096",
-        "fact_0097",
-        "fact_0098",
-        "fact_0104",
-        "fact_0105",
+        "fact_0092",
+        "fact_0093",
+        "fact_0100",
+        "fact_0101",
+        "fact_0102",
+        "fact_0103",
         "fact_0106",
-        "fact_0107",
-        "fact_0108"
+        "fact_0107"
       ],
       "required_hops": 4,
       "constraint_count": 4,
@@ -1032,7 +1143,7 @@
         "level_accuracy": true,
         "ambiguity": {
           "passed": true,
-          "issue": ""
+          "issue": "No material difference: the question keeps the team size limit, skill coverage, workload cap with leading excluded, and the conflict-of-interest definition, and still asks for a team (a list of members)."
         },
         "closed_book": {
           "passed": true,
@@ -1044,15 +1155,15 @@
           "answers": [
             {
               "answer": [],
-              "explanation": "I have no documents, rosters, skill requirements, project assignments, or sponsor data for the Solstice Research Consortium, so I cannot identify who could staff the Ferrix Array project. Building a valid team of up to four would require knowing (1) the skills Ferrix Array requires, (2) each person's skills, (3) how many active projects each person is on (to exclude anyone with more than two), and (4) which active projects share a sponsor with Ferrix Array and who leads them (to exclude those leads). Without this information any names I gave would be fabricated, so I am returning an empty list instead of a guess."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium, so I cannot see Project Ferrix Array's required skills, its sponsors, staff skill sets, project assignments, or who leads which projects. Without that information, I cannot identify a team of up to four eligible people, and naming individuals would be a fabrication. To answer, I would need the project's skill requirements and sponsors, the staff list with skills, each person's active project count (excluding projects they lead), and which active projects each person leads along with those projects' sponsors."
             },
             {
               "answer": [],
-              "explanation": "I have no documents or data about the Solstice Research Consortium, so I cannot identify its staff, the Ferrix Array project's required skills, who is on more than two active projects, or which project leads share a sponsor with Ferrix Array. Any names I gave would be invented. To answer, I would need the project's required skills, each person's skills, their active project counts, and project sponsors and leads. With that, I would drop anyone with more than two active projects or leading another active project with the same sponsor, then find a team of at most four covering every skill, as a set-cover problem. Without the data, I am returning an empty list."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium. That means I can't see Project Ferrix Array's required skills, its sponsors, the staff list, their skills, their project loads, or which projects they lead. Any team I named would be invented. To answer, I would need to (1) list Ferrix Array's required skills and sponsors, (2) exclude anyone on more than two active projects (not counting projects they lead), (3) exclude anyone who leads a different active project with a shared sponsor, and (4) find a set of at most four remaining people whose skills cover all requirements. Without that information I can't identify a team, so I'm returning an empty list rather than guessing names."
             },
             {
               "answer": [],
-              "explanation": "I have no documents or notes about the Solstice Research Consortium, so I can't see the Ferrix Array project's required skills, its sponsor, staff skill profiles, project assignments, or who leads which projects. Without that data, I can't build a valid team of up to four people, and naming individuals would be fabrication. To answer, I'd need: (1) the required skills for Ferrix Array, (2) each person's skills, (3) each person's count of active projects (exclude anyone with more than two), and (4) the sponsor of Ferrix Array plus the leaders of other active projects with the same sponsor (exclude those leaders). Then I'd pick a team of at most four whose combined skills cover all required skills, which is a set-cover problem. I'm returning an empty list because I can't identify any candidates."
+              "explanation": "I have no documents, notes, or data about the Solstice Research Consortium. That means I can't see Project Ferrix Array's required skills, its sponsors, staff skill lists, project assignments, or who leads which projects. Without that information I can't filter out people with more than two active projects or a sponsor conflict, and I can't build a team of up to four that covers the skills. Any names I gave would be invented, so I'm returning an empty list instead of guessing. To answer, I would need the project's skill requirements, each person's skills, their active project assignments (leading vs. participating), and the sponsors of each active project."
             }
           ]
         },
@@ -1067,25 +1178,23 @@
             {
               "answer": [
                 "Gelpenbe Ketehot",
-                "Saru Surobov",
-                "Kata Saho"
+                "Saru Surobov"
               ],
-              "explanation": "Ferrix Array requires Thermal Systems and Bio-Fabrication. Thermal Systems is held by Befkon Mehamhe and Gelpenbe Ketehot. Bio-Fabrication is held by Saru Surobov, Befkon Mehamhe and Kata Saho. Befkon is excluded because he leads Ashen Initiative, a different active project that shares the sponsor Zehu Systems with Ferrix Array. Gelpenbe leads Ferrix Array itself, so the exclusion does not apply, and he works on no other project. Kata Saho works on only one active project (Lumen Forge). She leads Corran Bridge, but that project is only proposed, so she is not excluded. Saru Surobov has no project commitments. Nikatum Gamevet is eligible but has neither required skill, so he is not needed. Gelpenbe covers Thermal Systems, and Saru or Kata covers Bio-Fabrication. Gelpenbe with either of them is enough, and all three together make a valid team of three, within the limit of four."
+              "explanation": "Ferrix Array requires Thermal Systems and Bio-Fabrication. Zehu Systems sponsors Ferrix Array. Befkon Mehamhe has both skills but leads Ashen Initiative, an active project also sponsored by Zehu, so he has a conflict of interest and is excluded. Gelpenbe Ketehot has Thermal Systems. He leads only Ferrix Array itself, which is not a different project, so there is no conflict. He works on no projects, so his workload is fine. Saru Surobov has Bio-Fabrication and works on no projects, so he is eligible too. Together they cover both required skills. Kata Saho (Bio-Fabrication, works on only Lumen Forge) would also work in place of Saru."
             },
             {
               "answer": [
                 "Gelpenbe Ketehot",
                 "Saru Surobov"
               ],
-              "explanation": "Ferrix Array requires Thermal Systems and Bio-Fabrication. Thermal Systems holders are Befkon Mehamhe and Gelpenbe Ketehot. Befkon is excluded because he leads Ashen Initiative, a different active project sponsored by Zehu Systems, which also sponsors Ferrix Array. That leaves Gelpenbe, who leads Ferrix Array itself, so the exclusion does not apply to him. Bio-Fabrication holders are Saru Surobov, Befkon (excluded) and Kata Saho. Saru has no project commitments, so he is eligible. Kata is also eligible, since Corran Bridge is only proposed and she works on one active project, so she could replace Saru. Gelpenbe plus Saru covers both required skills with a team of two, within the limit of four."
+              "explanation": "Ferrix Array requires Thermal Systems and Bio-Fabrication. Befkon Mehamhe has both skills but leads Ashen Initiative, an active project also sponsored by Zehu Systems (the sponsor of Ferrix Array), so he has a conflict of interest. Gelpenbe Ketehot has Thermal Systems and works on no projects as a non-lead. He leads only Ferrix Array itself, which is not a different project, so there is no conflict. Saru Surobov has Bio-Fabrication, works on no projects and leads none. Together they cover both required skills. Kata Saho (Bio-Fabrication) would also be eligible in place of Saru. Nikatum Gamevet works on 3 active projects, so he is excluded."
             },
             {
               "answer": [
                 "Gelpenbe Ketehot",
-                "Saru Surobov",
-                "Kata Saho"
+                "Saru Surobov"
               ],
-              "explanation": "Ferrix Array needs Thermal Systems and Bio-Fabrication. Skill holders are Befkon Mehamhe (both), Gelpenbe Ketehot (Thermal), and Saru Surobov and Kata Saho (Bio-Fabrication). Befkon is excluded because he leads Ashen Initiative, a different active project that shares the sponsor Zehu Systems with Ferrix Array. Gelpenbe leads Ferrix Array itself, so he is not excluded. Kata works on only one active project (Lumen Forge) and leads the proposed Corran Bridge, so she is eligible. Saru has no project commitments. Gelpenbe covers Thermal Systems, and Saru or Kata covers Bio-Fabrication. A team of Gelpenbe with Saru and/or Kata covers all required skills within four people. A minimal team is Gelpenbe plus either Saru or Kata."
+              "explanation": "Ferrix Array requires Thermal Systems and Bio-Fabrication. Zehu Systems sponsors Ferrix Array, Ashen Initiative and Lumen Forge. Befkon Mehamhe has both skills but leads Ashen Initiative, an active Zehu-sponsored project other than Ferrix Array, so he has a conflict of interest and is excluded. Gelpenbe Ketehot has Thermal Systems and works on no projects. He leads only Ferrix Array itself, which is not a different project, so he has no conflict. Saru Surobov has Bio-Fabrication and works on no projects. Together they cover both required skills. Kata Saho (Bio-Fabrication, works on only Lumen Forge) could replace Saru, so this is one valid team among several."
             }
           ]
         },
