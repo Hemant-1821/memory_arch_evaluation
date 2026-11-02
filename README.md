@@ -33,6 +33,21 @@ whole links (subject, predicate, object), so fact recall sees both names of a fa
 Full-size estimate (729 documents, 90 tasks): about $12 Claude for the dataset,
 about $4 Azure per seed for the experiment.
 
+Week 6: everything runs on the Anthropic API - Claude Haiku 5.5 writes documents and
+phrases questions; Claude Sonnet 5.5 runs the agent, the closed-book / gold-context
+checks, KG extraction and the fidelity / ambiguity checks. The Sol runs in
+`results/pilot_full/` stay as development runs and still replay from the cache. The
+agent passes every response block back unchanged and uses prompt caching. Haiku 5.5's
+safety filter refused some harmless documents because of invented names ("Virel ..."
+reads like "viral", "Vamtu-367" like a strain code), so the name generator no longer
+makes such names; refusals are logged, retried within the existing attempts, and an
+agent refusal is recorded as `refused` in the run. Rebuilt pilot: document accuracy
+1.00, extraction precision 0.98 / recall 0.99, 12/12 questions kept, no refusals.
+Calibration run (12 tasks x 3 conditions, 1 seed) in `results/calibration_sonnet55/`:
+accuracy vector 9/12, graph 11/12, hybrid 11/12; average cost per run vector $0.023,
+graph $0.013, hybrid $0.015. Full-run estimate (729 documents, 90 tasks, 5 seeds): about
+$10 for the dataset and $29 for the experiment, about $39 in total.
+
 ## Setup
 
 ```bash
@@ -52,12 +67,13 @@ docker compose up -d                          # Qdrant :6333, Neo4j :7474/:7687 
 
 ## Running the experiment
 
-Needs the memory stores (`docker compose up -d`) and `AZURE_OPENAI_ENDPOINT` /
-`AZURE_OPENAI_API_KEY` in `.env` (deployment names live in `configs/llm_config.yaml`).
+Needs the memory stores (`docker compose up -d`) and `ANTHROPIC_API_KEY` in `.env`. The
+agent model is `backbone_model` in `configs/llm_config.yaml`; `--model gpt-6.1-sol`
+replays the week-4/5 Azure runs from the cache.
 
 ```bash
 ./venv/bin/python -m agent.react                                   # self-check, no API calls
-./venv/bin/python -m scripts.run_experiment --name pilot_full --per-tier 30 --seeds 1 --max-usd 1.0
+./venv/bin/python -m scripts.run_experiment --name calibration_sonnet55 --per-tier 30 --seeds 1 --max-usd 1.5
 ```
 
 Runs are seed-major and replay from the cache for free; `--max-usd` stops early if
