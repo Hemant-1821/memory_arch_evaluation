@@ -140,8 +140,9 @@ LOOKUP_MEANINGS = {
 }
 STAFFING_MEANING = ("Propose a team of at most 4 people for project {p} that together covers all of the "
                     "project's required skills, where nobody is already working on more than 2 active "
-                    "projects, and nobody has a conflict of interest (a person has one if they already "
-                    "lead a different active project that shares a sponsor with {p}). List the members of that team.")
+                    "projects (leading a project does not count as working on it), and nobody has a conflict "
+                    "of interest (a person has one if they already lead a different active project that shares "
+                    "a sponsor with {p}). List the members of that team.")
 
 
 def _low(live, triples, entities, rng, n, as_of):
@@ -173,8 +174,10 @@ def _medium(live, entities, rng, n, as_of):
             people = sorted(x for x, ks in skills_of.items() if skill in ks)
             if 1 <= len(people) < len(skills_of):  # the skill filter must exclude someone
                 path = [w["fact_id"] for w in workers] + [skills_of[x][skill]["fact_id"] for x in people]
+                # works_at only: "leads" is a separate relation, so the wording says so (decision 6.10)
                 cands.append(("filter", p, f"List every person currently working on project {name(p)} who has "
-                              f"the skill {name(skill)}.", [name(x) for x in people], path, 1))
+                              f"the skill {name(skill)} (leading a project does not count as working on it).",
+                              [name(x) for x in people], path, 1))
         leaders = idx[("leads", "by_object", p)]
         if len(leaders) == 1:
             teams = idx[("member_of", "by_subject", leaders[0]["subject"])]
