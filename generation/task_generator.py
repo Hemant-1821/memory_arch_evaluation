@@ -167,18 +167,19 @@ def _medium(live, entities, rng, n, as_of):
         idx[(t["predicate"], "by_object", t["object"])].append(t)
     cands = []
     for p in sorted({t["object"] for t in live if t["predicate"] == "works_at"}):
-        workers = idx[("works_at", "by_object", p)]
+        leaders = idx[("leads", "by_object", p)]
+        # "leads" and "works_at" stay separate relations and the question says "not counting the
+        # project's lead", so a lead who also works on the project is left out too (decision 6.10)
+        workers = [w for w in idx[("works_at", "by_object", p)] if w["subject"] not in {x["subject"] for x in leaders}]
         skills_of = {w["subject"]: {s["object"]: s for s in idx[("has_skill", "by_subject", w["subject"])]}
                      for w in workers}
         for skill in sorted({k for ks in skills_of.values() for k in ks}):
             people = sorted(x for x, ks in skills_of.items() if skill in ks)
             if 1 <= len(people) < len(skills_of):  # the skill filter must exclude someone
                 path = [w["fact_id"] for w in workers] + [skills_of[x][skill]["fact_id"] for x in people]
-                # works_at only: "leads" is a separate relation, so the wording says so (decision 6.10)
                 cands.append(("filter", p, f"List every person currently working on project {name(p)} who has "
-                              f"the skill {name(skill)} (leading a project does not count as working on it).",
+                              f"the skill {name(skill)}, not counting the project's lead.",
                               [name(x) for x in people], path, 1))
-        leaders = idx[("leads", "by_object", p)]
         if len(leaders) == 1:
             teams = idx[("member_of", "by_subject", leaders[0]["subject"])]
             if len(teams) == 1:
@@ -287,6 +288,13 @@ if __name__ == "__main__":
     # Status is time-aware: once the led project is no longer active, the COI disappears.
     ended = coi_triples + [{"subject": "Project_0000", "predicate": "status", "object": "completed"}]
     assert has_conflict_of_interest("Person_0000", "Project_0001", coi_entities, ended) is False
+
+    # A lead who also works on the project is not counted - the question says so (decision 6.10).
+    f = lambda i, s, p, o: {"fact_id": f"f{i}", "subject": s, "predicate": p, "object": o}
+    toy = [f(0, "L", "leads", "P"), f(1, "L", "works_at", "P"), f(2, "W", "works_at", "P"),
+           f(3, "V", "works_at", "P"), f(4, "L", "has_skill", "S"), f(5, "W", "has_skill", "S")]
+    toy_tasks = _medium(toy, {x: {"display_name": x} for x in "LWVPS"}, random.Random(0), 5, 0)
+    assert [t["ground_truth_answer"] for t in toy_tasks] == [["W"]], "a filter answer counted the project's lead"
 
     tasks = generate_tasks(episoded, entities, seed=7, per_level=5)
     assert tasks == generate_tasks(episoded, entities, seed=7, per_level=5), "task generation not deterministic"
