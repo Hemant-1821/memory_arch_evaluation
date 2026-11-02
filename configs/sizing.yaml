@@ -41,8 +41,9 @@ documents:
   max_extra_mentions: 2       # decision 2.6
   distractor_fraction: 0.22   # decision 2.5 (~20-25% of the corpus)
 
-# One high-tier task per project active at the last episode (decision 4.2).
-min_active_projects: {pilot: 3, full: 36}
+# One high-tier task per project active at the last episode (decision 4.2; full 36 -> 38 in 6.11
+# so the self-loop fix still leaves 30 staffable projects).
+min_active_projects: {pilot: 3, full: 38}
 
 tasks:
   per_level_pilot: 5          # decision 2.10

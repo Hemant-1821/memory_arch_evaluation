@@ -226,8 +226,11 @@ def generate_graph(seed: int, pilot: bool = False) -> tuple[list[dict], dict]:
 
     # Enrichment can re-add a fact the random wiring already made; a duplicate
     # would double-count workload in the staffing checker. Keep first occurrence.
+    # Same-type wiring (cites, depends_on, reports_to) can draw the subject itself:
+    # never link an entity to itself (decision 6.10).
     unique = {(t["subject"], t["predicate"], t["object"]): t for t in reversed(triples)}
-    triples = [t for t in triples if unique.get((t["subject"], t["predicate"], t["object"])) is t]
+    triples = [t for t in triples if unique.get((t["subject"], t["predicate"], t["object"])) is t
+               and t["subject"] != t["object"]]
     return triples, entities
 
 
