@@ -36,7 +36,6 @@ GRAPH_TOOLS = [
 FINAL = _tool("final_answer", "Give your final answer and end the task.",
               answer={"type": "array", "items": STR}, explanation=STR)
 TOOLS = {"vector": VECTOR_TOOLS, "graph": GRAPH_TOOLS, "hybrid": VECTOR_TOOLS + GRAPH_TOOLS}
-NUDGE = "Call final_answer to give your answer."
 
 
 def _claude_tool(t) -> dict:
@@ -107,7 +106,7 @@ def run_task(task, condition, vector, graph, entities, triples, seed, model) -> 
             run["answer"], run["explanation"] = final["answer"], final["explanation"]
             break
         if not calls:
-            history.append({"role": "user", "content": NUDGE})
+            history.append({"role": "user", "content": "Call final_answer to give your answer."})
             continue
         results = []
         for call_id, name, args in calls:
