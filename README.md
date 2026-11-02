@@ -41,12 +41,17 @@ agent passes every response block back unchanged and uses prompt caching. Haiku 
 safety filter refused some harmless documents because of invented names ("Virel ..."
 reads like "viral", "Vamtu-367" like a strain code), so the name generator no longer
 makes such names; refusals are logged, retried within the existing attempts, and an
-agent refusal is recorded as `refused` in the run. Rebuilt pilot: document accuracy
-1.00, extraction precision 0.98 / recall 0.99, 12/12 questions kept, no refusals.
-Calibration run (12 tasks x 3 conditions, 1 seed) in `results/calibration_sonnet55/`:
-accuracy vector 9/12, graph 11/12, hybrid 11/12; average cost per run vector $0.023,
-graph $0.013, hybrid $0.015. Full-run estimate (729 documents, 90 tasks, 5 seeds): about
-$10 for the dataset and $29 for the experiment, about $39 in total.
+agent refusal is recorded as `refused` in the run. No fact links an entity to itself
+any more (the generator and the episode splitter could make "X reports to X"), and
+questions about who works on a project say the project's lead is not counted (`leads`
+and `works_at` are separate relations). Rebuilt pilot: 38 documents (1 distractor
+flagged), document accuracy 0.97, extraction precision 0.96 / recall 1.00, 13/13
+questions kept, 1 writing refusal that passed on retry. Calibration run (13 tasks x 3
+conditions, 1 seed) in `results/calibration_sonnet55/`: accuracy vector 11/13, graph
+13/13, hybrid 13/13; average cost per run vector $0.040, graph $0.017, hybrid $0.021.
+Full-run estimate (731 documents, 90 tasks, 5 seeds): about $10 for the dataset and $39
+for the experiment, about $49 in total. Run-day steps are in `docs/run_day_checklist.md`;
+a stopped run restarts with the same command and pays for nothing twice.
 
 ## Setup
 
