@@ -1,8 +1,9 @@
 """Writes the corpus with Haiku from the planner's specs, checks each document,
 and rewrites failures up to max_retries times before flagging it for human
-review (decisions 2.4-2.6, 2.20). Retry attempts are separate cache entries."""
+review (decisions 2.4-2.6, 2.20). Retry attempts are separate cache entries. A refusal
+counts as a failed attempt; a document refused on every attempt stops the run (decision 6.7)."""
 from generation.facts import contains_name, fact_to_statement, period_label
-from generation.llm_client import call_llm, load_prompt
+from generation.llm_client import Refusal, call_llm, load_prompt
 from validation.fidelity_check import fidelity_check
 
 SYSTEM = "You write realistic internal documents for a fictional organisation."
@@ -54,11 +55,18 @@ def write_documents(specs, triples, entities, max_retries=2):
     by_id = {t["fact_id"]: t for t in triples}
     docs, results = [], []
     for spec in specs:
+        written = None
         for attempt in range(max_retries + 1):
-            text = _write(spec, by_id, entities, attempt)
-            check = _check(spec, text, by_id, entities, attempt)
-            if check["passed"]:
+            try:
+                text = _write(spec, by_id, entities, attempt)
+                written = text, _check(spec, text, by_id, entities, attempt)
+            except Refusal:  # billed and logged by llm_client; try again
+                continue
+            if written[1]["passed"]:
                 break
+        if written is None:
+            raise RuntimeError(f"{spec['doc_id']}: refused on all {max_retries + 1} attempts - stopping (decision 6.7)")
+        text, check = written
         docs.append({**spec, "text": text, "attempts": attempt + 1, "status": "ok" if check["passed"] else "flagged"})
         results.append({"doc_id": spec["doc_id"], **check})
     return docs, results
@@ -75,6 +83,25 @@ def build_fact_doc_map(docs) -> dict:
 
 
 if __name__ == "__main__":
+    # Refusal handling, no API calls: a lookalike is checked by code only.
+    spec = {"doc_id": "doc_x", "kind": "lookalike", "home_fact_ids": [], "mention_fact_ids": []}
+    real_write, tries = _write, []
+
+    def flaky(spec, by_id, entities, attempt):
+        tries.append(attempt)
+        if attempt == 0 or spec["doc_id"] == "doc_never":
+            raise Refusal({"step": "document_writing", "refusal_category": "bio"})
+        return "Facilities notice: the east entrance closes early on Friday."
+    _write = flaky
+    docs, _ = write_documents([spec], [], {})
+    assert docs[0]["status"] == "ok" and docs[0]["attempts"] == 2 and tries == [0, 1], "refusal = failed attempt"
+    try:
+        write_documents([dict(spec, doc_id="doc_never")], [], {})
+        raise AssertionError("expected a stop")
+    except RuntimeError as e:
+        assert "doc_never" in str(e) and not isinstance(e, Refusal)
+    _write = real_write
+
     from generation.document_planner import plan_documents
     from generation.episode_splitter import split_into_episodes
     from generation.graph_generator import generate_graph

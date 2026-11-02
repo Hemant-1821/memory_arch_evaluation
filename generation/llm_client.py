@@ -48,6 +48,14 @@ class BudgetExceeded(RuntimeError):
     pass
 
 
+class Refusal(RuntimeError):
+    """A safety refusal (decision 6.8): billed, logged with its category, and cached, so a
+    replay repeats it for free. `result` holds the usage and any partial content."""
+    def __init__(self, result):
+        super().__init__(f"{result['step']}: refused (category {result['refusal_category']})")
+        self.result = result
+
+
 def load_prompt(name: str) -> str:
     return (PROMPT_DIR / f"{name}.txt").read_text()
 
@@ -92,6 +100,8 @@ def _claude(step, params, sample, fields) -> dict:
     global _client
     key = _cache_key(params, sample)
     if hit := _cached(key):
+        if hit.get("refused"):
+            raise Refusal(hit)
         return hit
     _check_budget()
     price = CONFIG["prices_usd_per_mtok"][params["model"]]  # an unpriced model fails before it bills
@@ -107,10 +117,16 @@ def _claude(step, params, sample, fields) -> dict:
              "cached_tokens": tokens["cache_read"], "cache_write_tokens": tokens["cache_write"],
              "output_tokens": tokens["output"],
              "cost_usd": round(sum(n * price[k] for k, n in tokens.items() if n) / 1e6, 6)}
-    _log({"cache_key": key, "step": step, "model": params["model"], "sample": sample, **usage,
-          "latency_s": latency, "stop_reason": response.stop_reason})
-    if response.stop_reason in ("max_tokens", "refusal"):
-        raise RuntimeError(f"{step}: stop_reason={response.stop_reason}, not parsing partial output")
+    entry = {"cache_key": key, "step": step, "model": params["model"], "sample": sample, **usage,
+             "latency_s": latency, "stop_reason": response.stop_reason}
+    if response.stop_reason == "refusal":
+        entry["refusal_category"] = getattr(response.stop_details, "category", None)
+    _log(entry)
+    if response.stop_reason == "refusal":
+        raise Refusal(_save(key, {"canary": CANARY, **entry, "refused": True, "request_id": response._request_id,
+                                  "content": [b.model_dump(mode="json", exclude_none=True) for b in response.content]}))
+    if response.stop_reason == "max_tokens":
+        raise RuntimeError(f"{step}: stop_reason=max_tokens, not parsing partial output")
     return _save(key, {"canary": CANARY, "step": step, "model": params["model"], "sample": sample,
                        **fields(response), **usage, "latency_s": latency, "request_id": response._request_id})
 
@@ -240,6 +256,15 @@ if __name__ == "__main__":
     except RuntimeError as e:
         assert "max_tokens" in str(e)
     assert spent_usd() > spend_before, "a billed failed call must still be logged"
+
+    # Review Focus: a cached refusal replays as a Refusal for free (no API call, no log line).
+    params = {"model": "refusal-selfcheck", "messages": []}
+    _save(_cache_key(params, 0), {"step": "selfcheck", "refused": True, "refusal_category": "bio", "cost_usd": 0.001})
+    try:
+        _claude("selfcheck", params, 0, None)
+        raise AssertionError("expected Refusal")
+    except Refusal as e:
+        assert e.result["refusal_category"] == "bio" and "refused" in str(e)
 
     # Review Focus: at the cap, uncached calls are refused but cached ones still work.
     cap = CONFIG["budget"]["cap_usd"]

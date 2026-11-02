@@ -8,7 +8,7 @@ import json
 import time
 
 from generation.facts import contains_name, display_name, period_label
-from generation.llm_client import call_agent, call_azure, load_prompt
+from generation.llm_client import Refusal, call_agent, call_azure, load_prompt
 from validation.grading import grade
 
 MAX_STEPS = 10  # decision 4.4: hitting the limit counts as a failure
@@ -79,13 +79,18 @@ def run_task(task, condition, vector, graph, entities, triples, seed, model) -> 
     run = {"task_id": task["task_id"], "tier": task["tier"], "condition": condition, "seed": seed,
            "answer": None, "explanation": None, "correct": False, "steps": 0, "hit_step_limit": False,
            "input_tokens": 0, "cached_tokens": 0, "output_tokens": 0, "cost_usd": 0.0,
-           "model_latency_s": 0.0, "tool_latency_s": 0.0, "tools_per_step": [], "error": None}
+           "model_latency_s": 0.0, "tool_latency_s": 0.0, "tools_per_step": [], "error": None,
+           "refused": False, "refusal_category": None}
     outputs = []
     for step in range(MAX_STEPS):
         if claude:  # append-only: every block, thinking included, goes back unchanged
-            r = call_agent("experiment_agent", model, system, history, tools, sample=seed)
-            history.append({"role": "assistant", "content": r["content"]})
-            calls = [(b["id"], b["name"], b["input"]) for b in r["content"] if b["type"] == "tool_use"]
+            try:
+                r = call_agent("experiment_agent", model, system, history, tools, sample=seed)
+                history.append({"role": "assistant", "content": r["content"]})
+                calls = [(b["id"], b["name"], b["input"]) for b in r["content"] if b["type"] == "tool_use"]
+            except Refusal as e:  # ends the run as a failure, counted per condition and tier (decision 6.8)
+                r, calls = e.result, []
+                run["refused"], run["refusal_category"], run["error"] = True, r["refusal_category"], str(e)
         else:  # incl. encrypted reasoning, so the next turn continues the same thought
             r = call_azure("experiment_agent", history, tools=tools, sample=seed, model=model)
             history += r["output"]
@@ -96,6 +101,8 @@ def run_task(task, condition, vector, graph, entities, triples, seed, model) -> 
             run[k] += r[k]
         run["model_latency_s"] += r["latency_s"]
         run["tools_per_step"].append([name for _, name, _ in calls])
+        if run["refused"]:
+            break
         if final := next((args for _, name, args in calls if name == "final_answer"), None):
             run["answer"], run["explanation"] = final["answer"], final["explanation"]
             break
@@ -134,4 +141,13 @@ if __name__ == "__main__":
     task = {"reasoning_path": ["f1", "f2"]}
     assert recall(task, ['[{"subject": "Kivo Ranet", "object": "Hedto"}]'], entities, triples) == 0.5
     assert recall(task, ['["Kivo Ranet"]', '["Hedto"]'], entities, triples) == 0.0, "names must co-occur in one output"
+
+    # A refusal ends the run as a counted failure, its billed turn included (no API call here).
+    def call_agent(*args, **kwargs):  # replaces the module global for this check
+        raise Refusal({"step": "experiment_agent", "refusal_category": "bio", "input_tokens": 900,
+                       "cached_tokens": 0, "output_tokens": 50, "cost_usd": 0.0023, "latency_s": 1.5})
+    run = run_task({"task_id": "t1", "tier": "low", "question": "Who?", "as_of_episode": 0, **task},
+                   "graph", None, None, entities, triples, 0, "claude-sonnet-5-5")
+    assert run["refused"] and run["refusal_category"] == "bio" and not run["correct"] and not run["hit_step_limit"]
+    assert run["steps"] == 1 and run["cost_usd"] == 0.0023 and run["recall"] == 0.0
     print("agent/react.py: OK")

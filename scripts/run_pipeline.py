@@ -19,7 +19,7 @@ from generation.episode_splitter import split_into_episodes
 from generation.facts import fact_to_statement, period_label
 from generation.graph_generator import generate_graph, save_graph
 from generation.kg_extractor import extract_kg
-from generation.llm_client import spent_usd
+from generation.llm_client import Refusal, spent_usd
 from generation.task_generator import generate_tasks, phrase_task_as_question
 from schema.validate_ontology import load_ontology
 from validation.ambiguity_check import ambiguity_check
@@ -37,12 +37,18 @@ SEED = 7
 def run_task_checks(task, entities, triples) -> None:
     checks = task["checks"]
     checks["level_accuracy"] = level_accuracy_check(task, triples)
-    for attempt in range(2):  # one rephrase if the ambiguity check objects
-        question = phrase_task_as_question(task, attempt)
-        checks["ambiguity"] = ambiguity_check(task, question, attempt)
-        if checks["ambiguity"]["passed"]:
+    checks["ambiguity"] = None
+    for attempt in range(2):  # one rephrase if the ambiguity check objects or a call is refused (decision 6.7)
+        try:
+            question = phrase_task_as_question(task, attempt)
+            ambiguity = ambiguity_check(task, question, attempt)
+        except Refusal:  # billed and logged by llm_client
+            continue
+        task["question"], checks["ambiguity"] = question, ambiguity
+        if ambiguity["passed"]:
             break
-    task["question"] = question
+    if checks["ambiguity"] is None:
+        raise RuntimeError(f"{task['task_id']}: phrasing refused on both attempts - stopping (decision 6.7)")
     for name, passed in (("level_accuracy", checks["level_accuracy"]),
                          ("ambiguity", checks["ambiguity"]["passed"])):
         if not passed:
@@ -112,7 +118,10 @@ def main() -> None:
         per_level = yaml.safe_load(f)["tasks"]["per_level_pilot" if PILOT else "per_level_full"]
     tasks = generate_tasks(episoded, entities, SEED, per_level)
     for task in tasks:
-        run_task_checks(task, entities, episoded)
+        try:
+            run_task_checks(task, entities, episoded)
+        except Refusal as e:  # the gates have no retry attempts (decision 6.7)
+            raise RuntimeError(f"{task['task_id']}: {e} - stopping") from e
     save_json(OUT / "tasks.json", tasks)
     write_review_sheets(docs, fidelity, tasks, episoded, entities)
 

@@ -5,7 +5,7 @@ ground-truth entity table is never consulted (decision 2.9)."""
 from collections import Counter
 
 from generation.facts import normalise_name, period_label
-from generation.llm_client import call_llm, load_prompt
+from generation.llm_client import Refusal, call_llm, load_prompt
 
 SYSTEM = "You extract knowledge graphs precisely, using only the vocabulary you are given."
 
@@ -37,7 +37,10 @@ def extract_document(doc, ontology) -> list[dict]:
     prompt = load_prompt("kg_extractor").format(
         entity_types=", ".join(sorted(ontology["entity_types"])), relations=relations,
         attributes=", ".join(attributes), period=period_label(doc["episode"]), document=doc["text"])
-    raw = call_llm("backbone", "kg_extraction", SYSTEM, prompt, schema=_schema(ontology, attributes))["json"]
+    try:
+        raw = call_llm("backbone", "kg_extraction", SYSTEM, prompt, schema=_schema(ontology, attributes))["json"]
+    except Refusal as e:  # one call per document, no retry attempts (decision 6.7)
+        raise RuntimeError(f"{doc['doc_id']}: {e} - stopping") from e
     return [dict(t, doc_id=doc["doc_id"], episode=doc["episode"]) for t in raw["triples"]]
 
 
