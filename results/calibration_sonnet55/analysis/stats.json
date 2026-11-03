@@ -1,0 +1,384 @@
+{
+  "runs": 39,
+  "tasks": 13,
+  "seeds": 1,
+  "errors": 0,
+  "refusals": 0,
+  "majority_ties": 0,
+  "mcnemar": [
+    {
+      "tier": "low",
+      "a": "vector",
+      "b": "graph",
+      "tasks": 5,
+      "both_correct": 4,
+      "only_a_correct": 0,
+      "only_b_correct": 1,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "low",
+      "a": "vector",
+      "b": "hybrid",
+      "tasks": 5,
+      "both_correct": 4,
+      "only_a_correct": 0,
+      "only_b_correct": 1,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "low",
+      "a": "graph",
+      "b": "hybrid",
+      "tasks": 5,
+      "both_correct": 5,
+      "only_a_correct": 0,
+      "only_b_correct": 0,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "medium",
+      "a": "vector",
+      "b": "graph",
+      "tasks": 5,
+      "both_correct": 4,
+      "only_a_correct": 0,
+      "only_b_correct": 0,
+      "both_wrong": 1,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "medium",
+      "a": "vector",
+      "b": "hybrid",
+      "tasks": 5,
+      "both_correct": 4,
+      "only_a_correct": 0,
+      "only_b_correct": 1,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "medium",
+      "a": "graph",
+      "b": "hybrid",
+      "tasks": 5,
+      "both_correct": 4,
+      "only_a_correct": 0,
+      "only_b_correct": 1,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "high",
+      "a": "vector",
+      "b": "graph",
+      "tasks": 3,
+      "both_correct": 3,
+      "only_a_correct": 0,
+      "only_b_correct": 0,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "high",
+      "a": "vector",
+      "b": "hybrid",
+      "tasks": 3,
+      "both_correct": 3,
+      "only_a_correct": 0,
+      "only_b_correct": 0,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "high",
+      "a": "graph",
+      "b": "hybrid",
+      "tasks": 3,
+      "both_correct": 3,
+      "only_a_correct": 0,
+      "only_b_correct": 0,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "all",
+      "a": "vector",
+      "b": "graph",
+      "tasks": 13,
+      "both_correct": 11,
+      "only_a_correct": 0,
+      "only_b_correct": 1,
+      "both_wrong": 1,
+      "p_exact": 1.0,
+      "p_holm": null
+    },
+    {
+      "tier": "all",
+      "a": "vector",
+      "b": "hybrid",
+      "tasks": 13,
+      "both_correct": 11,
+      "only_a_correct": 0,
+      "only_b_correct": 2,
+      "both_wrong": 0,
+      "p_exact": 0.5,
+      "p_holm": null
+    },
+    {
+      "tier": "all",
+      "a": "graph",
+      "b": "hybrid",
+      "tasks": 13,
+      "both_correct": 12,
+      "only_a_correct": 0,
+      "only_b_correct": 1,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": null
+    }
+  ],
+  "mixed_models": {
+    "correct": {
+      "result": "fitted",
+      "note": "posterior mean/SD (logit scale); task random-intercept SD ~ 1.56. Cells at 0% or 100% accuracy (vector/high, graph/low, graph/high, hybrid/low, hybrid/medium, hybrid/high): their terms lean on the prior.",
+      "warnings": [],
+      "terms": [
+        {
+          "term": "Intercept",
+          "estimate": 2.473130666091039,
+          "sd": 0.6527865222275614,
+          "ci95_low": 1.1936690825250187,
+          "ci95_high": 3.7525922496570594
+        },
+        {
+          "term": "condition[T.graph]",
+          "estimate": 1.239561680422874,
+          "sd": 1.0236303422692856,
+          "ci95_low": -0.7667537904249258,
+          "ci95_high": 3.2458771512706734
+        },
+        {
+          "term": "condition[T.hybrid]",
+          "estimate": 2.1778746283466677,
+          "sd": 1.2889891953436898,
+          "ci95_low": -0.3485441945269643,
+          "ci95_high": 4.7042934512203
+        },
+        {
+          "term": "tier[T.medium]",
+          "estimate": -0.024228128856289968,
+          "sd": 0.8959253249958049,
+          "ci95_low": -1.7802417658480676,
+          "ci95_high": 1.7317855081354876
+        },
+        {
+          "term": "tier[T.high]",
+          "estimate": 1.5383980035926836,
+          "sd": 1.4076021029276782,
+          "ci95_low": -1.2205021181455658,
+          "ci95_high": 4.297298125330933
+        },
+        {
+          "term": "condition[T.graph]:tier[T.medium]",
+          "estimate": -0.6549479203167208,
+          "sd": 1.2586982667814877,
+          "ci95_low": -3.121996523208437,
+          "ci95_high": 1.812100682574995
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.medium]",
+          "estimate": 1.0072170361597874,
+          "sd": 1.591849658228788,
+          "ci95_low": -2.112808293968637,
+          "ci95_high": 4.127242366288211
+        },
+        {
+          "term": "condition[T.graph]:tier[T.high]",
+          "estimate": 0.48585903470056024,
+          "sd": 1.7495926832158049,
+          "ci95_low": -2.9433426244024172,
+          "ci95_high": 3.9150606938035377
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.high]",
+          "estimate": 0.35253483617613346,
+          "sd": 1.8075980383938892,
+          "ci95_low": -3.1903573190758894,
+          "ci95_high": 3.8954269914281565
+        }
+      ]
+    },
+    "steps": {
+      "result": "fitted",
+      "note": "REML; task random-intercept variance 1.41",
+      "warnings": [],
+      "terms": [
+        {
+          "term": "Intercept",
+          "estimate": 2.800000000000001,
+          "sd": 0.6518348376501508,
+          "ci95_low": 1.5224271943371923,
+          "ci95_high": 4.07757280566281,
+          "p": 1.742476620716013e-05
+        },
+        {
+          "term": "condition[T.graph]",
+          "estimate": -0.40000000000000036,
+          "sd": 0.5341661270398326,
+          "ci95_low": -1.4469463707593193,
+          "ci95_high": 0.6469463707593186,
+          "p": 0.4539592476456127
+        },
+        {
+          "term": "condition[T.hybrid]",
+          "estimate": 0.39999999999999913,
+          "sd": 0.5341661270398326,
+          "ci95_low": -0.6469463707593198,
+          "ci95_high": 1.446946370759318,
+          "p": 0.45395924764561413
+        },
+        {
+          "term": "tier[T.medium]",
+          "estimate": 1.7999999999999978,
+          "sd": 0.9218336678321079,
+          "ci95_low": -0.006760788687392827,
+          "ci95_high": 3.6067607886873887,
+          "p": 0.05086346331198009
+        },
+        {
+          "term": "tier[T.high]",
+          "estimate": 3.1999999999999966,
+          "sd": 1.064441832541855,
+          "ci95_low": 1.1137323445801455,
+          "ci95_high": 5.286267655419848,
+          "p": 0.0026447367734411275
+        },
+        {
+          "term": "condition[T.graph]:tier[T.medium]",
+          "estimate": -0.6000000000000002,
+          "sd": 0.7554249814200409,
+          "ci95_low": -2.0806057566051197,
+          "ci95_high": 0.8806057566051194,
+          "p": 0.42704704835723284
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.medium]",
+          "estimate": -0.5999999999999999,
+          "sd": 0.755424981420041,
+          "ci95_low": -2.0806057566051197,
+          "ci95_high": 0.88060575660512,
+          "p": 0.42704704835723306
+        },
+        {
+          "term": "condition[T.graph]:tier[T.high]",
+          "estimate": -0.2666666666666664,
+          "sd": 0.8722896327508575,
+          "ci95_low": -1.9763229309460175,
+          "ci95_high": 1.4429895976126847,
+          "p": 0.7598263290085562
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.high]",
+          "estimate": 0.2666666666666677,
+          "sd": 0.8722896327508574,
+          "ci95_low": -1.4429895976126832,
+          "ci95_high": 1.9763229309460186,
+          "p": 0.759826329008555
+        }
+      ]
+    },
+    "log_cost": {
+      "result": "fitted",
+      "note": "REML; task random-intercept variance 0.136",
+      "warnings": [],
+      "terms": [
+        {
+          "term": "Intercept",
+          "estimate": -4.018350626503704,
+          "sd": 0.21308527452107964,
+          "ci95_low": -4.435990090200851,
+          "ci95_high": -3.6007111628065576,
+          "p": 2.5285301416751386e-79
+        },
+        {
+          "term": "condition[T.graph]",
+          "estimate": -0.7729164668522643,
+          "sd": 0.1910538338416419,
+          "ci95_low": -1.1473751002901822,
+          "ci95_high": -0.39845783341434643,
+          "p": 5.220202101602443e-05
+        },
+        {
+          "term": "condition[T.hybrid]",
+          "estimate": -0.22065630973971617,
+          "sd": 0.19105383384164185,
+          "ci95_low": -0.5951149431776339,
+          "ci95_high": 0.15380232369820163,
+          "p": 0.2481137225139476
+        },
+        {
+          "term": "tier[T.medium]",
+          "estimate": 0.8819908156271227,
+          "sd": 0.301348085169705,
+          "ci95_low": 0.291359421884392,
+          "ci95_high": 1.4726222093698533,
+          "p": 0.0034244988844294353
+        },
+        {
+          "term": "tier[T.high]",
+          "estimate": 1.5428332517958554,
+          "sd": 0.3479667961850149,
+          "ci95_low": 0.8608308634574366,
+          "ci95_high": 2.224835640134274,
+          "p": 9.25642099908293e-06
+        },
+        {
+          "term": "condition[T.graph]:tier[T.medium]",
+          "estimate": -0.29994079022560705,
+          "sd": 0.27019092296222585,
+          "ci95_low": -0.8295052681812061,
+          "ci95_high": 0.22962368772999198,
+          "p": 0.2669529924447014
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.medium]",
+          "estimate": -0.6673485182454917,
+          "sd": 0.2701909229622258,
+          "ci95_low": -1.1969129962010907,
+          "ci95_high": -0.13778404028989277,
+          "p": 0.013514529314205362
+        },
+        {
+          "term": "condition[T.graph]:tier[T.high]",
+          "estimate": -0.10315470392703743,
+          "sd": 0.31198960420966904,
+          "ci95_low": -0.7146430917288947,
+          "ci95_high": 0.5083336838748199,
+          "p": 0.7409201543741896
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.high]",
+          "estimate": -0.28838649217664125,
+          "sd": 0.31198960420966904,
+          "ci95_low": -0.8998748799784986,
+          "ci95_high": 0.3231018956252161,
+          "p": 0.35530595069522075
+        }
+      ]
+    }
+  }
+}

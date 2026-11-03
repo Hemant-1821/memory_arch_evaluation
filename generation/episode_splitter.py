@@ -37,14 +37,16 @@ def _is_replaceable(predicate: str, ontology: dict) -> bool:
     return bool(attr_def and attr_def.get("replaceable"))
 
 
-def _replacement_object(predicate: str, current_object, rng: random.Random, ontology: dict, all_ids_by_predicate: dict):
+def _replacement_object(predicate: str, subject, current_object, rng: random.Random, ontology: dict,
+                        all_ids_by_predicate: dict):
     if predicate not in ontology["relation_types"]:
         # Literal attribute (e.g. Project.status) - reuse the enum's own
         # values from the ontology rather than a second, unsynced copy here.
         attr_def = _attr_def_for(predicate, ontology)
         choices = [v for v in attr_def["values"] if v != current_object]
         return rng.choice(choices) if choices else current_object
-    candidates = [o for o in all_ids_by_predicate.get(predicate, []) if o != current_object]
+    # never the subject itself: "X reports to X" (decision 6.10)
+    candidates = [o for o in all_ids_by_predicate.get(predicate, []) if o not in (current_object, subject)]
     return rng.choice(candidates) if candidates else current_object
 
 
@@ -69,7 +71,8 @@ def split_into_episodes(triples: list[dict], seed: int, pilot: bool = False) -> 
             continue
         later_episode = rng.randint(original["episode_id"] + 1, episode_count - 1)
         original["superseded_in_episode"] = later_episode
-        new_object = _replacement_object(original["predicate"], original["object"], rng, ontology, all_ids_by_predicate)
+        new_object = _replacement_object(original["predicate"], original["subject"], original["object"], rng, ontology,
+                                         all_ids_by_predicate)
         new_triples.append({
             "subject": original["subject"], "predicate": original["predicate"],
             "object": new_object,
@@ -117,5 +120,11 @@ if __name__ == "__main__":
     assert example["object"] in early_objects and example["object"] not in late_objects, (
         "old value should be visible early and gone (replaced) late"
     )
+
+    # No fact links an entity to itself - neither from the generator's wiring nor from a
+    # replacement pick (decision 6.10), at pilot and full size.
+    for pilot in (True, False):
+        facts = split_into_episodes(generate_graph(seed=7, pilot=pilot)[0], seed=7, pilot=pilot)
+        assert not [t for t in facts if t["subject"] == t["object"]], f"self-loop fact (pilot={pilot})"
 
     print(f"generation/episode_splitter.py: OK ({len(superseded)} superseded triples, supersession verified)")

@@ -11,7 +11,7 @@ _CONSONANTS = list("brtnkvmslpdfgzh")
 _VOWELS = list("aeiou")
 
 _PROJECT_PREFIXES = ["Aeon", "Vantor", "Lumen", "Kestrel", "Nomos", "Halcyon",
-                      "Ferrix", "Solace", "Tundra", "Virel", "Corvid", "Ashen"]
+                      "Ferrix", "Solace", "Tundra", "Corran", "Corvid", "Ashen"]  # Corran was Virel (6.9)
 _PROJECT_SUFFIXES = ["Initiative", "Array", "Protocol", "Bridge", "Forge",
                       "Nexus", "Cascade", "Loop", "Vault", "Signal"]
 _TEAM_FOCUS_WORDS = ["Cryogenics", "Swarm Robotics", "Photonic Sensing",
@@ -21,6 +21,10 @@ _PUB_TOPIC_WORDS = ["resilient", "adaptive", "distributed", "low-power",
                      "scalable", "self-calibrating", "cross-domain"]
 _PUB_SUBJECT_WORDS = ["sensor fusion", "materials synthesis", "swarm control",
                        "thermal regulation", "signal compression"]
+_EQUIPMENT_NOUNS = ["Press", "Rig", "Lathe", "Scanner", "Furnace", "Printer"]
+# Decision 6.9: Haiku 5.5's safety filter refused documents naming "Virel ..." (reads as
+# "viral") and strain-like equipment codes ("Vamtu-367"); renamed, the same documents passed.
+_TRIGGER = "vir"
 
 
 def _unique_until(rng: random.Random, count: int, make_candidate) -> list[str]:
@@ -35,7 +39,7 @@ def _unique_until(rng: random.Random, count: int, make_candidate) -> list[str]:
     seen: set[str] = set()
     while len(ordered) < count:
         candidate = make_candidate(rng)
-        if candidate not in seen:
+        if candidate not in seen and _TRIGGER not in candidate.lower():
             seen.add(candidate)
             ordered.append(candidate)
     return ordered
@@ -119,7 +123,7 @@ def _generate_skill_names(rng: random.Random, count: int) -> list[str]:
 
 def _generate_equipment_names(rng: random.Random, count: int) -> list[str]:
     def candidate(rng):
-        return f"{_invented_word(rng, 2)}-{rng.randint(100, 999)}"
+        return f"{_invented_word(rng, 2)} {rng.choice(_EQUIPMENT_NOUNS)}"  # no "Word-123" codes (6.9)
     return _unique_until(rng, count, candidate)
 
 
@@ -191,6 +195,11 @@ if __name__ == "__main__":
         b = generate_names_raw(entity_type, 10, seed=42)
         assert a == b, f"{entity_type}: not deterministic"
         assert len(set(a)) == 10, f"{entity_type}: collision within pool"
+
+    # Decision 6.9: no name contains the safety-filter trigger, no equipment code has digits.
+    pools = {t: generate_names_raw(t, 100, seed=7) for t in _GENERATORS}
+    assert not any(_TRIGGER in n.lower() for pool in pools.values() for n in pool)
+    assert not any(ch.isdigit() for n in pools["Equipment"] for ch in n)
 
     # Different seeds -> different pools (sanity, not a hard determinism check).
     assert generate_names_raw("Person", 10, seed=1) != generate_names_raw("Person", 10, seed=2)

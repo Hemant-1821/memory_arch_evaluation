@@ -5,6 +5,7 @@ if the projected cost of the whole run passes --max-usd (checked from run 3 on).
 Needs `docker compose up -d`; loads the dataset into both stores first.
 
 Run: python -m scripts.run_experiment --name e2e --per-tier 1 --seeds 1 --max-usd 0.5
+--model defaults to the Claude backbone; gpt-6.1-sol replays the week-4/5 Azure runs.
 """
 import argparse
 import json
@@ -24,7 +25,7 @@ def main() -> None:
     ap.add_argument("--conditions", nargs="+", default=["vector", "graph", "hybrid"])
     ap.add_argument("--seeds", type=int, default=1)
     ap.add_argument("--per-tier", type=int, default=30)
-    ap.add_argument("--model", choices=["backbone", "dev"], default="backbone")
+    ap.add_argument("--model", default=CONFIG["backbone_model"])  # recorded in summary.json
     ap.add_argument("--max-usd", type=float, required=True)
     args = ap.parse_args()
 
@@ -43,7 +44,7 @@ def main() -> None:
     with open(out / "runs.jsonl", "w") as f:
         for seed, task, condition in plan:
             try:
-                run = run_task(task, condition, vector, graph, entities, triples, seed, CONFIG["azure"][args.model])
+                run = run_task(task, condition, vector, graph, entities, triples, seed, args.model)
             except RuntimeError as e:  # an incomplete model response is a failed run, not a crash
                 run = {"task_id": task["task_id"], "tier": task["tier"], "condition": condition, "seed": seed,
                        "correct": False, "error": str(e)}
@@ -57,7 +58,7 @@ def main() -> None:
                 break
     graph.driver.close()
 
-    summary = {"runs": len(runs), "planned": len(plan), "model": CONFIG["azure"][args.model],
+    summary = {"runs": len(runs), "planned": len(plan), "model": args.model,
                "cost_usd": round(sum(r.get("cost_usd", 0) for r in runs), 6),
                "accuracy_by_condition": {c: round(sum(r["correct"] for r in runs if r["condition"] == c) /
                                                   max(1, sum(r["condition"] == c for r in runs)), 3)

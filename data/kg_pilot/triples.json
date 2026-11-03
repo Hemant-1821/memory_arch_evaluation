@@ -70,7 +70,7 @@
       "predicate": "works_at",
       "object": "Project_0001",
       "episode_id": 0,
-      "superseded_in_episode": 2,
+      "superseded_in_episode": 1,
       "fact_id": "fact_0008"
     },
     {
@@ -334,7 +334,7 @@
       "predicate": "based_in",
       "object": "Location_0001",
       "episode_id": 1,
-      "superseded_in_episode": 2,
+      "superseded_in_episode": null,
       "fact_id": "fact_0041"
     },
     {
@@ -466,7 +466,7 @@
       "fact_id": "fact_0057"
     },
     {
-      "subject": "Publication_0000",
+      "subject": "Publication_0001",
       "predicate": "cites",
       "object": "Publication_0000",
       "episode_id": 1,
@@ -474,9 +474,9 @@
       "fact_id": "fact_0058"
     },
     {
-      "subject": "Publication_0001",
+      "subject": "Publication_0002",
       "predicate": "cites",
-      "object": "Publication_0000",
+      "object": "Publication_0001",
       "episode_id": 1,
       "superseded_in_episode": null,
       "fact_id": "fact_0059"
@@ -484,42 +484,26 @@
     {
       "subject": "Publication_0002",
       "predicate": "cites",
-      "object": "Publication_0001",
+      "object": "Publication_0000",
       "episode_id": 2,
       "superseded_in_episode": null,
       "fact_id": "fact_0060"
     },
     {
-      "subject": "Publication_0002",
-      "predicate": "cites",
-      "object": "Publication_0002",
+      "subject": "Project_0000",
+      "predicate": "depends_on",
+      "object": "Project_0001",
       "episode_id": 0,
       "superseded_in_episode": null,
       "fact_id": "fact_0061"
     },
     {
-      "subject": "Publication_0002",
-      "predicate": "cites",
-      "object": "Publication_0000",
-      "episode_id": 2,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0062"
-    },
-    {
-      "subject": "Project_0000",
-      "predicate": "depends_on",
-      "object": "Project_0001",
-      "episode_id": 1,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0063"
-    },
-    {
       "subject": "Project_0001",
       "predicate": "depends_on",
       "object": "Project_0003",
-      "episode_id": 0,
+      "episode_id": 2,
       "superseded_in_episode": null,
-      "fact_id": "fact_0064"
+      "fact_id": "fact_0062"
     },
     {
       "subject": "Project_0002",
@@ -527,10 +511,26 @@
       "object": "Project_0000",
       "episode_id": 1,
       "superseded_in_episode": null,
+      "fact_id": "fact_0063"
+    },
+    {
+      "subject": "Project_0003",
+      "predicate": "depends_on",
+      "object": "Project_0000",
+      "episode_id": 0,
+      "superseded_in_episode": null,
+      "fact_id": "fact_0064"
+    },
+    {
+      "subject": "Publication_0000",
+      "predicate": "depends_on",
+      "object": "Project_0003",
+      "episode_id": 1,
+      "superseded_in_episode": null,
       "fact_id": "fact_0065"
     },
     {
-      "subject": "Project_0002",
+      "subject": "Publication_0000",
       "predicate": "depends_on",
       "object": "Project_0002",
       "episode_id": 0,
@@ -538,15 +538,15 @@
       "fact_id": "fact_0066"
     },
     {
-      "subject": "Project_0003",
+      "subject": "Publication_0001",
       "predicate": "depends_on",
-      "object": "Project_0000",
+      "object": "Project_0002",
       "episode_id": 1,
       "superseded_in_episode": null,
       "fact_id": "fact_0067"
     },
     {
-      "subject": "Project_0003",
+      "subject": "Publication_0002",
       "predicate": "depends_on",
       "object": "Project_0003",
       "episode_id": 2,
@@ -554,39 +554,39 @@
       "fact_id": "fact_0068"
     },
     {
-      "subject": "Publication_0000",
-      "predicate": "depends_on",
-      "object": "Project_0003",
+      "subject": "Person_0001",
+      "predicate": "attends",
+      "object": "Meeting_0000",
       "episode_id": 2,
       "superseded_in_episode": null,
       "fact_id": "fact_0069"
     },
     {
-      "subject": "Publication_0000",
-      "predicate": "depends_on",
-      "object": "Project_0002",
+      "subject": "Person_0002",
+      "predicate": "attends",
+      "object": "Meeting_0001",
       "episode_id": 2,
       "superseded_in_episode": null,
       "fact_id": "fact_0070"
     },
     {
-      "subject": "Publication_0001",
-      "predicate": "depends_on",
-      "object": "Project_0002",
+      "subject": "Person_0003",
+      "predicate": "attends",
+      "object": "Meeting_0001",
       "episode_id": 0,
       "superseded_in_episode": null,
       "fact_id": "fact_0071"
     },
     {
-      "subject": "Publication_0002",
-      "predicate": "depends_on",
-      "object": "Project_0003",
+      "subject": "Person_0005",
+      "predicate": "attends",
+      "object": "Meeting_0001",
       "episode_id": 0,
       "superseded_in_episode": null,
       "fact_id": "fact_0072"
     },
     {
-      "subject": "Person_0001",
+      "subject": "Person_0006",
       "predicate": "attends",
       "object": "Meeting_0000",
       "episode_id": 1,
@@ -594,44 +594,12 @@
       "fact_id": "fact_0073"
     },
     {
-      "subject": "Person_0002",
-      "predicate": "attends",
-      "object": "Meeting_0001",
-      "episode_id": 1,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0074"
-    },
-    {
-      "subject": "Person_0003",
-      "predicate": "attends",
-      "object": "Meeting_0001",
-      "episode_id": 0,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0075"
-    },
-    {
-      "subject": "Person_0005",
-      "predicate": "attends",
-      "object": "Meeting_0001",
-      "episode_id": 2,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0076"
-    },
-    {
-      "subject": "Person_0006",
-      "predicate": "attends",
-      "object": "Meeting_0000",
-      "episode_id": 1,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0077"
-    },
-    {
       "subject": "Person_0007",
       "predicate": "attends",
       "object": "Meeting_0000",
       "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0078"
+      "fact_id": "fact_0074"
     },
     {
       "subject": "Person_0000",
@@ -639,23 +607,23 @@
       "object": "Person_0001",
       "episode_id": 0,
       "superseded_in_episode": 2,
-      "fact_id": "fact_0079"
+      "fact_id": "fact_0075"
     },
     {
       "subject": "Person_0002",
       "predicate": "reports_to",
       "object": "Person_0000",
-      "episode_id": 0,
-      "superseded_in_episode": 1,
-      "fact_id": "fact_0080"
+      "episode_id": 2,
+      "superseded_in_episode": null,
+      "fact_id": "fact_0076"
     },
     {
       "subject": "Person_0003",
       "predicate": "reports_to",
       "object": "Person_0005",
-      "episode_id": 2,
+      "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0081"
+      "fact_id": "fact_0077"
     },
     {
       "subject": "Person_0004",
@@ -663,7 +631,7 @@
       "object": "Person_0001",
       "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0082"
+      "fact_id": "fact_0078"
     },
     {
       "subject": "Person_0005",
@@ -671,15 +639,15 @@
       "object": "Person_0002",
       "episode_id": 0,
       "superseded_in_episode": null,
-      "fact_id": "fact_0083"
+      "fact_id": "fact_0079"
     },
     {
       "subject": "Person_0006",
       "predicate": "reports_to",
       "object": "Person_0000",
-      "episode_id": 1,
+      "episode_id": 0,
       "superseded_in_episode": null,
-      "fact_id": "fact_0084"
+      "fact_id": "fact_0080"
     },
     {
       "subject": "Project_0002",
@@ -687,15 +655,15 @@
       "object": "Equipment_0001",
       "episode_id": 2,
       "superseded_in_episode": null,
-      "fact_id": "fact_0085"
+      "fact_id": "fact_0081"
     },
     {
       "subject": "Meeting_0000",
       "predicate": "located_at",
       "object": "Location_0001",
-      "episode_id": 2,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0086"
+      "episode_id": 1,
+      "superseded_in_episode": 2,
+      "fact_id": "fact_0082"
     },
     {
       "subject": "Meeting_0001",
@@ -703,7 +671,7 @@
       "object": "Location_0001",
       "episode_id": 0,
       "superseded_in_episode": null,
-      "fact_id": "fact_0087"
+      "fact_id": "fact_0083"
     },
     {
       "subject": "Meeting_0002",
@@ -711,111 +679,111 @@
       "object": "Location_0000",
       "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0088"
+      "fact_id": "fact_0084"
     },
     {
       "subject": "Equipment_0000",
       "predicate": "located_at",
       "object": "Location_0000",
-      "episode_id": 1,
+      "episode_id": 2,
       "superseded_in_episode": null,
-      "fact_id": "fact_0089"
+      "fact_id": "fact_0085"
     },
     {
       "subject": "Equipment_0001",
       "predicate": "located_at",
       "object": "Location_0000",
-      "episode_id": 1,
-      "superseded_in_episode": 2,
-      "fact_id": "fact_0090"
+      "episode_id": 2,
+      "superseded_in_episode": null,
+      "fact_id": "fact_0086"
     },
     {
       "subject": "PartnerOrganization_0000",
       "predicate": "sponsors",
       "object": "Project_0001",
-      "episode_id": 1,
+      "episode_id": 0,
       "superseded_in_episode": null,
-      "fact_id": "fact_0091"
+      "fact_id": "fact_0087"
     },
     {
       "subject": "Meeting_0000",
       "predicate": "concerns",
       "object": "Project_0000",
-      "episode_id": 2,
+      "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0092"
+      "fact_id": "fact_0088"
     },
     {
       "subject": "Meeting_0001",
       "predicate": "concerns",
       "object": "Project_0000",
-      "episode_id": 0,
+      "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0093"
+      "fact_id": "fact_0089"
     },
     {
       "subject": "Meeting_0002",
       "predicate": "concerns",
       "object": "Project_0001",
-      "episode_id": 0,
+      "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0094"
+      "fact_id": "fact_0090"
     },
     {
       "subject": "Project_0000",
       "predicate": "status",
       "object": "active",
-      "episode_id": 2,
+      "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0095"
+      "fact_id": "fact_0091"
     },
     {
       "subject": "Project_0001",
       "predicate": "status",
       "object": "active",
-      "episode_id": 0,
+      "episode_id": 2,
       "superseded_in_episode": null,
-      "fact_id": "fact_0096"
+      "fact_id": "fact_0092"
     },
     {
       "subject": "Project_0002",
       "predicate": "status",
       "object": "active",
-      "episode_id": 2,
+      "episode_id": 0,
       "superseded_in_episode": null,
-      "fact_id": "fact_0097"
+      "fact_id": "fact_0093"
     },
     {
       "subject": "Project_0003",
       "predicate": "status",
       "object": "proposed",
       "episode_id": 0,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0098"
+      "superseded_in_episode": 1,
+      "fact_id": "fact_0094"
     },
     {
       "subject": "Equipment_0000",
       "predicate": "availability",
       "object": "in_use",
-      "episode_id": 1,
+      "episode_id": 2,
       "superseded_in_episode": null,
-      "fact_id": "fact_0099"
+      "fact_id": "fact_0095"
     },
     {
       "subject": "Equipment_0001",
       "predicate": "availability",
       "object": "maintenance",
-      "episode_id": 2,
+      "episode_id": 0,
       "superseded_in_episode": null,
-      "fact_id": "fact_0100"
+      "fact_id": "fact_0096"
     },
     {
       "subject": "Project_0000",
       "predicate": "requires_skill",
       "object": "Skill_0002",
-      "episode_id": 1,
+      "episode_id": 2,
       "superseded_in_episode": null,
-      "fact_id": "fact_0101"
+      "fact_id": "fact_0097"
     },
     {
       "subject": "Project_0000",
@@ -823,7 +791,7 @@
       "object": "Skill_0001",
       "episode_id": 0,
       "superseded_in_episode": null,
-      "fact_id": "fact_0102"
+      "fact_id": "fact_0098"
     },
     {
       "subject": "Project_0002",
@@ -831,7 +799,7 @@
       "object": "Skill_0002",
       "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0103"
+      "fact_id": "fact_0099"
     },
     {
       "subject": "Person_0003",
@@ -839,7 +807,7 @@
       "object": "Project_0000",
       "episode_id": 2,
       "superseded_in_episode": null,
-      "fact_id": "fact_0104"
+      "fact_id": "fact_0100"
     },
     {
       "subject": "PartnerOrganization_0000",
@@ -847,31 +815,55 @@
       "object": "Project_0002",
       "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0105"
+      "fact_id": "fact_0101"
     },
     {
       "subject": "PartnerOrganization_0000",
       "predicate": "sponsors",
       "object": "Project_0000",
-      "episode_id": 2,
+      "episode_id": 0,
       "superseded_in_episode": null,
-      "fact_id": "fact_0106"
+      "fact_id": "fact_0102"
     },
     {
       "subject": "Person_0006",
       "predicate": "leads",
       "object": "Project_0002",
+      "episode_id": 1,
+      "superseded_in_episode": null,
+      "fact_id": "fact_0103"
+    },
+    {
+      "subject": "Meeting_0000",
+      "predicate": "located_at",
+      "object": "Location_0000",
       "episode_id": 2,
       "superseded_in_episode": null,
-      "fact_id": "fact_0107"
+      "fact_id": "fact_0104"
+    },
+    {
+      "subject": "Person_0000",
+      "predicate": "reports_to",
+      "object": "Person_0002",
+      "episode_id": 2,
+      "superseded_in_episode": null,
+      "fact_id": "fact_0105"
+    },
+    {
+      "subject": "Project_0003",
+      "predicate": "status",
+      "object": "active",
+      "episode_id": 1,
+      "superseded_in_episode": null,
+      "fact_id": "fact_0106"
     },
     {
       "subject": "Person_0004",
       "predicate": "works_at",
-      "object": "Project_0003",
-      "episode_id": 2,
+      "object": "Project_0000",
+      "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0108"
+      "fact_id": "fact_0107"
     },
     {
       "subject": "Person_0001",
@@ -879,39 +871,7 @@
       "object": "Location_0000",
       "episode_id": 1,
       "superseded_in_episode": null,
-      "fact_id": "fact_0109"
-    },
-    {
-      "subject": "Person_0002",
-      "predicate": "reports_to",
-      "object": "Person_0001",
-      "episode_id": 1,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0110"
-    },
-    {
-      "subject": "Person_0000",
-      "predicate": "reports_to",
-      "object": "Person_0000",
-      "episode_id": 2,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0111"
-    },
-    {
-      "subject": "Team_0000",
-      "predicate": "based_in",
-      "object": "Location_0002",
-      "episode_id": 2,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0112"
-    },
-    {
-      "subject": "Equipment_0001",
-      "predicate": "located_at",
-      "object": "Location_0001",
-      "episode_id": 2,
-      "superseded_in_episode": null,
-      "fact_id": "fact_0113"
+      "fact_id": "fact_0108"
     }
   ]
 }

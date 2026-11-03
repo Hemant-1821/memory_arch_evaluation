@@ -2,8 +2,8 @@
 
 Each call is cached on disk, keyed by a hash of everything that shapes the
 response plus a sample number, so reruns after a bug fix cost nothing and the
-cache is the reproducibility record (Sonnet 5 accepts no temperature, so its
-outputs can't be made deterministic). Every uncached call is logged with tokens
+cache is the reproducibility record (the Claude 5.5 models accept no temperature,
+so their outputs can't be made deterministic). Every uncached call is logged with tokens
 and cost, and refused once logged spend reaches the configured cap.
 
 Set MEMARCH_LLM_DIR to redirect cache + log (self-checks use private/llm_selfcheck).
@@ -48,6 +48,14 @@ class BudgetExceeded(RuntimeError):
     pass
 
 
+class Refusal(RuntimeError):
+    """A safety refusal (decision 6.8): billed, logged with its category, and cached, so a
+    replay repeats it for free. `result` holds the usage and any partial content."""
+    def __init__(self, result):
+        super().__init__(f"{result['step']}: refused (category {result['refusal_category']})")
+        self.result = result
+
+
 def load_prompt(name: str) -> str:
     return (PROMPT_DIR / f"{name}.txt").read_text()
 
@@ -86,48 +94,74 @@ def _save(key, result) -> dict:
     return {**result, "cached": False}
 
 
-def call_llm(role, step, system, prompt, schema=None, sample=0, max_tokens=None) -> dict:
+def _claude(step, params, sample, fields) -> dict:
+    """One cached, logged, budget-capped Claude call; `fields(response)` picks what to keep.
+    Cost counts cache writes and reads (decision 6.4)."""
     global _client
+    key = _cache_key(params, sample)
+    if hit := _cached(key):
+        if hit.get("refused"):
+            raise Refusal(hit)
+        return hit
+    _check_budget()
+    price = CONFIG["prices_usd_per_mtok"][params["model"]]  # an unpriced model fails before it bills
+
+    _client = _client or anthropic.Anthropic()
+    start = time.perf_counter()
+    response = _client.messages.create(**params)
+    latency = round(time.perf_counter() - start, 3)
+    u = response.usage
+    tokens = {"input": u.input_tokens, "cache_write": u.cache_creation_input_tokens or 0,
+              "cache_read": u.cache_read_input_tokens or 0, "output": u.output_tokens}
+    usage = {"input_tokens": tokens["input"] + tokens["cache_write"] + tokens["cache_read"],  # all input, as on Azure
+             "cached_tokens": tokens["cache_read"], "cache_write_tokens": tokens["cache_write"],
+             "output_tokens": tokens["output"],
+             "cost_usd": round(sum(n * price[k] for k, n in tokens.items() if n) / 1e6, 6)}
+    entry = {"cache_key": key, "step": step, "model": params["model"], "sample": sample, **usage,
+             "latency_s": latency, "stop_reason": response.stop_reason}
+    if response.stop_reason == "refusal":
+        entry["refusal_category"] = getattr(response.stop_details, "category", None)
+    _log(entry)
+    if response.stop_reason == "refusal":
+        raise Refusal(_save(key, {"canary": CANARY, **entry, "refused": True, "request_id": response._request_id,
+                                  "content": [b.model_dump(mode="json", exclude_none=True) for b in response.content]}))
+    if response.stop_reason == "max_tokens":
+        raise RuntimeError(f"{step}: stop_reason=max_tokens, not parsing partial output")
+    return _save(key, {"canary": CANARY, "step": step, "model": params["model"], "sample": sample,
+                       **fields(response), **usage, "latency_s": latency, "request_id": response._request_id})
+
+
+def call_llm(role, step, system, prompt, schema=None, sample=0, max_tokens=None) -> dict:
     model = CONFIG["generation_model"] if role == "generation" else CONFIG["backbone_model"]
     params = {
         "model": model,
         "max_tokens": max_tokens or CONFIG["max_tokens"],
         "system": system,
         "messages": [{"role": "user", "content": prompt}],
+        "output_config": {"effort": CONFIG["effort"][step]},  # both 5.5 models take effort (ruling 6.3)
     }
-    output_config = {}
-    if role == "backbone":  # Haiku 4.5 rejects `effort`
-        output_config["effort"] = CONFIG["effort"][step]
     if schema:
-        output_config["format"] = {"type": "json_schema", "schema": schema}
-    if output_config:
-        params["output_config"] = output_config
+        params["output_config"]["format"] = {"type": "json_schema", "schema": schema}
 
-    key = _cache_key(params, sample)
-    if hit := _cached(key):
-        return hit
-    _check_budget()
+    def fields(response):  # thinking blocks come first - pick the text block by type
+        text = next(b.text for b in response.content if b.type == "text")
+        return {"system": system, "prompt": prompt, "text": text, "json": json.loads(text) if schema else None}
+    return _claude(step, params, sample, fields)
 
-    _client = _client or anthropic.Anthropic()
-    response = _client.messages.create(**params)
-    usage = response.usage
-    price = CONFIG["prices_usd_per_mtok"][model]
-    cost = round((usage.input_tokens * price["input"] + usage.output_tokens * price["output"]) / 1e6, 6)
-    _log({"cache_key": key, "step": step, "model": model, "sample": sample,
-          "input_tokens": usage.input_tokens, "output_tokens": usage.output_tokens,
-          "cost_usd": cost, "stop_reason": response.stop_reason})
-    if response.stop_reason in ("max_tokens", "refusal"):
-        raise RuntimeError(f"{step}: stop_reason={response.stop_reason}, not parsing partial output")
 
-    text = next(b.text for b in response.content if b.type == "text")
-    result = {
-        "canary": CANARY, "step": step, "model": model, "sample": sample,
-        "system": system, "prompt": prompt, "text": text,
-        "json": json.loads(text) if schema else None,
-        "input_tokens": usage.input_tokens, "output_tokens": usage.output_tokens,
-        "cost_usd": cost, "request_id": response._request_id,
-    }
-    return _save(key, result)
+def call_agent(step, model, system, messages, tools, sample=0) -> dict:
+    """One turn of the experiment agent on Claude (decision 6.5). The caller appends the
+    returned `content` (every block, thinking signatures included) unchanged, so the
+    history is append-only and a run replays exactly from the cache. Top-level
+    cache_control caches the growing prefix, so later turns read earlier ones cheaply."""
+    params = {"model": model, "max_tokens": CONFIG["max_tokens"], "system": system,
+              "messages": messages, "tools": tools, "output_config": {"effort": CONFIG["effort"][step]},
+              "cache_control": {"type": "ephemeral"}}
+    r = _claude(step, params, sample,
+                lambda resp: {"content": [b.model_dump(mode="json", exclude_none=True) for b in resp.content]})
+    if not r["cached"] and r["cost_usd"] > CONFIG["budget"]["max_call_usd"]:
+        raise BudgetExceeded(f"{step}: one call cost ${r['cost_usd']} > ${CONFIG['budget']['max_call_usd']} - stopping")
+    return r
 
 
 def call_azure(step, input_items, tools=None, schema=None, sample=0, model=None) -> dict:
@@ -186,13 +220,30 @@ if __name__ == "__main__":
               "required": ["reply"], "additionalProperties": False}
 
     # Real call on each model with a schema (catches a model rejecting structured output).
-    a = call_llm("generation", "selfcheck", "Be brief.", "Reply with the word OK.", schema=schema)
+    a = call_llm("generation", "question_phrasing", "Be brief.", "Reply with the word OK.", schema=schema)
     b = call_llm("backbone", "kg_extraction", "Be brief.", "Reply with the word OK.", schema=schema)
     assert isinstance(a["json"]["reply"], str) and isinstance(b["json"]["reply"], str)
 
+    # Agent route: two turns, thinking blocks passed back unchanged, all tool results in one
+    # user message; the second turn must read the first from the prompt cache. The system
+    # text is padded past the minimum cacheable prefix.
+    tool = {"name": "lookup", "description": "Look up a word.", "strict": True,
+            "input_schema": {"type": "object", "properties": {"word": {"type": "string"}},
+                             "required": ["word"], "additionalProperties": False}}
+    system = "Call lookup once, then reply with its result.\n" + "\n".join(f"Note {i}: unused." for i in range(400))
+    msgs = [{"role": "user", "content": "Look up the word 'river'."}]
+    t1 = call_agent("experiment_agent", CONFIG["backbone_model"], system, msgs, [tool])
+    uses = [blk for blk in t1["content"] if blk["type"] == "tool_use"]
+    assert uses and t1["cache_write_tokens"] > 0, t1
+    msgs += [{"role": "assistant", "content": t1["content"]},
+             {"role": "user", "content": [{"type": "tool_result", "tool_use_id": u["id"], "content": "flows"}
+                                          for u in uses]}]
+    t2 = call_agent("experiment_agent", CONFIG["backbone_model"], system, msgs, [tool])
+    assert t2["cached_tokens"] > 0 and any(blk["type"] == "text" for blk in t2["content"]), t2
+
     # Review Focus: an identical call is served from cache with no new log line.
     lines_before = len(LOG_PATH.read_text().splitlines())
-    again = call_llm("generation", "selfcheck", "Be brief.", "Reply with the word OK.", schema=schema)
+    again = call_llm("generation", "question_phrasing", "Be brief.", "Reply with the word OK.", schema=schema)
     assert again["cached"] and again["text"] == a["text"]
     assert len(LOG_PATH.read_text().splitlines()) == lines_before
 
@@ -200,30 +251,31 @@ if __name__ == "__main__":
     # (billed) cost is still logged so the budget cap counts it.
     spend_before = spent_usd()
     try:
-        call_llm("generation", "selfcheck", "Be verbose.", "Write 300 words about rivers.", max_tokens=5)
+        call_llm("generation", "question_phrasing", "Be verbose.", "Write 300 words about rivers.", max_tokens=5)
         raise AssertionError("expected RuntimeError on max_tokens stop")
     except RuntimeError as e:
         assert "max_tokens" in str(e)
     assert spent_usd() > spend_before, "a billed failed call must still be logged"
 
+    # Review Focus: a cached refusal replays as a Refusal for free (no API call, no log line).
+    params = {"model": "refusal-selfcheck", "messages": []}
+    _save(_cache_key(params, 0), {"step": "selfcheck", "refused": True, "refusal_category": "bio", "cost_usd": 0.001})
+    try:
+        _claude("selfcheck", params, 0, None)
+        raise AssertionError("expected Refusal")
+    except Refusal as e:
+        assert e.result["refusal_category"] == "bio" and "refused" in str(e)
+
     # Review Focus: at the cap, uncached calls are refused but cached ones still work.
     cap = CONFIG["budget"]["cap_usd"]
     CONFIG["budget"]["cap_usd"] = 0
     try:
-        assert call_llm("generation", "selfcheck", "Be brief.", "Reply with the word OK.", schema=schema)["cached"]
-        call_llm("generation", "selfcheck", "Be brief.", "Reply with the word NO.", schema=schema)
+        assert call_llm("generation", "question_phrasing", "Be brief.", "Reply with the word OK.", schema=schema)["cached"]
+        call_llm("generation", "question_phrasing", "Be brief.", "Reply with the word NO.", schema=schema)
         raise AssertionError("expected BudgetExceeded")
     except BudgetExceeded:
         pass
     finally:
         CONFIG["budget"]["cap_usd"] = cap
-
-    # Azure route: replay is free, logs nothing, and keeps the original latency.
-    pong = [{"role": "user", "content": "Reply with exactly: pong"}]
-    az = call_azure("experiment_agent", pong)
-    lines_before = len(LOG_PATH.read_text().splitlines())
-    replay = call_azure("experiment_agent", pong)
-    assert replay["cached"] and replay["latency_s"] == az["latency_s"] and "pong" in replay["text"].lower()
-    assert len(LOG_PATH.read_text().splitlines()) == lines_before
 
     print(f"generation/llm_client.py: OK (self-check spend so far ${spent_usd():.4f})")

@@ -2,12 +2,13 @@
 in every condition - only the tool list changes (decision 4.3). Vector gets
 search_memory, graph gets the four traversal tools, hybrid gets all five and
 chooses per step (agentic hybrid, not HybridRAG's fixed fusion). The harness binds
-as_of_episode and k; the model never sees or sets them."""
+as_of_episode and k; the model never sees or sets them. Claude models run on the
+Anthropic API (decision 6.5); an Azure deployment name replays the week-4/5 Sol runs."""
 import json
 import time
 
 from generation.facts import contains_name, display_name, period_label
-from generation.llm_client import call_azure, load_prompt
+from generation.llm_client import Refusal, call_agent, call_azure, load_prompt
 from validation.grading import grade
 
 MAX_STEPS = 10  # decision 4.4: hitting the limit counts as a failure
@@ -37,6 +38,10 @@ FINAL = _tool("final_answer", "Give your final answer and end the task.",
 TOOLS = {"vector": VECTOR_TOOLS, "graph": GRAPH_TOOLS, "hybrid": VECTOR_TOOLS + GRAPH_TOOLS}
 
 
+def _claude_tool(t) -> dict:
+    return {"name": t["name"], "description": t["description"], "input_schema": t["parameters"], "strict": True}
+
+
 def _call_tool(name, args, vector, graph, as_of):
     if name == "search_memory":
         return [{"period": period_label(h["episode"]), "text": h["text"]}
@@ -61,35 +66,60 @@ def recall(task, tool_outputs, entities, triples) -> float:
     return round(found / len(facts), 4) if facts else 0.0
 
 
-def run_task(task, condition, vector, graph, entities, triples, seed, model=None) -> dict:
+def run_task(task, condition, vector, graph, entities, triples, seed, model) -> dict:
+    claude = model.startswith("claude")
     tools = TOOLS[condition] + [FINAL]
-    items = [{"role": "system", "content": load_prompt("agent")}, {"role": "user", "content": task["question"]}]
+    system = load_prompt("agent")
+    if claude:
+        tools = [_claude_tool(t) for t in tools]
+        history = [{"role": "user", "content": task["question"]}]
+    else:
+        history = [{"role": "system", "content": system}, {"role": "user", "content": task["question"]}]
     run = {"task_id": task["task_id"], "tier": task["tier"], "condition": condition, "seed": seed,
            "answer": None, "explanation": None, "correct": False, "steps": 0, "hit_step_limit": False,
            "input_tokens": 0, "cached_tokens": 0, "output_tokens": 0, "cost_usd": 0.0,
-           "model_latency_s": 0.0, "tool_latency_s": 0.0, "tools_per_step": [], "error": None}
+           "model_latency_s": 0.0, "tool_latency_s": 0.0, "tools_per_step": [], "error": None,
+           "refused": False, "refusal_category": None}
     outputs = []
     for step in range(MAX_STEPS):
-        r = call_azure("experiment_agent", items, tools=tools, sample=seed, model=model)
+        if claude:  # append-only: every block, thinking included, goes back unchanged
+            try:
+                r = call_agent("experiment_agent", model, system, history, tools, sample=seed)
+                history.append({"role": "assistant", "content": r["content"]})
+                calls = [(b["id"], b["name"], b["input"]) for b in r["content"] if b["type"] == "tool_use"]
+            except Refusal as e:  # ends the run as a failure, counted per condition and tier (decision 6.8)
+                r, calls = e.result, []
+                run["refused"], run["refusal_category"], run["error"] = True, r["refusal_category"], str(e)
+        else:  # incl. encrypted reasoning, so the next turn continues the same thought
+            r = call_azure("experiment_agent", history, tools=tools, sample=seed, model=model)
+            history += r["output"]
+            calls = [(o["call_id"], o["name"], json.loads(o["arguments"]))
+                     for o in r["output"] if o["type"] == "function_call"]
         run["steps"] = step + 1
         for k in ("input_tokens", "cached_tokens", "output_tokens", "cost_usd"):
             run[k] += r[k]
         run["model_latency_s"] += r["latency_s"]
-        items += r["output"]  # incl. encrypted reasoning, so the next turn continues the same thought
-        calls = [o for o in r["output"] if o["type"] == "function_call"]
-        run["tools_per_step"].append([c["name"] for c in calls])
-        if final := next((c for c in calls if c["name"] == "final_answer"), None):
-            args = json.loads(final["arguments"])
-            run["answer"], run["explanation"] = args["answer"], args["explanation"]
+        run["tools_per_step"].append([name for _, name, _ in calls])
+        if run["refused"]:
+            break
+        if final := next((args for _, name, args in calls if name == "final_answer"), None):
+            run["answer"], run["explanation"] = final["answer"], final["explanation"]
             break
         if not calls:
-            items.append({"role": "user", "content": "Call final_answer to give your answer."})
-        for c in calls:
+            history.append({"role": "user", "content": "Call final_answer to give your answer."})
+            continue
+        results = []
+        for call_id, name, args in calls:
             start = time.perf_counter()
-            out = json.dumps(_call_tool(c["name"], json.loads(c["arguments"]), vector, graph, task["as_of_episode"]))
+            out = json.dumps(_call_tool(name, args, vector, graph, task["as_of_episode"]))
             run["tool_latency_s"] += time.perf_counter() - start
             outputs.append(out)
-            items.append({"type": "function_call_output", "call_id": c["call_id"], "output": out})
+            results.append((call_id, out))
+        if claude:  # all results of one turn in ONE user message
+            history.append({"role": "user", "content": [{"type": "tool_result", "tool_use_id": i, "content": out}
+                                                        for i, out in results]})
+        else:
+            history += [{"type": "function_call_output", "call_id": i, "output": out} for i, out in results]
     else:
         run["hit_step_limit"] = True
     run["correct"] = run["answer"] is not None and grade(task, run["answer"], entities, triples)
@@ -101,10 +131,22 @@ def run_task(task, condition, vector, graph, entities, triples, seed, model=None
 
 if __name__ == "__main__":
     assert [t["name"] for t in TOOLS["hybrid"]] == ["search_memory"] + [t["name"] for t in GRAPH_TOOLS]
+    ft = _claude_tool(FINAL)
+    assert set(ft) == {"name", "description", "input_schema", "strict"} and ft["input_schema"]["required"] == \
+        ["answer", "explanation"], "Anthropic tool format"
     entities = {"P1": {"display_name": "Kivo Ranet"}, "L1": {"display_name": "Hedto"}, "L2": {"display_name": "Tapdiho"}}
     triples = [{"fact_id": "f1", "subject": "P1", "predicate": "based_in", "object": "L1"},
                {"fact_id": "f2", "subject": "P1", "predicate": "based_in", "object": "L2"}]
     task = {"reasoning_path": ["f1", "f2"]}
     assert recall(task, ['[{"subject": "Kivo Ranet", "object": "Hedto"}]'], entities, triples) == 0.5
     assert recall(task, ['["Kivo Ranet"]', '["Hedto"]'], entities, triples) == 0.0, "names must co-occur in one output"
+
+    # A refusal ends the run as a counted failure, its billed turn included (no API call here).
+    def call_agent(*args, **kwargs):  # replaces the module global for this check
+        raise Refusal({"step": "experiment_agent", "refusal_category": "bio", "input_tokens": 900,
+                       "cached_tokens": 0, "output_tokens": 50, "cost_usd": 0.0023, "latency_s": 1.5})
+    run = run_task({"task_id": "t1", "tier": "low", "question": "Who?", "as_of_episode": 0, **task},
+                   "graph", None, None, entities, triples, 0, "claude-sonnet-5-5")
+    assert run["refused"] and run["refusal_category"] == "bio" and not run["correct"] and not run["hit_step_limit"]
+    assert run["steps"] == 1 and run["cost_usd"] == 0.0023 and run["recall"] == 0.0
     print("agent/react.py: OK")
