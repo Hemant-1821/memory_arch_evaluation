@@ -2,7 +2,7 @@
 
 Only on the user's explicit go. Every command runs from the repo root. Anything that can
 call a paid model starts with `AZURE_OPENAI_API_KEY=blocked` (Azure is not used any more).
-Expected cost: about $49 in total (dataset ~$10, experiment ~$7.9 per
+Expected cost: about $56 in total (dataset ~$10, experiment ~$9.1 per
 seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
 
 ## Pre-flight
@@ -42,7 +42,7 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
    ./venv/bin/python -c "from generation.llm_client import spent_usd; print(round(spent_usd(), 2))"   # S0
    ```
 8. Check the cap (`budget.cap_usd` in `configs/llm_config.yaml`) is **100** (user, 2026-11-03:
-   total logged spend capped at $100 for now). S0 + the projection ($49, ~$74 with a x1.5 margin)
+   total logged spend capped at $100 for now). S0 + the projection ($56, ~$84 with a x1.5 margin)
    fits under it. If the cap is reached, stop and decide with the user before raising it.
 
 ## Run, in this order
@@ -57,7 +57,7 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
     ./venv/bin/python -c "import json; r=[json.loads(l) for l in open('data/llm_calls.jsonl')][L0:]; print(len(r), 'calls', round(sum(x['cost_usd'] for x in r), 2), 'USD, refusals:', [(x['step'], x.get('refusal_category')) for x in r if x.get('stop_reason') == 'refusal'])"
     ```
     (replace `L0`.) Go on only if: documents 731, flagged a handful at most, document accuracy and
-    extraction precision/recall close to the pilot (0.97 / 0.96 / 1.00), kept tasks close to 30 per
+    extraction precision/recall close to the pilot (0.97 / 0.94 / 0.99), kept tasks close to 30 per
     tier, every refusal in `document_writing` and retried. Skim `data/kg_full/review/questions.csv`
     and the flagged rows of `documents.csv`.
 11. Load the memory stores (smoke test prints one question and hits from both stores):
@@ -66,9 +66,9 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
     ```
 12. Full experiment, 5 seeds (~4 h):
     ```bash
-    AZURE_OPENAI_API_KEY=blocked caffeinate -i ./venv/bin/python -u -m scripts.run_experiment --dataset data/kg_full --name full_sonnet55 --per-tier 30 --seeds 5 --max-usd 60 2>&1 | tee -a private/full_experiment.log
+    AZURE_OPENAI_API_KEY=blocked caffeinate -i ./venv/bin/python -u -m scripts.run_experiment --dataset data/kg_full --name full_sonnet55 --per-tier 30 --seeds 5 --max-usd 70 2>&1 | tee -a private/full_experiment.log
     ```
-    `--max-usd 60` = the experiment projection (~$39) x1.5. Runs go low, medium, high
+    `--max-usd 70` = the experiment projection (~$46) x1.5. Runs go low, medium, high
     within each seed, so the projected total is only meaningful after the first seed.
 13. Check the runs:
     ```bash
@@ -81,7 +81,7 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
 
 - After step 9: spend since S0 should be near $10. Above $15: stop and find out why.
 - During step 12: each line prints the run cost; after seed 1 (270 runs) spend should be near
-  $7.9. The script stops itself if the projected total passes `--max-usd`.
+  $9.1. The script stops itself if the projected total passes `--max-usd`.
 - Spend since the start at any time:
   ```bash
   ./venv/bin/python -c "from generation.llm_client import spent_usd; print(round(spent_usd() - S0, 2))"
