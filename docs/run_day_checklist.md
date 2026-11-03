@@ -41,9 +41,9 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
    wc -l < data/llm_calls.jsonl                      # write down as L0
    ./venv/bin/python -c "from generation.llm_client import spent_usd; print(round(spent_usd(), 2))"   # S0
    ```
-8. Set the cap (`budget.cap_usd` in `configs/llm_config.yaml`) to **S0 + 75**. Reason: the
-   projection is $49; x1.5 margin for bigger full-size prompts and retries is ~$74,
-   rounded up. The cap is only a runaway guard - one full rerun would still fit in the $200 credit.
+8. Check the cap (`budget.cap_usd` in `configs/llm_config.yaml`) is **100** (user, 2026-11-03:
+   total logged spend capped at $100 for now). S0 + the projection ($49, ~$74 with a x1.5 margin)
+   fits under it. If the cap is reached, stop and decide with the user before raising it.
 
 ## Run, in this order
 
