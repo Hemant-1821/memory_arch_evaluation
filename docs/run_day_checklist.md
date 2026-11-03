@@ -60,6 +60,13 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
     extraction precision/recall close to the pilot (0.97 / 0.94 / 0.99), kept tasks close to 30 per
     tier, every refusal in `document_writing` and retried. Skim `data/kg_full/review/questions.csv`
     and the flagged rows of `documents.csv`.
+10a. Freeze the dataset (decision 6.18): from here on nothing in `data/kg_full/` changes because
+    of results; a problem the experiment finds is reported as a limitation, not fixed.
+    ```bash
+    shasum -a 256 data/kg_full/*.json data/kg_full/graph.gpickle > data/kg_full/SHA256SUMS
+    git add data/kg_full data/llm_cache data/llm_calls.jsonl configs/llm_config.yaml
+    git commit -m "data: full dataset v1.0, frozen - <documents, accuracy, P/R, kept per tier, refusals, cost>"
+    ```
 11. Load the memory stores (smoke test prints one question and hits from both stores):
     ```bash
     ./venv/bin/python -m scripts.load_memory data/kg_full
@@ -76,6 +83,7 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
     ./venv/bin/python -c "import json; r=[json.loads(l) for l in open('results/full_sonnet55/runs.jsonl')]; print(len(r), 'runs; errors', sum(bool(x.get('error')) for x in r), '; refused', sum(bool(x.get('refused')) for x in r), '; step limit', sum(bool(x.get('hit_step_limit')) for x in r))"
     ```
     Expect 0 errors. Any error run: see "If something goes wrong", then rerun step 12.
+    Confirm the dataset is unchanged since the freeze: `shasum -a 256 -c data/kg_full/SHA256SUMS`.
 
 ## Cost checkpoints
 
@@ -116,11 +124,10 @@ logged); that is one call, a cent or two.
 
 ```bash
 git status --short     # never add private/, .claude/, .env or results/*/analysis/
-git add configs/llm_config.yaml data/kg_full data/llm_cache data/llm_calls.jsonl
-git commit -m "data: full dataset - <documents, accuracy, P/R, kept per tier, refusals, cost>"
 git add results/full_sonnet55/runs.jsonl results/full_sonnet55/summary.json data/llm_cache data/llm_calls.jsonl
 git commit -m "data: full experiment, 5 seeds - <accuracy per condition, refusals, cost>"
 ```
 
-Then add the numbers and the spend to the decision log. The analysis
-(`scripts/analyse_results.py`) waits for the agreed discussion of its settings.
+Then run the pre-registered analysis (settings agreed in 6.13) and commit its text outputs:
+`./venv/bin/python -m scripts.analyse_results results/full_sonnet55`. Add the numbers and the
+spend to the decision log.
