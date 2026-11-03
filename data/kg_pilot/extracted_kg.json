@@ -74,13 +74,13 @@
       },
       {
         "node_id": "ext_0014",
-        "name": "Signal Processing",
-        "entity_type": "Skill"
+        "name": "Valode Zihuki",
+        "entity_type": "Person"
       },
       {
         "node_id": "ext_0015",
-        "name": "Valode Zihuki",
-        "entity_type": "Person"
+        "name": "Signal Processing",
+        "entity_type": "Skill"
       },
       {
         "node_id": "ext_0016",
@@ -154,33 +154,33 @@
       },
       {
         "node_id": "ext_0030",
-        "name": "Photonic Sensing Gime Group",
-        "entity_type": "Team"
+        "name": "Project Lumen Forge",
+        "entity_type": "Project"
       },
       {
         "node_id": "ext_0031",
-        "name": "Cryogenic Control",
-        "entity_type": "Skill"
-      },
-      {
-        "node_id": "ext_0032",
-        "name": "Purzu Scanner",
-        "entity_type": "Equipment"
-      },
-      {
-        "node_id": "ext_0033",
         "name": "Project Ferrix Array",
         "entity_type": "Project"
       },
       {
+        "node_id": "ext_0032",
+        "name": "Project Corran Bridge",
+        "entity_type": "Project"
+      },
+      {
+        "node_id": "ext_0033",
+        "name": "Cryogenic Control",
+        "entity_type": "Skill"
+      },
+      {
         "node_id": "ext_0034",
-        "name": "Saruu Surobov",
-        "entity_type": "Person"
+        "name": "Photonic Sensing Gime Group",
+        "entity_type": "Team"
       },
       {
         "node_id": "ext_0035",
-        "name": "cross-border research coordination",
-        "entity_type": "Skill"
+        "name": "Purzu Scanner",
+        "entity_type": "Equipment"
       }
     ],
     "triples": [
@@ -283,37 +283,37 @@
         "episode": 0
       },
       {
-        "subject": "ext_0010",
-        "predicate": "requires_skill",
-        "object": "ext_0014",
-        "doc_id": "doc_003",
-        "episode": 0
-      },
-      {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "works_at",
         "object": "ext_0010",
         "doc_id": "doc_003",
         "episode": 0
       },
       {
-        "subject": "ext_0016",
-        "predicate": "has_skill",
-        "object": "ext_0014",
+        "subject": "ext_0010",
+        "predicate": "requires_skill",
+        "object": "ext_0015",
         "doc_id": "doc_003",
         "episode": 0
       },
       {
-        "subject": "ext_0008",
-        "predicate": "works_at",
-        "object": "ext_0017",
-        "doc_id": "doc_004",
+        "subject": "ext_0016",
+        "predicate": "has_skill",
+        "object": "ext_0015",
+        "doc_id": "doc_003",
         "episode": 0
       },
       {
         "subject": "ext_0017",
         "predicate": "status",
         "object": "active",
+        "doc_id": "doc_004",
+        "episode": 0
+      },
+      {
+        "subject": "ext_0008",
+        "predicate": "works_at",
+        "object": "ext_0017",
         "doc_id": "doc_004",
         "episode": 0
       },
@@ -367,9 +367,9 @@
         "episode": 0
       },
       {
-        "subject": "ext_0019",
-        "predicate": "member_of",
-        "object": "ext_0022",
+        "subject": "ext_0011",
+        "predicate": "depends_on",
+        "object": "ext_0010",
         "doc_id": "doc_004",
         "episode": 0
       },
@@ -381,9 +381,9 @@
         "episode": 0
       },
       {
-        "subject": "ext_0011",
-        "predicate": "depends_on",
-        "object": "ext_0010",
+        "subject": "ext_0019",
+        "predicate": "member_of",
+        "object": "ext_0022",
         "doc_id": "doc_004",
         "episode": 0
       },
@@ -465,21 +465,21 @@
         "episode": 0
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "has_skill",
-        "object": "ext_0014",
+        "object": "ext_0015",
         "doc_id": "doc_007",
         "episode": 0
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "based_in",
         "object": "ext_0026",
         "doc_id": "doc_007",
         "episode": 0
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "works_at",
         "object": "ext_0010",
         "doc_id": "doc_007",
@@ -488,7 +488,7 @@
       {
         "subject": "ext_0004",
         "predicate": "has_skill",
-        "object": "ext_0014",
+        "object": "ext_0015",
         "doc_id": "doc_008",
         "episode": 0
       },
@@ -523,7 +523,7 @@
       {
         "subject": "ext_0016",
         "predicate": "has_skill",
-        "object": "ext_0014",
+        "object": "ext_0015",
         "doc_id": "doc_008",
         "episode": 0
       },
@@ -542,6 +542,13 @@
         "episode": 1
       },
       {
+        "subject": "ext_0028",
+        "predicate": "concerns",
+        "object": "ext_0011",
+        "doc_id": "doc_009",
+        "episode": 1
+      },
+      {
         "subject": "ext_0016",
         "predicate": "attends",
         "object": "ext_0028",
@@ -556,16 +563,9 @@
         "episode": 1
       },
       {
-        "subject": "ext_0028",
-        "predicate": "concerns",
-        "object": "ext_0011",
-        "doc_id": "doc_009",
-        "episode": 1
-      },
-      {
         "subject": "ext_0016",
         "predicate": "has_skill",
-        "object": "ext_0014",
+        "object": "ext_0015",
         "doc_id": "doc_009",
         "episode": 1
       },
@@ -577,6 +577,13 @@
         "episode": 1
       },
       {
+        "subject": "ext_0004",
+        "predicate": "attends",
+        "object": "ext_0001",
+        "doc_id": "doc_010",
+        "episode": 1
+      },
+      {
         "subject": "ext_0011",
         "predicate": "status",
         "object": "active",
@@ -584,9 +591,9 @@
         "episode": 1
       },
       {
-        "subject": "ext_0004",
-        "predicate": "attends",
-        "object": "ext_0001",
+        "subject": "ext_0029",
+        "predicate": "concerns",
+        "object": "ext_0010",
         "doc_id": "doc_010",
         "episode": 1
       },
@@ -598,13 +605,6 @@
         "episode": 1
       },
       {
-        "subject": "ext_0029",
-        "predicate": "concerns",
-        "object": "ext_0010",
-        "doc_id": "doc_010",
-        "episode": 1
-      },
-      {
         "subject": "ext_0009",
         "predicate": "sponsors",
         "object": "ext_0010",
@@ -612,21 +612,7 @@
         "episode": 1
       },
       {
-        "subject": "ext_0009",
-        "predicate": "sponsors",
-        "object": "ext_0017",
-        "doc_id": "doc_011",
-        "episode": 1
-      },
-      {
-        "subject": "ext_0007",
-        "predicate": "depends_on",
-        "object": "ext_0017",
-        "doc_id": "doc_011",
-        "episode": 1
-      },
-      {
-        "subject": "ext_0011",
+        "subject": "ext_0030",
         "predicate": "partners_with",
         "object": "ext_0013",
         "doc_id": "doc_011",
@@ -635,14 +621,28 @@
       {
         "subject": "ext_0009",
         "predicate": "sponsors",
-        "object": "ext_0011",
+        "object": "ext_0030",
+        "doc_id": "doc_011",
+        "episode": 1
+      },
+      {
+        "subject": "ext_0009",
+        "predicate": "sponsors",
+        "object": "ext_0031",
+        "doc_id": "doc_011",
+        "episode": 1
+      },
+      {
+        "subject": "ext_0007",
+        "predicate": "depends_on",
+        "object": "ext_0031",
         "doc_id": "doc_011",
         "episode": 1
       },
       {
         "subject": "ext_0028",
         "predicate": "concerns",
-        "object": "ext_0011",
+        "object": "ext_0030",
         "doc_id": "doc_011",
         "episode": 1
       },
@@ -654,7 +654,7 @@
         "episode": 1
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "works_at",
         "object": "ext_0011",
         "doc_id": "doc_012",
@@ -696,7 +696,7 @@
         "episode": 1
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "reports_to",
         "object": "ext_0008",
         "doc_id": "doc_013",
@@ -738,6 +738,13 @@
         "episode": 1
       },
       {
+        "subject": "ext_0011",
+        "predicate": "partners_with",
+        "object": "ext_0013",
+        "doc_id": "doc_013",
+        "episode": 1
+      },
+      {
         "subject": "ext_0017",
         "predicate": "requires_skill",
         "object": "ext_0006",
@@ -752,13 +759,6 @@
         "episode": 1
       },
       {
-        "subject": "ext_0011",
-        "predicate": "partners_with",
-        "object": "ext_0013",
-        "doc_id": "doc_013",
-        "episode": 1
-      },
-      {
         "subject": "ext_0001",
         "predicate": "concerns",
         "object": "ext_0011",
@@ -768,35 +768,35 @@
       {
         "subject": "ext_0004",
         "predicate": "leads",
-        "object": "ext_0012",
+        "object": "ext_0032",
         "doc_id": "doc_014",
         "episode": 1
       },
       {
-        "subject": "ext_0012",
+        "subject": "ext_0032",
+        "predicate": "requires_skill",
+        "object": "ext_0015",
+        "doc_id": "doc_014",
+        "episode": 1
+      },
+      {
+        "subject": "ext_0032",
         "predicate": "status",
         "object": "active",
         "doc_id": "doc_014",
         "episode": 1
       },
       {
-        "subject": "ext_0012",
-        "predicate": "requires_skill",
-        "object": "ext_0014",
-        "doc_id": "doc_014",
-        "episode": 1
-      },
-      {
         "subject": "ext_0004",
         "predicate": "has_skill",
-        "object": "ext_0014",
+        "object": "ext_0015",
         "doc_id": "doc_014",
         "episode": 1
       },
       {
         "subject": "ext_0020",
         "predicate": "has_skill",
-        "object": "ext_0014",
+        "object": "ext_0015",
         "doc_id": "doc_014",
         "episode": 1
       },
@@ -808,7 +808,7 @@
         "episode": 1
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "authored",
         "object": "ext_0023",
         "doc_id": "doc_015",
@@ -831,7 +831,7 @@
       {
         "subject": "ext_0012",
         "predicate": "requires_skill",
-        "object": "ext_0014",
+        "object": "ext_0015",
         "doc_id": "doc_015",
         "episode": 1
       },
@@ -850,7 +850,7 @@
         "episode": 1
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "authored",
         "object": "ext_0023",
         "doc_id": "doc_016",
@@ -906,51 +906,9 @@
         "episode": 1
       },
       {
-        "subject": "ext_0015",
-        "predicate": "member_of",
-        "object": "ext_0030",
-        "doc_id": "doc_018",
-        "episode": 1
-      },
-      {
-        "subject": "ext_0015",
-        "predicate": "reports_to",
-        "object": "ext_0008",
-        "doc_id": "doc_018",
-        "episode": 1
-      },
-      {
-        "subject": "ext_0008",
-        "predicate": "based_in",
-        "object": "ext_0027",
-        "doc_id": "doc_018",
-        "episode": 1
-      },
-      {
-        "subject": "ext_0018",
-        "predicate": "reports_to",
-        "object": "ext_0008",
-        "doc_id": "doc_018",
-        "episode": 1
-      },
-      {
-        "subject": "ext_0003",
-        "predicate": "based_in",
-        "object": "ext_0026",
-        "doc_id": "doc_018",
-        "episode": 1
-      },
-      {
-        "subject": "ext_0003",
-        "predicate": "reports_to",
-        "object": "ext_0004",
-        "doc_id": "doc_018",
-        "episode": 1
-      },
-      {
         "subject": "ext_0018",
         "predicate": "has_skill",
-        "object": "ext_0031",
+        "object": "ext_0033",
         "doc_id": "doc_018",
         "episode": 1
       },
@@ -969,21 +927,56 @@
         "episode": 1
       },
       {
-        "subject": "ext_0016",
-        "predicate": "attends",
-        "object": "ext_0028",
+        "subject": "ext_0008",
+        "predicate": "based_in",
+        "object": "ext_0027",
         "doc_id": "doc_018",
         "episode": 1
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0003",
+        "predicate": "based_in",
+        "object": "ext_0026",
+        "doc_id": "doc_018",
+        "episode": 1
+      },
+      {
+        "subject": "ext_0003",
+        "predicate": "reports_to",
+        "object": "ext_0004",
+        "doc_id": "doc_018",
+        "episode": 1
+      },
+      {
+        "subject": "ext_0014",
+        "predicate": "reports_to",
+        "object": "ext_0008",
+        "doc_id": "doc_018",
+        "episode": 1
+      },
+      {
+        "subject": "ext_0018",
+        "predicate": "reports_to",
+        "object": "ext_0008",
+        "doc_id": "doc_018",
+        "episode": 1
+      },
+      {
+        "subject": "ext_0014",
+        "predicate": "member_of",
+        "object": "ext_0034",
+        "doc_id": "doc_018",
+        "episode": 1
+      },
+      {
+        "subject": "ext_0014",
         "predicate": "works_at",
         "object": "ext_0011",
         "doc_id": "doc_018",
         "episode": 1
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "authored",
         "object": "ext_0023",
         "doc_id": "doc_018",
@@ -997,23 +990,30 @@
         "episode": 1
       },
       {
+        "subject": "ext_0016",
+        "predicate": "attends",
+        "object": "ext_0028",
+        "doc_id": "doc_018",
+        "episode": 1
+      },
+      {
+        "subject": "ext_0034",
+        "predicate": "based_in",
+        "object": "ext_0002",
+        "doc_id": "doc_019",
+        "episode": 1
+      },
+      {
         "subject": "ext_0020",
         "predicate": "member_of",
-        "object": "ext_0030",
+        "object": "ext_0034",
         "doc_id": "doc_019",
         "episode": 1
       },
       {
         "subject": "ext_0020",
         "predicate": "has_skill",
-        "object": "ext_0014",
-        "doc_id": "doc_019",
-        "episode": 1
-      },
-      {
-        "subject": "ext_0030",
-        "predicate": "based_in",
-        "object": "ext_0002",
+        "object": "ext_0015",
         "doc_id": "doc_019",
         "episode": 1
       },
@@ -1025,14 +1025,14 @@
         "episode": 1
       },
       {
-        "subject": "ext_0032",
+        "subject": "ext_0035",
         "predicate": "availability",
         "object": "in_use",
         "doc_id": "doc_020",
         "episode": 2
       },
       {
-        "subject": "ext_0032",
+        "subject": "ext_0035",
         "predicate": "located_at",
         "object": "ext_0027",
         "doc_id": "doc_020",
@@ -1102,13 +1102,6 @@
         "episode": 2
       },
       {
-        "subject": "ext_0019",
-        "predicate": "authored",
-        "object": "ext_0007",
-        "doc_id": "doc_021",
-        "episode": 2
-      },
-      {
         "subject": "ext_0004",
         "predicate": "based_in",
         "object": "ext_0027",
@@ -1123,28 +1116,35 @@
         "episode": 2
       },
       {
-        "subject": "ext_0032",
+        "subject": "ext_0035",
         "predicate": "located_at",
         "object": "ext_0027",
         "doc_id": "doc_021",
         "episode": 2
       },
       {
-        "subject": "ext_0033",
+        "subject": "ext_0019",
+        "predicate": "authored",
+        "object": "ext_0007",
+        "doc_id": "doc_021",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0031",
         "predicate": "partners_with",
         "object": "ext_0013",
         "doc_id": "doc_022",
         "episode": 2
       },
       {
-        "subject": "ext_0033",
+        "subject": "ext_0031",
         "predicate": "requires_skill",
         "object": "ext_0005",
         "doc_id": "doc_022",
         "episode": 2
       },
       {
-        "subject": "ext_0033",
+        "subject": "ext_0031",
         "predicate": "requires_skill",
         "object": "ext_0006",
         "doc_id": "doc_022",
@@ -1158,23 +1158,9 @@
         "episode": 2
       },
       {
-        "subject": "ext_0003",
-        "predicate": "member_of",
-        "object": "ext_0025",
-        "doc_id": "doc_023",
-        "episode": 2
-      },
-      {
         "subject": "ext_0020",
         "predicate": "works_at",
         "object": "ext_0011",
-        "doc_id": "doc_023",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0020",
-        "predicate": "member_of",
-        "object": "ext_0030",
         "doc_id": "doc_023",
         "episode": 2
       },
@@ -1186,9 +1172,23 @@
         "episode": 2
       },
       {
-        "subject": "ext_0028",
-        "predicate": "concerns",
-        "object": "ext_0011",
+        "subject": "ext_0003",
+        "predicate": "member_of",
+        "object": "ext_0025",
+        "doc_id": "doc_023",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0003",
+        "predicate": "based_in",
+        "object": "ext_0026",
+        "doc_id": "doc_023",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0020",
+        "predicate": "member_of",
+        "object": "ext_0034",
         "doc_id": "doc_023",
         "episode": 2
       },
@@ -1200,9 +1200,9 @@
         "episode": 2
       },
       {
-        "subject": "ext_0003",
-        "predicate": "based_in",
-        "object": "ext_0026",
+        "subject": "ext_0028",
+        "predicate": "concerns",
+        "object": "ext_0011",
         "doc_id": "doc_023",
         "episode": 2
       },
@@ -1228,7 +1228,7 @@
         "episode": 2
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "leads",
         "object": "ext_0012",
         "doc_id": "doc_024",
@@ -1250,15 +1250,15 @@
       },
       {
         "subject": "ext_0003",
-        "predicate": "reports_to",
-        "object": "ext_0004",
+        "predicate": "works_at",
+        "object": "ext_0011",
         "doc_id": "doc_024",
         "episode": 2
       },
       {
         "subject": "ext_0003",
-        "predicate": "works_at",
-        "object": "ext_0011",
+        "predicate": "reports_to",
+        "object": "ext_0004",
         "doc_id": "doc_024",
         "episode": 2
       },
@@ -1298,13 +1298,6 @@
         "episode": 2
       },
       {
-        "subject": "ext_0017",
-        "predicate": "partners_with",
-        "object": "ext_0013",
-        "doc_id": "doc_025",
-        "episode": 2
-      },
-      {
         "subject": "ext_0008",
         "predicate": "works_at",
         "object": "ext_0017",
@@ -1314,7 +1307,7 @@
       {
         "subject": "ext_0008",
         "predicate": "has_skill",
-        "object": "ext_0014",
+        "object": "ext_0015",
         "doc_id": "doc_025",
         "episode": 2
       },
@@ -1326,21 +1319,21 @@
         "episode": 2
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "works_at",
         "object": "ext_0012",
         "doc_id": "doc_025",
         "episode": 2
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "leads",
         "object": "ext_0012",
         "doc_id": "doc_025",
         "episode": 2
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "authored",
         "object": "ext_0007",
         "doc_id": "doc_025",
@@ -1350,6 +1343,13 @@
         "subject": "ext_0007",
         "predicate": "depends_on",
         "object": "ext_0017",
+        "doc_id": "doc_025",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0017",
+        "predicate": "partners_with",
+        "object": "ext_0013",
         "doc_id": "doc_025",
         "episode": 2
       },
@@ -1382,48 +1382,6 @@
         "episode": 2
       },
       {
-        "subject": "ext_0015",
-        "predicate": "authored",
-        "object": "ext_0007",
-        "doc_id": "doc_026",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0016",
-        "predicate": "authored",
-        "object": "ext_0007",
-        "doc_id": "doc_026",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0015",
-        "predicate": "member_of",
-        "object": "ext_0030",
-        "doc_id": "doc_026",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0015",
-        "predicate": "works_at",
-        "object": "ext_0012",
-        "doc_id": "doc_026",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0015",
-        "predicate": "leads",
-        "object": "ext_0012",
-        "doc_id": "doc_026",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0016",
-        "predicate": "based_in",
-        "object": "ext_0002",
-        "doc_id": "doc_026",
-        "episode": 2
-      },
-      {
         "subject": "ext_0019",
         "predicate": "attends",
         "object": "ext_0001",
@@ -1438,9 +1396,51 @@
         "episode": 2
       },
       {
+        "subject": "ext_0014",
+        "predicate": "authored",
+        "object": "ext_0007",
+        "doc_id": "doc_026",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0016",
+        "predicate": "authored",
+        "object": "ext_0007",
+        "doc_id": "doc_026",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0016",
+        "predicate": "based_in",
+        "object": "ext_0002",
+        "doc_id": "doc_026",
+        "episode": 2
+      },
+      {
         "subject": "ext_0016",
         "predicate": "reports_to",
         "object": "ext_0018",
+        "doc_id": "doc_026",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0014",
+        "predicate": "member_of",
+        "object": "ext_0034",
+        "doc_id": "doc_026",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0014",
+        "predicate": "works_at",
+        "object": "ext_0012",
+        "doc_id": "doc_026",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0014",
+        "predicate": "leads",
+        "object": "ext_0012",
         "doc_id": "doc_026",
         "episode": 2
       },
@@ -1461,14 +1461,7 @@
       {
         "subject": "ext_0012",
         "predicate": "requires_skill",
-        "object": "ext_0014",
-        "doc_id": "doc_027",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0010",
-        "predicate": "depends_on",
-        "object": "ext_0012",
+        "object": "ext_0015",
         "doc_id": "doc_027",
         "episode": 2
       },
@@ -1480,31 +1473,10 @@
         "episode": 2
       },
       {
-        "subject": "ext_0018",
-        "predicate": "based_in",
-        "object": "ext_0026",
-        "doc_id": "doc_028",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0019",
-        "predicate": "based_in",
-        "object": "ext_0027",
-        "doc_id": "doc_028",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0016",
-        "predicate": "based_in",
-        "object": "ext_0002",
-        "doc_id": "doc_028",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0020",
-        "predicate": "based_in",
-        "object": "ext_0027",
-        "doc_id": "doc_028",
+        "subject": "ext_0010",
+        "predicate": "depends_on",
+        "object": "ext_0012",
+        "doc_id": "doc_027",
         "episode": 2
       },
       {
@@ -1523,22 +1495,15 @@
       },
       {
         "subject": "ext_0018",
-        "predicate": "has_skill",
-        "object": "ext_0031",
+        "predicate": "based_in",
+        "object": "ext_0026",
         "doc_id": "doc_028",
         "episode": 2
       },
       {
-        "subject": "ext_0008",
-        "predicate": "has_skill",
-        "object": "ext_0014",
-        "doc_id": "doc_028",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0016",
-        "predicate": "has_skill",
-        "object": "ext_0021",
+        "subject": "ext_0019",
+        "predicate": "based_in",
+        "object": "ext_0027",
         "doc_id": "doc_028",
         "episode": 2
       },
@@ -1553,6 +1518,34 @@
         "subject": "ext_0022",
         "predicate": "based_in",
         "object": "ext_0026",
+        "doc_id": "doc_028",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0018",
+        "predicate": "has_skill",
+        "object": "ext_0033",
+        "doc_id": "doc_028",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0008",
+        "predicate": "has_skill",
+        "object": "ext_0015",
+        "doc_id": "doc_028",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0016",
+        "predicate": "has_skill",
+        "object": "ext_0021",
+        "doc_id": "doc_028",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0016",
+        "predicate": "based_in",
+        "object": "ext_0002",
         "doc_id": "doc_028",
         "episode": 2
       },
@@ -1578,16 +1571,9 @@
         "episode": 2
       },
       {
-        "subject": "ext_0019",
-        "predicate": "authored",
-        "object": "ext_0007",
-        "doc_id": "doc_028",
-        "episode": 2
-      },
-      {
-        "subject": "ext_0019",
-        "predicate": "authored",
-        "object": "ext_0023",
+        "subject": "ext_0020",
+        "predicate": "based_in",
+        "object": "ext_0027",
         "doc_id": "doc_028",
         "episode": 2
       },
@@ -1606,16 +1592,16 @@
         "episode": 2
       },
       {
-        "subject": "ext_0019",
-        "predicate": "attends",
-        "object": "ext_0001",
+        "subject": "ext_0028",
+        "predicate": "located_at",
+        "object": "ext_0027",
         "doc_id": "doc_028",
         "episode": 2
       },
       {
-        "subject": "ext_0028",
-        "predicate": "located_at",
-        "object": "ext_0027",
+        "subject": "ext_0019",
+        "predicate": "attends",
+        "object": "ext_0001",
         "doc_id": "doc_028",
         "episode": 2
       },
@@ -1627,7 +1613,21 @@
         "episode": 2
       },
       {
-        "subject": "ext_0032",
+        "subject": "ext_0019",
+        "predicate": "authored",
+        "object": "ext_0007",
+        "doc_id": "doc_028",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0019",
+        "predicate": "authored",
+        "object": "ext_0023",
+        "doc_id": "doc_028",
+        "episode": 2
+      },
+      {
+        "subject": "ext_0035",
         "predicate": "located_at",
         "object": "ext_0027",
         "doc_id": "doc_028",
@@ -1662,7 +1662,7 @@
         "episode": 2
       },
       {
-        "subject": "ext_0015",
+        "subject": "ext_0014",
         "predicate": "based_in",
         "object": "ext_0026",
         "doc_id": "doc_029",
@@ -1674,13 +1674,6 @@
         "object": "ext_0026",
         "doc_id": "doc_029",
         "episode": 2
-      },
-      {
-        "subject": "ext_0034",
-        "predicate": "has_skill",
-        "object": "ext_0035",
-        "doc_id": "doc_036",
-        "episode": 1
       }
     ]
   }
