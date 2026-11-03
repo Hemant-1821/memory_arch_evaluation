@@ -6,35 +6,35 @@
 
 | condition | tier | tasks | seeds | accuracy | accuracy_sd_seeds | ci95_low | ci95_high | errors | refusals | steps | step_limit_rate | input_tokens | cached_tokens | output_tokens | cost_usd | latency_s | recall |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| vector | low | 5 | 1 | 0.8 |  | 0.3755 | 0.9638 | 0 | 0 | 2.8 | 0 | 7360 | 2966 | 392.8 | 0.0155 | 8.629 | 1 |
-| graph | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 2.4 | 0 | 3168 | 1146 | 249.8 | 0.007779 | 5.463 | 1 |
-| hybrid | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 2.8 | 0 | 5558 | 2473 | 331.2 | 0.01152 | 6.386 | 1 |
-| vector | medium | 5 | 1 | 0.8 |  | 0.3755 | 0.9638 | 0 | 0 | 4.6 | 0 | 3.201e+04 | 2.045e+04 | 1126 | 0.04424 | 13.77 | 1 |
-| graph | medium | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 4 | 0 | 9805 | 6639 | 711.8 | 0.01636 | 8.277 | 1 |
-| hybrid | medium | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 3.8 | 0 | 9793 | 6114 | 711.4 | 0.01753 | 7.039 | 1 |
-| vector | high | 3 | 1 | 1 |  | 0.4385 | 1 | 0 | 0 | 5 | 0 | 4.386e+04 | 2.562e+04 | 2194 | 0.07266 | 19.15 | 1 |
-| graph | high | 3 | 1 | 1 |  | 0.4385 | 1 | 0 | 0 | 5.667 | 0 | 1.879e+04 | 1.295e+04 | 1556 | 0.03274 | 13.87 | 0.9439 |
-| hybrid | high | 3 | 1 | 1 |  | 0.4385 | 1 | 0 | 0 | 6 | 0 | 2.686e+04 | 1.872e+04 | 1910 | 0.04318 | 17.67 | 0.9347 |
-| vector | all | 13 | 1 | 0.8462 |  | 0.5777 | 0.9567 | 0 | 0 | 4 | 0 | 2.526e+04 | 1.492e+04 | 1091 | 0.03975 | 13.03 | 1 |
-| graph | all | 13 | 1 | 1 |  | 0.7719 | 1 | 0 | 0 | 3.769 | 0 | 9326 | 5983 | 729 | 0.01684 | 8.485 | 0.9871 |
-| hybrid | all | 13 | 1 | 1 |  | 0.7719 | 1 | 0 | 0 | 3.923 | 0 | 1.21e+04 | 7623 | 841.8 | 0.02114 | 9.241 | 0.9849 |
+| vector | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 3.2 | 0 | 1.278e+04 | 6726 | 500 | 0.02146 | 11.06 | 1 |
+| graph | low | 5 | 1 | 0.8 |  | 0.3755 | 0.9638 | 0 | 0 | 2.4 | 0 | 3187 | 689.8 | 284.6 | 0.009223 | 8.367 | 1 |
+| hybrid | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 3 | 0 | 6202 | 2096 | 380.4 | 0.01448 | 9.628 | 1 |
+| vector | medium | 5 | 1 | 0.8 |  | 0.3755 | 0.9638 | 0 | 0 | 5 | 0 | 4.27e+04 | 2.881e+04 | 1271 | 0.0532 | 14.9 | 1 |
+| graph | medium | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 4 | 0 | 9839 | 5225 | 754 | 0.02011 | 7.784 | 1 |
+| hybrid | medium | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 4.2 | 0 | 1.263e+04 | 7818 | 772.4 | 0.0213 | 8.387 | 1 |
+| vector | high | 3 | 1 | 1 |  | 0.4385 | 1 | 0 | 0 | 5.667 | 0 | 5.907e+04 | 3.763e+04 | 2287 | 0.084 | 22.39 | 0.9812 |
+| graph | high | 3 | 1 | 1 |  | 0.4385 | 1 | 0 | 0 | 5.667 | 0 | 1.898e+04 | 1.148e+04 | 1727 | 0.03831 | 18.11 | 0.9254 |
+| hybrid | high | 3 | 1 | 1 |  | 0.4385 | 1 | 0 | 0 | 6.333 | 0 | 2.906e+04 | 1.985e+04 | 2045 | 0.04745 | 21.44 | 0.9162 |
+| vector | all | 13 | 1 | 0.9231 |  | 0.6669 | 0.9863 | 0 | 0 | 4.462 | 0 | 3.497e+04 | 2.235e+04 | 1209 | 0.0481 | 15.15 | 0.9957 |
+| graph | all | 13 | 1 | 0.9231 |  | 0.6669 | 0.9863 | 0 | 0 | 3.769 | 0 | 9389 | 4924 | 798.1 | 0.02012 | 10.39 | 0.9828 |
+| hybrid | all | 13 | 1 | 1 |  | 0.7719 | 1 | 0 | 0 | 4.231 | 0 | 1.395e+04 | 8394 | 915.2 | 0.02471 | 11.88 | 0.9807 |
 
 ## McNemar (exact, majority across seeds)
 
 | tier | a | b | tasks | both_correct | only_a_correct | only_b_correct | both_wrong | p_exact | p_holm |
 |---|---|---|---|---|---|---|---|---|---|
-| low | vector | graph | 5 | 4 | 0 | 1 | 0 | 1 | 1 |
-| low | vector | hybrid | 5 | 4 | 0 | 1 | 0 | 1 | 1 |
-| low | graph | hybrid | 5 | 5 | 0 | 0 | 0 | 1 | 1 |
+| low | vector | graph | 5 | 4 | 1 | 0 | 0 | 1 | 1 |
+| low | vector | hybrid | 5 | 5 | 0 | 0 | 0 | 1 | 1 |
+| low | graph | hybrid | 5 | 4 | 0 | 1 | 0 | 1 | 1 |
 | medium | vector | graph | 5 | 4 | 0 | 1 | 0 | 1 | 1 |
 | medium | vector | hybrid | 5 | 4 | 0 | 1 | 0 | 1 | 1 |
 | medium | graph | hybrid | 5 | 5 | 0 | 0 | 0 | 1 | 1 |
 | high | vector | graph | 3 | 3 | 0 | 0 | 0 | 1 | 1 |
 | high | vector | hybrid | 3 | 3 | 0 | 0 | 0 | 1 | 1 |
 | high | graph | hybrid | 3 | 3 | 0 | 0 | 0 | 1 | 1 |
-| all | vector | graph | 13 | 11 | 0 | 2 | 0 | 0.5 |  |
-| all | vector | hybrid | 13 | 11 | 0 | 2 | 0 | 0.5 |  |
-| all | graph | hybrid | 13 | 13 | 0 | 0 | 0 | 1 |  |
+| all | vector | graph | 13 | 11 | 1 | 1 | 0 | 1 |  |
+| all | vector | hybrid | 13 | 12 | 0 | 1 | 0 | 1 |  |
+| all | graph | hybrid | 13 | 12 | 0 | 1 | 0 | 1 |  |
 
 ## Mixed-effects models (vector and low are the references)
 
@@ -42,52 +42,52 @@
 
 fitted
 
-posterior mean/SD (logit scale); task random-intercept SD ~ 0.82. Cells at 0% or 100% accuracy (vector/high, graph/low, graph/medium, graph/high, hybrid/low, hybrid/medium, hybrid/high): their terms lean on the prior.
+posterior mean/SD (logit scale); task random-intercept SD ~ 0.80. Cells at 0% or 100% accuracy (vector/low, vector/high, graph/medium, graph/high, hybrid/low, hybrid/medium, hybrid/high): their terms lean on the prior.
 
 | term | estimate | sd | ci95_low | ci95_high |
 |---|---|---|---|---|
-| Intercept | 2.206 | 0.6909 | 0.8522 | 3.561 |
-| condition[T.graph] | 2.042 | 1.27 | -0.447 | 4.531 |
-| condition[T.hybrid] | 2.042 | 1.27 | -0.447 | 4.531 |
-| tier[T.medium] | 0.3114 | 1.009 | -1.667 | 2.29 |
-| tier[T.high] | 1.529 | 1.389 | -1.194 | 4.251 |
-| condition[T.graph]:tier[T.medium] | 0.827 | 1.601 | -2.311 | 3.965 |
-| condition[T.hybrid]:tier[T.medium] | 0.827 | 1.601 | -2.311 | 3.965 |
-| condition[T.graph]:tier[T.high] | 0.3877 | 1.784 | -3.109 | 3.884 |
-| condition[T.hybrid]:tier[T.high] | 0.3877 | 1.784 | -3.109 | 3.884 |
+| Intercept | 2.603 | 0.6784 | 1.274 | 3.933 |
+| condition[T.graph] | 0.1694 | 1.022 | -1.834 | 2.172 |
+| condition[T.hybrid] | 1.849 | 1.306 | -0.7103 | 4.408 |
+| tier[T.medium] | 0.2319 | 1.011 | -1.749 | 2.213 |
+| tier[T.high] | 1.552 | 1.389 | -1.17 | 4.274 |
+| condition[T.graph]:tier[T.medium] | 1.333 | 1.467 | -1.542 | 4.209 |
+| condition[T.hybrid]:tier[T.medium] | 0.7942 | 1.612 | -2.365 | 3.953 |
+| condition[T.graph]:tier[T.high] | 0.6573 | 1.681 | -2.638 | 3.953 |
+| condition[T.hybrid]:tier[T.high] | 0.3519 | 1.8 | -3.176 | 3.88 |
 
 ### steps
 
 fitted
 
-REML; task random-intercept variance 0.773
+REML; task random-intercept variance 0.898
 
 | term | estimate | sd | ci95_low | ci95_high | p |
 |---|---|---|---|---|---|
-| Intercept | 2.8 | 0.5506 | 1.721 | 3.879 | 3.661e-07 |
-| condition[T.graph] | -0.4 | 0.5449 | -1.468 | 0.6679 | 0.4629 |
-| condition[T.hybrid] | -1.312e-15 | 0.5449 | -1.068 | 1.068 | 1 |
-| tier[T.medium] | 1.8 | 0.7786 | 0.274 | 3.326 | 0.02079 |
-| tier[T.high] | 2.2 | 0.8991 | 0.4379 | 3.962 | 0.0144 |
-| condition[T.graph]:tier[T.medium] | -0.2 | 0.7706 | -1.71 | 1.31 | 0.7952 |
-| condition[T.hybrid]:tier[T.medium] | -0.8 | 0.7706 | -2.31 | 0.7103 | 0.2992 |
-| condition[T.graph]:tier[T.high] | 1.067 | 0.8898 | -0.6773 | 2.811 | 0.2306 |
-| condition[T.hybrid]:tier[T.high] | 1 | 0.8898 | -0.7439 | 2.744 | 0.2611 |
+| Intercept | 3.2 | 0.6773 | 1.873 | 4.527 | 2.301e-06 |
+| condition[T.graph] | -0.8 | 0.7471 | -2.264 | 0.6644 | 0.2843 |
+| condition[T.hybrid] | -0.2 | 0.7471 | -1.664 | 1.264 | 0.7889 |
+| tier[T.medium] | 1.8 | 0.9578 | -0.07721 | 3.677 | 0.0602 |
+| tier[T.high] | 2.467 | 1.106 | 0.2991 | 4.634 | 0.02572 |
+| condition[T.graph]:tier[T.medium] | -0.2 | 1.057 | -2.271 | 1.871 | 0.8499 |
+| condition[T.hybrid]:tier[T.medium] | -0.6 | 1.057 | -2.671 | 1.471 | 0.5701 |
+| condition[T.graph]:tier[T.high] | 0.8 | 1.22 | -1.591 | 3.191 | 0.512 |
+| condition[T.hybrid]:tier[T.high] | 0.8667 | 1.22 | -1.525 | 3.258 | 0.4775 |
 
 ### log_cost
 
 fitted
 
-REML; task random-intercept variance 0.119
+REML; task random-intercept variance 0.0885
 
 | term | estimate | sd | ci95_low | ci95_high | p |
 |---|---|---|---|---|---|
-| Intercept | -4.241 | 0.1894 | -4.612 | -3.87 | 4.587e-111 |
-| condition[T.graph] | -0.6287 | 0.1554 | -0.9332 | -0.3242 | 5.206e-05 |
-| condition[T.hybrid] | -0.2777 | 0.1554 | -0.5822 | 0.02684 | 0.0739 |
-| tier[T.medium] | 1.028 | 0.2679 | 0.5032 | 1.553 | 0.0001237 |
-| tier[T.high] | 1.602 | 0.3093 | 0.9959 | 2.208 | 2.221e-07 |
-| condition[T.graph]:tier[T.medium] | -0.3936 | 0.2197 | -0.8243 | 0.03711 | 0.07328 |
-| condition[T.hybrid]:tier[T.medium] | -0.688 | 0.2197 | -1.119 | -0.2573 | 0.001743 |
-| condition[T.graph]:tier[T.high] | -0.1604 | 0.2537 | -0.6577 | 0.3369 | 0.5273 |
-| condition[T.hybrid]:tier[T.high] | -0.2293 | 0.2537 | -0.7266 | 0.268 | 0.3662 |
+| Intercept | -3.988 | 0.2274 | -4.434 | -3.542 | 7.526e-69 |
+| condition[T.graph] | -0.7217 | 0.2608 | -1.233 | -0.2106 | 0.005652 |
+| condition[T.hybrid] | -0.3121 | 0.2608 | -0.8233 | 0.199 | 0.2314 |
+| tier[T.medium] | 0.8995 | 0.3216 | 0.2692 | 1.53 | 0.005159 |
+| tier[T.high] | 1.502 | 0.3714 | 0.7743 | 2.23 | 5.231e-05 |
+| condition[T.graph]:tier[T.medium] | -0.2601 | 0.3688 | -0.983 | 0.4628 | 0.4806 |
+| condition[T.hybrid]:tier[T.medium] | -0.6221 | 0.3688 | -1.345 | 0.1008 | 0.09167 |
+| condition[T.graph]:tier[T.high] | -0.06176 | 0.4259 | -0.8965 | 0.773 | 0.8847 |
+| condition[T.hybrid]:tier[T.high] | -0.2532 | 0.4259 | -1.088 | 0.5815 | 0.5522 |
