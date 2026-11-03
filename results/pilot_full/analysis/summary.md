@@ -1,23 +1,23 @@
 # Analysis: pilot_full
 
-36 runs, 12 tasks, 1 seed(s), 0 errored (counted incorrect), 0 majority ties (counted incorrect). Decisions 6.1/6.2.
+36 runs, 12 tasks, 1 seed(s), 0 errored (counted incorrect), 0 refused (counted incorrect), 0 majority ties (counted incorrect). Decisions 6.1/6.2/6.13.
 
 ## Descriptives
 
-| condition | tier | tasks | seeds | accuracy | accuracy_sd_seeds | ci95_low | ci95_high | errors | steps | step_limit_rate | input_tokens | cached_tokens | output_tokens | cost_usd | latency_s | recall |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| vector | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 2.4 | 0 | 1957 | 219.2 | 96.2 | 0.00446 | 4.869 | 1 |
-| graph | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 2.6 | 0 | 1165 | 0 | 79.6 | 0.003127 | 4.869 | 1 |
-| hybrid | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 2.8 | 0 | 1610 | 0 | 90 | 0.004119 | 5.438 | 1 |
-| vector | medium | 5 | 1 | 0.8 |  | 0.3755 | 0.9638 | 0 | 5 | 0 | 2.23e+04 | 1.324e+04 | 566.8 | 0.02512 | 19.2 | 1 |
-| graph | medium | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 3.4 | 0 | 2477 | 234.2 | 189 | 0.006398 | 8.251 | 1 |
-| hybrid | medium | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 3.8 | 0 | 3811 | 1012 | 218.6 | 0.007885 | 9.134 | 1 |
-| vector | high | 2 | 1 | 1 |  | 0.3424 | 1 | 0 | 8 | 0 | 6.909e+04 | 5.126e+04 | 1305 | 0.05382 | 40.41 | 1 |
-| graph | high | 2 | 1 | 1 |  | 0.3424 | 1 | 0 | 4.5 | 0 | 6518 | 1816 | 533.5 | 0.01492 | 16.2 | 0.8187 |
-| hybrid | high | 2 | 1 | 1 |  | 0.3424 | 1 | 0 | 5 | 0 | 8154 | 3162 | 595 | 0.01625 | 19.3 | 0.9151 |
-| vector | all | 12 | 1 | 0.9167 |  | 0.6461 | 0.9851 | 0 | 4.417 | 0 | 2.162e+04 | 1.415e+04 | 493.8 | 0.0213 | 16.77 | 1 |
-| graph | all | 12 | 1 | 1 |  | 0.7575 | 1 | 0 | 3.25 | 0 | 2604 | 400.2 | 200.8 | 0.006456 | 8.166 | 0.9698 |
-| hybrid | all | 12 | 1 | 1 |  | 0.7575 | 1 | 0 | 3.583 | 0 | 3618 | 948.8 | 227.8 | 0.00771 | 9.288 | 0.9858 |
+| condition | tier | tasks | seeds | accuracy | accuracy_sd_seeds | ci95_low | ci95_high | errors | refusals | steps | step_limit_rate | input_tokens | cached_tokens | output_tokens | cost_usd | latency_s | recall |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| vector | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 2.4 | 0 | 1957 | 219.2 | 96.2 | 0.00446 | 4.869 | 1 |
+| graph | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 2.6 | 0 | 1165 | 0 | 79.6 | 0.003127 | 4.869 | 1 |
+| hybrid | low | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 2.8 | 0 | 1610 | 0 | 90 | 0.004119 | 5.438 | 1 |
+| vector | medium | 5 | 1 | 0.8 |  | 0.3755 | 0.9638 | 0 | 0 | 5 | 0 | 2.23e+04 | 1.324e+04 | 566.8 | 0.02512 | 19.2 | 1 |
+| graph | medium | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 3.4 | 0 | 2477 | 234.2 | 189 | 0.006398 | 8.251 | 1 |
+| hybrid | medium | 5 | 1 | 1 |  | 0.5655 | 1 | 0 | 0 | 3.8 | 0 | 3811 | 1012 | 218.6 | 0.007885 | 9.134 | 1 |
+| vector | high | 2 | 1 | 1 |  | 0.3424 | 1 | 0 | 0 | 8 | 0 | 6.909e+04 | 5.126e+04 | 1305 | 0.05382 | 40.41 | 1 |
+| graph | high | 2 | 1 | 1 |  | 0.3424 | 1 | 0 | 0 | 4.5 | 0 | 6518 | 1816 | 533.5 | 0.01492 | 16.2 | 0.8187 |
+| hybrid | high | 2 | 1 | 1 |  | 0.3424 | 1 | 0 | 0 | 5 | 0 | 8154 | 3162 | 595 | 0.01625 | 19.3 | 0.9151 |
+| vector | all | 12 | 1 | 0.9167 |  | 0.6461 | 0.9851 | 0 | 0 | 4.417 | 0 | 2.162e+04 | 1.415e+04 | 493.8 | 0.0213 | 16.77 | 1 |
+| graph | all | 12 | 1 | 1 |  | 0.7575 | 1 | 0 | 0 | 3.25 | 0 | 2604 | 400.2 | 200.8 | 0.006456 | 8.166 | 0.9698 |
+| hybrid | all | 12 | 1 | 1 |  | 0.7575 | 1 | 0 | 0 | 3.583 | 0 | 3618 | 948.8 | 227.8 | 0.00771 | 9.288 | 0.9858 |
 
 ## McNemar (exact, majority across seeds)
 
@@ -48,7 +48,7 @@ posterior mean/SD (logit scale); task random-intercept SD ~ 0.78. Cells at 0% or
 |---|---|---|---|---|
 | Intercept | 3.139 | 0.8005 | 1.57 | 4.708 |
 | condition[T.graph] | 1.693 | 1.349 | -0.9505 | 4.336 |
-| condition[T.hybrid] | 1.693 | 1.349 | -0.9505 | 4.336 |
+| condition[T.hybrid] | 1.693 | 1.349 | -0.9506 | 4.336 |
 | tier[T.medium] | -0.2113 | 1.054 | -2.276 | 1.854 |
 | tier[T.high] | 1.024 | 1.538 | -1.99 | 4.038 |
 | condition[T.graph]:tier[T.medium] | 0.8503 | 1.599 | -2.283 | 3.984 |

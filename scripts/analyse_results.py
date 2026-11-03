@@ -15,7 +15,8 @@ Writes results/<name>/analysis/:
   summary.md        all of the above as Markdown
   accuracy_by_tier.png, steps_by_tier.png, cost_by_tier.png
 Runs with an `error` count as incorrect, are counted separately, and are left out of the
-step/token/cost/latency/recall means (they have none).
+step/token/cost/latency/recall means (they have none). Refused runs (decision 6.8) count as
+incorrect and are counted separately; their steps and cost stay in the means.
 """
 import json
 import sys
@@ -45,14 +46,15 @@ METRICS = ["steps", "hit_step_limit", "input_tokens", "cached_tokens", "output_t
 
 def load_runs(path) -> pd.DataFrame:
     df = pd.read_json(path, lines=True)
-    df["errored"] = df["error"].notna()
-    df["correct"] = df["correct"].astype(bool) & ~df["errored"]
+    df["refused"] = df.get("refused", pd.Series(False, index=df.index)).fillna(False).astype(bool)  # pre-6.8 runs lack it
+    df["errored"] = df["error"].notna() & ~df["refused"]  # a refusal also sets `error`, but has steps and cost
+    df["correct"] = df["correct"].astype(bool) & ~df["errored"] & ~df["refused"]
     df[METRICS] = df[METRICS].astype(float)  # errored runs have no steps etc. -> NaN
     return df
 
 
 def descriptives(df) -> pd.DataFrame:
-    """Decision 6.1. The Wilson interval takes the task as the unit (n = tasks, accuracy
+    """Decisions 6.1/6.13. The Wilson interval takes the task as the unit (n = tasks, accuracy
     averaged over seeds), since seeds of the same task are not independent observations."""
     rows = []
     for tier in TIERS + ["all"]:
@@ -66,6 +68,7 @@ def descriptives(df) -> pd.DataFrame:
             rows.append({"condition": cond, "tier": tier, "tasks": n, "seeds": len(per_seed),
                          "accuracy": per_seed.mean(), "accuracy_sd_seeds": per_seed.std(),
                          "ci95_low": low, "ci95_high": high, "errors": int(g["errored"].sum()),
+                         "refusals": int(g["refused"].sum()),
                          **g[METRICS].mean().rename({"hit_step_limit": "step_limit_rate"})})
     return pd.DataFrame(rows)
 
@@ -98,9 +101,10 @@ def mcnemar_tests(df) -> pd.DataFrame:
 
 
 def _bayes_glmm(d):
-    """correctness ~ condition * tier + (1 | task), variational Bayes with statsmodels' default
-    N(0, 2^2) prior on the fixed effects (logit scale)."""
-    model = BinomialBayesMixedGLM.from_formula("correct ~ condition * tier", {"task": "0 + C(task_id)"}, d)
+    """correctness ~ condition * tier + (1 | task), variational Bayes with an N(0, 2^2) prior on the
+    fixed effects (logit scale), pre-registered (decision 6.13) and pinned, not left to a library default."""
+    model = BinomialBayesMixedGLM.from_formula("correct ~ condition * tier", {"task": "0 + C(task_id)"}, d,
+                                               fe_p=2)
     fit = model.fit_vb()
     t = pd.DataFrame({"estimate": fit.fe_mean, "sd": fit.fe_sd}, index=model.exog_names)
     t = t.assign(ci95_low=t.estimate - 1.96 * t.sd, ci95_high=t.estimate + 1.96 * t.sd)
@@ -182,7 +186,7 @@ def analyse(run_dir) -> dict:
     desc, mc, models = descriptives(df), mcnemar_tests(df), mixed_models(df)
     ties = int(df.groupby(["task_id", "condition"])["correct"].mean().eq(0.5).sum())
     stats = {"runs": len(df), "tasks": df.task_id.nunique(), "seeds": df.seed.nunique(),
-             "errors": int(df.errored.sum()), "majority_ties": ties,
+             "errors": int(df.errored.sum()), "refusals": int(df.refused.sum()), "majority_ties": ties,
              "mcnemar": _records(mc), "mixed_models": models}
 
     desc.to_csv(out / "descriptives.csv", index=False)
@@ -194,7 +198,8 @@ def analyse(run_dir) -> dict:
 
     md = [f"# Analysis: {run_dir.name}", "",
           f"{stats['runs']} runs, {stats['tasks']} tasks, {stats['seeds']} seed(s), {stats['errors']} errored "
-          f"(counted incorrect), {ties} majority ties (counted incorrect). Decisions 6.1/6.2.", "",
+          f"(counted incorrect), {stats['refusals']} refused (counted incorrect), {ties} majority ties "
+          "(counted incorrect). Decisions 6.1/6.2/6.13.", "",
           "## Descriptives", "", _md(desc), "", "## McNemar (exact, majority across seeds)", "", _md(mc), "",
           "## Mixed-effects models (vector and low are the references)"]
     for name, m in models.items():
@@ -224,13 +229,15 @@ def demo() -> None:
                                  "output_tokens": 40 * steps, "cost_usd": 0.0012 * steps * rng.uniform(0.8, 1.2),
                                  "latency_s": 2.0 * steps, "recall": 1.0, "error": None})
     runs[-1] = {k: runs[-1][k] for k in ("task_id", "tier", "condition", "seed")} | {"correct": True, "error": "boom"}
+    runs[-2] |= {"correct": True, "refused": True, "error": "Refusal: bio"}  # graph high_29 is wrong by design anyway
     with tempfile.TemporaryDirectory() as tmp:
         Path(tmp, "runs.jsonl").write_text("\n".join(map(json.dumps, runs)))
         stats = analyse(tmp)
         assert {p.name for p in Path(tmp, "analysis").iterdir()} >= {"summary.md", "accuracy_by_tier.png"}
         df = load_runs(Path(tmp, "runs.jsonl"))
     mc = {(r["tier"], r["a"], r["b"]): r for r in stats["mcnemar"]}
-    assert stats["errors"] == 1 and stats["majority_ties"] == 0
+    assert stats["errors"] == 1 and stats["refusals"] == 1 and stats["majority_ties"] == 0
+    assert not df[df.refused].correct.any() and df[df.refused].steps.notna().all(), "refused: wrong, steps kept"
     assert mc["high", "vector", "hybrid"]["only_b_correct"] == 16 and mc["high", "vector", "hybrid"]["only_a_correct"] == 0
     assert mc["high", "vector", "hybrid"]["p_exact"] < 0.001
     assert mc["low", "vector", "hybrid"]["p_exact"] == 1.0, "equal on low -> no discordant pairs"
