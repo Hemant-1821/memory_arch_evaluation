@@ -2,6 +2,8 @@
 and rewrites failures up to max_retries times before flagging it for human
 review (decisions 2.4-2.6, 2.20). Retry attempts are separate cache entries. A refusal
 counts as a failed attempt; a document refused on every attempt stops the run (decision 6.7)."""
+import re
+
 from generation.facts import contains_name, fact_to_statement, period_label
 from generation.llm_client import Refusal, call_llm, load_prompt
 from validation.fidelity_check import fidelity_check
@@ -10,6 +12,11 @@ SYSTEM = "You write realistic internal documents for a fictional organisation."
 SCHEMA = {"type": "object",
           "properties": {"title": {"type": "string"}, "body": {"type": "string"}},
           "required": ["title", "body"], "additionalProperties": False}
+
+# Documents are dated by period label only; a real date would add a second, real-world timeline
+# that need not match the periods (decision 6.20). Month names only (case-sensitive), no entity
+# name contains one. ponytail: years alone ("in 2026") and "Oct" pass; add them if they show up.
+MONTHS = re.compile(r"\b(January|February|March|April|May|June|July|August|September|October|November|December)\b")
 
 NO_CLAIMS = ("Do not state any relationship, role, leadership, membership, location, skill, status, "
              "availability or date for any named person, team, project, organisation, publication, "
@@ -45,10 +52,13 @@ def _write(spec, by_id, entities, attempt) -> str:
 def _check(spec, text, by_id, entities, attempt) -> dict:
     if spec["kind"] == "lookalike":  # may state facts about the fake entity; must not name real ones
         leaked = sorted(e["display_name"] for e in entities.values() if contains_name(text, e["display_name"]))
-        return {"passed": not leaked, "coverage": 1.0, "missing_names": [], "verdicts": None,
-                "invented_claims": [], "leaked_real_names": leaked}
-    facts = [by_id[f] for f in spec["home_fact_ids"] + spec["mention_fact_ids"]]
-    return fidelity_check(text, facts, entities, attempt)
+        result = {"passed": not leaked, "coverage": 1.0, "missing_names": [], "verdicts": None,
+                  "invented_claims": [], "leaked_real_names": leaked}
+    else:
+        result = fidelity_check(text, [by_id[f] for f in spec["home_fact_ids"] + spec["mention_fact_ids"]],
+                                entities, attempt)
+    dates = MONTHS.findall(text)
+    return {**result, "passed": result["passed"] and not dates, "real_dates": dates}
 
 
 def write_documents(specs, triples, entities, max_retries=2):
@@ -100,6 +110,12 @@ if __name__ == "__main__":
         raise AssertionError("expected a stop")
     except RuntimeError as e:
         assert "doc_never" in str(e) and not isinstance(e, Refusal)
+    _write = lambda spec, by_id, entities, attempt: ("Facilities notice: the east car park closes on 18 October."
+                                                      if attempt < 2 else "Facilities notice: the car park closes early.")
+    docs, results = write_documents([spec], [], {})
+    assert docs[0]["attempts"] == 3 and docs[0]["status"] == "ok" and results[0]["real_dates"] == [], "a real date is rewritten"
+    assert _check(spec, "Lift closed on 4 May.", {}, {}, 0)["real_dates"] == ["May"]
+    assert _check(spec, "Staff may use the stairs.", {}, {}, 0)["passed"], "lowercase 'may' is not a month"
     _write = real_write
 
     from generation.document_planner import plan_documents
