@@ -231,7 +231,21 @@ def generate_graph(seed: int, pilot: bool = False) -> tuple[list[dict], dict]:
     unique = {(t["subject"], t["predicate"], t["object"]): t for t in reversed(triples)}
     triples = [t for t in triples if unique.get((t["subject"], t["predicate"], t["object"])) is t
                and t["subject"] != t["object"]]
-    return triples, entities
+    # Reporting lines form a hierarchy: drop a reports_to edge that would close a loop (decision 6.21).
+    chain = nx.DiGraph()
+    kept = []
+    for t in triples:
+        if t["predicate"] == "reports_to":
+            if closes_loop(chain, t["subject"], t["object"]):
+                continue
+            chain.add_edge(t["subject"], t["object"])
+        kept.append(t)
+    return kept, entities
+
+
+def closes_loop(chain: nx.DiGraph, person, manager) -> bool:
+    """True if `person` reporting to `manager` would make a reporting loop."""
+    return chain.has_node(manager) and chain.has_node(person) and nx.has_path(chain, manager, person)
 
 
 def _build_networkx_graph(triples: list[dict], entities: dict) -> nx.MultiDiGraph:
