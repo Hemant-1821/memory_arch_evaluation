@@ -9,7 +9,7 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
 
 1. Branch and clean tree (only `.claude/` may show as untracked):
    ```bash
-   git switch week-6-claude-models     # or main, once week 6 is merged
+   git switch week-7-full-run
    git status --short
    ```
 2. Disk: at least 15 GB free (Docker's disk got corrupted at 0 free in week 3).
@@ -56,10 +56,11 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
     cat data/kg_full/summary.json
     ./venv/bin/python -c "import json; r=[json.loads(l) for l in open('data/llm_calls.jsonl')][L0:]; print(len(r), 'calls', round(sum(x['cost_usd'] for x in r), 2), 'USD, refusals:', [(x['step'], x.get('refusal_category')) for x in r if x.get('stop_reason') == 'refusal'])"
     ```
-    (replace `L0`.) Go on only if: documents 731, flagged a handful at most, document accuracy and
+    (replace `L0`.) Go on only if: documents 726 (731 before 6.21), flagged about 3% (pilot 1 of 38), document accuracy and
     extraction precision/recall close to the pilot (0.97 / 0.94 / 0.99), kept tasks close to 30 per
-    tier, every refusal in `document_writing` and retried. Skim `data/kg_full/review/questions.csv`
-    and the flagged rows of `documents.csv`.
+    tier, every refusal in `document_writing` and retried. The user then reviews every question in
+    `data/kg_full/review/questions.csv` (wording only, decision 2.12) and the flagged rows of
+    `documents.csv`, before the freeze.
 10a. Freeze the dataset (decision 6.18): from here on nothing in `data/kg_full/` changes because
     of results; a problem the experiment finds is reported as a limitation, not fixed.
     ```bash
