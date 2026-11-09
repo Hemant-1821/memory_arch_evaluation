@@ -11,7 +11,7 @@ _CONSONANTS = list("brtnkvmslpdfgzh")
 _VOWELS = list("aeiou")
 
 _PROJECT_PREFIXES = ["Aeon", "Vantor", "Lumen", "Kestrel", "Nomos", "Halcyon",
-                      "Ferrix", "Solace", "Tundra", "Corran", "Corvid", "Ashen"]  # Corran was Virel (6.9)
+                      "Ferrix", "Solace", "Tundra", "Corran", "Basalt", "Ashen"]  # Corran was Virel (6.9), Basalt was Corvid (6.22)
 _PROJECT_SUFFIXES = ["Initiative", "Array", "Protocol", "Bridge", "Forge",
                       "Nexus", "Cascade", "Loop", "Vault", "Signal"]
 _TEAM_FOCUS_WORDS = ["Cryogenics", "Swarm Robotics", "Photonic Sensing",
@@ -24,6 +24,8 @@ _PUB_SUBJECT_WORDS = ["sensor fusion", "materials synthesis", "swarm control",
 _EQUIPMENT_NOUNS = ["Press", "Rig", "Lathe", "Scanner", "Furnace", "Printer"]
 # Decision 6.9: Haiku 5.5's safety filter refused documents naming "Virel ..." (reads as
 # "viral") and strain-like equipment codes ("Vamtu-367"); renamed, the same documents passed.
+# Decision 6.22: same filter refused to phrase a question naming "Corvid Nexus" (reads as "Covid");
+# swapped in place, so no other name moves.
 _TRIGGER = "vir"
 
 
@@ -200,6 +202,7 @@ if __name__ == "__main__":
     pools = {t: generate_names_raw(t, 100, seed=7) for t in _GENERATORS}
     assert not any(_TRIGGER in n.lower() for pool in pools.values() for n in pool)
     assert not any(ch.isdigit() for n in pools["Equipment"] for ch in n)
+    assert not any("corvid" in n.lower() for n in pools["Project"]), "6.22"
 
     # Different seeds -> different pools (sanity, not a hard determinism check).
     assert generate_names_raw("Person", 10, seed=1) != generate_names_raw("Person", 10, seed=2)
