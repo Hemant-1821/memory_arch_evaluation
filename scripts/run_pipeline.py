@@ -105,7 +105,8 @@ def main() -> None:
     episoded = split_into_episodes(triples, SEED, pilot=PILOT)
     save_graph(episoded, entities, out_dir=str(OUT))
 
-    docs, fidelity = write_documents(plan_documents(episoded, entities, SEED), episoded, entities)
+    specs = plan_documents(episoded, entities, SEED)
+    docs, fidelity = write_documents(specs, episoded, entities)
     save_json(OUT / "documents.json", docs)
     save_json(OUT / "fact_doc_map.json", build_fact_doc_map(docs))
     save_json(OUT / "fidelity_results.json", fidelity)
@@ -129,6 +130,7 @@ def main() -> None:
     summary = {
         "documents": len(docs), "distractors": sum(d["kind"] != "fact" for d in docs),
         "documents_flagged": sum(d["status"] == "flagged" for d in docs),
+        "distractors_dropped": sorted({s["doc_id"] for s in specs} - {d["doc_id"] for d in docs}),  # 6.25
         "document_accuracy": document_accuracy_check(fidelity),
         "extraction_precision": quality["precision"], "extraction_recall": quality["recall"],
         "tasks_by_tier": {tier: {"generated": sum(t["tier"] == tier for t in tasks),

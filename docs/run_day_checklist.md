@@ -56,7 +56,7 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
     cat data/kg_full/summary.json
     ./venv/bin/python -c "import json; r=[json.loads(l) for l in open('data/llm_calls.jsonl')][L0:]; print(len(r), 'calls', round(sum(x['cost_usd'] for x in r), 2), 'USD, refusals:', [(x['step'], x.get('refusal_category')) for x in r if x.get('stop_reason') == 'refusal'])"
     ```
-    (replace `L0`.) Go on only if: documents 726 (731 before 6.21), flagged about 3% (pilot 1 of 38), document accuracy and
+    (replace `L0`.) Go on only if: documents about 701 (6.23; minus `distractors_dropped`), flagged about 3% (pilot 1 of 38), document accuracy and
     extraction precision/recall close to the pilot (0.97 / 0.94 / 0.99), kept tasks close to 30 per
     tier, every refusal in `document_writing` and retried. The user then reviews every question in
     `data/kg_full/review/questions.csv` (wording only, decision 2.12) and the flagged rows of
@@ -107,7 +107,9 @@ logged); that is one call, a cent or two.
 - **Crash, Ctrl-C, power or network loss, Docker down:** `docker compose up -d` if needed, rerun the
   same command. `run_experiment` rewrites `runs.jsonl` from the start; finished runs replay.
 - **Refusal while writing a document:** counted as a failed attempt and retried; nothing to do.
-- **"refused on all 3 attempts - stopping" (pipeline):** do not edit or skip the document. Note
+- **"distractor refused on all 3 attempts - dropped":** nothing to do; it carries no facts and is
+  listed in `summary.json` under `distractors_dropped` (decision 6.25).
+- **"refused on all 3 attempts - stopping" (pipeline, fact documents only):** do not edit or skip the document. Note
   the doc_id and category and tell the user. Pre-agreed fallback (user, 2026-11-02): all document
   writing moves to Haiku 4.5, never mixed; that is the user's call.
 - **Refusal in phrasing, checks, extraction or gates (pipeline stops):** stop and report (6.8).

@@ -75,7 +75,11 @@ def write_documents(specs, triples, entities, max_retries=2):
             if written[1]["passed"]:
                 break
         if written is None:
-            raise RuntimeError(f"{spec['doc_id']}: refused on all {max_retries + 1} attempts - stopping (decision 6.7)")
+            if spec["kind"] == "fact":
+                raise RuntimeError(f"{spec['doc_id']}: refused on all {max_retries + 1} attempts - stopping (decision 6.7)")
+            # A distractor carries no facts: leave it out; the pipeline counts it (decision 6.25).
+            print(f"{spec['doc_id']}: {spec['kind']} distractor refused on all {max_retries + 1} attempts - dropped (6.25)")
+            continue
         text, check = written
         docs.append({**spec, "text": text, "attempts": attempt + 1, "status": "ok" if check["passed"] else "flagged"})
         results.append({"doc_id": spec["doc_id"], **check})
@@ -106,10 +110,13 @@ if __name__ == "__main__":
     docs, _ = write_documents([spec], [], {})
     assert docs[0]["status"] == "ok" and docs[0]["attempts"] == 2 and tries == [0, 1], "refusal = failed attempt"
     try:
-        write_documents([dict(spec, doc_id="doc_never")], [], {})
+        write_documents([dict(spec, doc_id="doc_never", kind="fact")], [], {})
         raise AssertionError("expected a stop")
     except RuntimeError as e:
         assert "doc_never" in str(e) and not isinstance(e, Refusal)
+    # A distractor refused every time is dropped, the run goes on (decision 6.25).
+    docs, results = write_documents([dict(spec, doc_id="doc_never"), spec], [], {})
+    assert [d["doc_id"] for d in docs] == ["doc_x"] and [r["doc_id"] for r in results] == ["doc_x"], "6.25"
     _write = lambda spec, by_id, entities, attempt: ("Facilities notice: the east car park closes on 18 October."
                                                       if attempt < 2 else "Facilities notice: the car park closes early.")
     docs, results = write_documents([spec], [], {})
