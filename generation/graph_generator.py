@@ -240,7 +240,10 @@ def generate_graph(seed: int, pilot: bool = False) -> tuple[list[dict], dict]:
                 continue
             chain.add_edge(t["subject"], t["object"])
         kept.append(t)
-    return kept, entities
+    # A project has at most one leader (decision 6.23): keep its last `leads` edge. The staffing
+    # enrichment appends its conflict-of-interest leader last, so that set-up survives.
+    last_lead = {t["object"]: t for t in kept if t["predicate"] == "leads"}
+    return [t for t in kept if t["predicate"] != "leads" or last_lead[t["object"]] is t], entities
 
 
 def closes_loop(chain: nx.DiGraph, person, manager) -> bool:
@@ -290,6 +293,12 @@ if __name__ == "__main__":
             assert all(n <= 1 for n in by_subject.values()), (
                 f"{rel_name} (N:1) has a subject with >1 live edge"
             )
+
+    # A project has at most one leader (decision 6.23), at pilot and full size.
+    from collections import Counter
+    for size in (True, False):
+        leaders = Counter(t["object"] for t in generate_graph(seed=7, pilot=size)[0] if t["predicate"] == "leads")
+        assert max(leaders.values()) <= 1, f"a project has {max(leaders.values())} leaders (pilot={size})"
 
     # No dangling references: every triple object that looks like an entity id
     # (matches "<EntityType>_####") resolves to a real generated entity.
