@@ -15,7 +15,7 @@ _PROJECT_PREFIXES = ["Aeon", "Vantor", "Lumen", "Kestrel", "Nomos", "Halcyon",
 _PROJECT_SUFFIXES = ["Initiative", "Array", "Protocol", "Bridge", "Forge",
                       "Nexus", "Cascade", "Loop", "Vault", "Signal"]
 _TEAM_FOCUS_WORDS = ["Cryogenics", "Swarm Robotics", "Photonic Sensing",
-                      "Thin-Film Coatings", "Grid Resilience", "Adaptive Materials"]  # was Bio-Fabrication (6.24)
+                      "Power Electronics", "Grid Resilience", "Adaptive Materials"]  # was Bio-Fabrication (6.24)
 _ORG_SUFFIXES = ["Dynamics", "Collective", "Foundry", "Systems", "Works", "Labs"]
 _PUB_TOPIC_WORDS = ["resilient", "adaptive", "distributed", "low-power",
                      "scalable", "self-calibrating", "cross-domain"]
@@ -28,6 +28,7 @@ _EQUIPMENT_NOUNS = ["Press", "Rig", "Lathe", "Scanner", "Furnace", "Printer"]
 # swapped in place, so no other name moves.
 # Decision 6.24: same filter refused a document naming the team "Bio-Fabrication Verdud Group";
 # the team word swapped in place (the skill "Bio-Fabrication" passed in hundreds of documents, kept).
+# The first pick, "Thin-Film Coatings", was refused too (bio); "Power Electronics" passed 10/10 tests.
 _TRIGGER = "vir"
 
 
@@ -205,7 +206,7 @@ if __name__ == "__main__":
     assert not any(_TRIGGER in n.lower() for pool in pools.values() for n in pool)
     assert not any(ch.isdigit() for n in pools["Equipment"] for ch in n)
     assert not any("corvid" in n.lower() for n in pools["Project"]), "6.22"
-    assert not any(n.startswith("Bio-") for n in pools["Team"]), "6.24"
+    assert not any(n.startswith(("Bio-", "Thin-Film")) for n in pools["Team"]), "6.24"
 
     # Different seeds -> different pools (sanity, not a hard determinism check).
     assert generate_names_raw("Person", 10, seed=1) != generate_names_raw("Person", 10, seed=2)
