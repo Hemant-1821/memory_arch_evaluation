@@ -18,4 +18,6 @@ if __name__ == "__main__":
     task = {"meaning": "Which team is Kivo Ranet currently a member of?"}
     assert ambiguity_check(task, "Which team is Kivo Ranet on these days?")["passed"]
     assert not ambiguity_check(task, "Which project does Kivo Ranet lead?")["passed"]
+    # Naming the one organisation adds no condition (decision 6.26).
+    assert ambiguity_check(task, "Which team is Kivo Ranet currently on at the Solstice Research Consortium?")["passed"], "6.26"
     print("validation/ambiguity_check.py: OK")
