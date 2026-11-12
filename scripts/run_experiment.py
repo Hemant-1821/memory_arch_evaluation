@@ -11,7 +11,7 @@ import argparse
 import json
 from pathlib import Path
 
-from agent.react import run_task
+from agent.react import MAX_STEPS, run_task
 from generation.dataset_io import load_json
 from generation.llm_client import CONFIG
 from memory.graph_store import GraphMemory
@@ -27,6 +27,7 @@ def main() -> None:
     ap.add_argument("--per-tier", type=int, default=30)
     ap.add_argument("--model", default=CONFIG["backbone_model"])  # recorded in summary.json
     ap.add_argument("--max-usd", type=float, required=True)
+    ap.add_argument("--max-steps", type=int, default=MAX_STEPS)  # exploratory runs only; the main run uses 10 (4.4)
     args = ap.parse_args()
 
     data, name = Path(args.dataset), Path(args.dataset).name
@@ -44,7 +45,7 @@ def main() -> None:
     with open(out / "runs.jsonl", "w") as f:
         for seed, task, condition in plan:
             try:
-                run = run_task(task, condition, vector, graph, entities, triples, seed, args.model)
+                run = run_task(task, condition, vector, graph, entities, triples, seed, args.model, args.max_steps)
             except RuntimeError as e:  # an incomplete model response is a failed run, not a crash
                 run = {"task_id": task["task_id"], "tier": task["tier"], "condition": condition, "seed": seed,
                        "correct": False, "error": str(e)}
@@ -58,7 +59,7 @@ def main() -> None:
                 break
     graph.driver.close()
 
-    summary = {"runs": len(runs), "planned": len(plan), "model": args.model,
+    summary = {"runs": len(runs), "planned": len(plan), "model": args.model, "max_steps": args.max_steps,
                "cost_usd": round(sum(r.get("cost_usd", 0) for r in runs), 6),
                "accuracy_by_condition": {c: round(sum(r["correct"] for r in runs if r["condition"] == c) /
                                                   max(1, sum(r["condition"] == c for r in runs)), 3)

@@ -66,10 +66,12 @@ def recall(task, tool_outputs, entities, triples) -> float:
     return round(found / len(facts), 4) if facts else 0.0
 
 
-def run_task(task, condition, vector, graph, entities, triples, seed, model) -> dict:
+def run_task(task, condition, vector, graph, entities, triples, seed, model, max_steps=MAX_STEPS) -> dict:
     claude = model.startswith("claude")
     tools = TOOLS[condition] + [FINAL]
-    system = load_prompt("agent")
+    system = load_prompt("agent")  # byte-identical at the default, so the main run replays from the cache
+    assert f"at most {MAX_STEPS} turns" in system, "agent prompt must state the step limit"
+    system = system.replace(f"at most {MAX_STEPS} turns", f"at most {max_steps} turns")
     if claude:
         tools = [_claude_tool(t) for t in tools]
         history = [{"role": "user", "content": task["question"]}]
@@ -81,7 +83,7 @@ def run_task(task, condition, vector, graph, entities, triples, seed, model) -> 
            "model_latency_s": 0.0, "tool_latency_s": 0.0, "tools_per_step": [], "error": None,
            "refused": False, "refusal_category": None}
     outputs = []
-    for step in range(MAX_STEPS):
+    for step in range(max_steps):
         if claude:  # append-only: every block, thinking included, goes back unchanged
             try:
                 r = call_agent("experiment_agent", model, system, history, tools, sample=seed)
