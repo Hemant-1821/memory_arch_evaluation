@@ -27,7 +27,7 @@ effort:
 budget:
   cap_usd: 165.00        # user 2026-11-12: 100 -> 120 before the experiment, -> 165 for the exploratory runs (vector 20 steps, Haiku 5.5, Opus 5.5); $200 credit in total
   azure_cap_usd: 2.00    # hard stop on logged Azure spend (week-5 limit agreed with the user)
-  max_call_usd: 0.05     # any single agent call above this stops the run
+  max_call_usd: 0.15     # any single agent call above this fails the run; 0.05 -> 0.15 for the Opus 5.5 run (2x Sonnet prices, high effort), 2026-11-13
 
 prices_usd_per_mtok:     # Anthropic first-party rates; cache_write = 5-minute writes (1.25x input)
   claude-haiku-4-5: {input: 1.00, output: 5.00}
