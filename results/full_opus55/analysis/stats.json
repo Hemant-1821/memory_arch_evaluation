@@ -1,0 +1,384 @@
+{
+  "runs": 528,
+  "tasks": 88,
+  "seeds": 2,
+  "errors": 0,
+  "refusals": 0,
+  "majority_ties": 17,
+  "mcnemar": [
+    {
+      "tier": "low",
+      "a": "vector",
+      "b": "graph",
+      "tasks": 30,
+      "both_correct": 15,
+      "only_a_correct": 0,
+      "only_b_correct": 15,
+      "both_wrong": 0,
+      "p_exact": 6.103515625e-05,
+      "p_holm": 0.00042724609375
+    },
+    {
+      "tier": "low",
+      "a": "vector",
+      "b": "hybrid",
+      "tasks": 30,
+      "both_correct": 15,
+      "only_a_correct": 0,
+      "only_b_correct": 15,
+      "both_wrong": 0,
+      "p_exact": 6.103515625e-05,
+      "p_holm": 0.00042724609375
+    },
+    {
+      "tier": "low",
+      "a": "graph",
+      "b": "hybrid",
+      "tasks": 30,
+      "both_correct": 30,
+      "only_a_correct": 0,
+      "only_b_correct": 0,
+      "both_wrong": 0,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "medium",
+      "a": "vector",
+      "b": "graph",
+      "tasks": 30,
+      "both_correct": 15,
+      "only_a_correct": 1,
+      "only_b_correct": 14,
+      "both_wrong": 0,
+      "p_exact": 0.0009765625,
+      "p_holm": 0.0048828125
+    },
+    {
+      "tier": "medium",
+      "a": "vector",
+      "b": "hybrid",
+      "tasks": 30,
+      "both_correct": 15,
+      "only_a_correct": 1,
+      "only_b_correct": 14,
+      "both_wrong": 0,
+      "p_exact": 0.0009765625,
+      "p_holm": 0.0048828125
+    },
+    {
+      "tier": "medium",
+      "a": "graph",
+      "b": "hybrid",
+      "tasks": 30,
+      "both_correct": 29,
+      "only_a_correct": 0,
+      "only_b_correct": 0,
+      "both_wrong": 1,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "high",
+      "a": "vector",
+      "b": "graph",
+      "tasks": 28,
+      "both_correct": 9,
+      "only_a_correct": 0,
+      "only_b_correct": 18,
+      "both_wrong": 1,
+      "p_exact": 7.62939453125e-06,
+      "p_holm": 6.866455078125e-05
+    },
+    {
+      "tier": "high",
+      "a": "vector",
+      "b": "hybrid",
+      "tasks": 28,
+      "both_correct": 9,
+      "only_a_correct": 0,
+      "only_b_correct": 18,
+      "both_wrong": 1,
+      "p_exact": 7.62939453125e-06,
+      "p_holm": 6.866455078125e-05
+    },
+    {
+      "tier": "high",
+      "a": "graph",
+      "b": "hybrid",
+      "tasks": 28,
+      "both_correct": 27,
+      "only_a_correct": 0,
+      "only_b_correct": 0,
+      "both_wrong": 1,
+      "p_exact": 1.0,
+      "p_holm": 1.0
+    },
+    {
+      "tier": "all",
+      "a": "vector",
+      "b": "graph",
+      "tasks": 88,
+      "both_correct": 39,
+      "only_a_correct": 1,
+      "only_b_correct": 47,
+      "both_wrong": 1,
+      "p_exact": 3.481659405224491e-13,
+      "p_holm": null
+    },
+    {
+      "tier": "all",
+      "a": "vector",
+      "b": "hybrid",
+      "tasks": 88,
+      "both_correct": 39,
+      "only_a_correct": 1,
+      "only_b_correct": 47,
+      "both_wrong": 1,
+      "p_exact": 3.481659405224491e-13,
+      "p_holm": null
+    },
+    {
+      "tier": "all",
+      "a": "graph",
+      "b": "hybrid",
+      "tasks": 88,
+      "both_correct": 86,
+      "only_a_correct": 0,
+      "only_b_correct": 0,
+      "both_wrong": 2,
+      "p_exact": 1.0,
+      "p_holm": null
+    }
+  ],
+  "mixed_models": {
+    "correct": {
+      "result": "fitted",
+      "note": "posterior mean/SD (logit scale); task random-intercept SD ~ 2.10. Cells at 0% or 100% accuracy (graph/low, hybrid/low): their terms lean on the prior.",
+      "warnings": [],
+      "terms": [
+        {
+          "term": "Intercept",
+          "estimate": 0.68785846403186,
+          "sd": 0.17572179352833203,
+          "ci95_low": 0.34344374871632927,
+          "ci95_high": 1.0322731793473907
+        },
+        {
+          "term": "condition[T.graph]",
+          "estimate": 4.958571165435274,
+          "sd": 0.5007918240915734,
+          "ci95_low": 3.9770191902157905,
+          "ci95_high": 5.940123140654759
+        },
+        {
+          "term": "condition[T.hybrid]",
+          "estimate": 4.9585706417468005,
+          "sd": 0.50079180788536,
+          "ci95_low": 3.977018698291495,
+          "ci95_high": 5.940122585202106
+        },
+        {
+          "term": "tier[T.medium]",
+          "estimate": 0.22251901850205535,
+          "sd": 0.2992856143688703,
+          "ci95_low": -0.3640807856609304,
+          "ci95_high": 0.8091188226650411
+        },
+        {
+          "term": "tier[T.high]",
+          "estimate": -0.9545404212643108,
+          "sd": 0.2996112415468169,
+          "ci95_low": -1.5417784546960718,
+          "ci95_high": -0.36730238783254976
+        },
+        {
+          "term": "condition[T.graph]:tier[T.medium]",
+          "estimate": -0.36392693236891455,
+          "sd": 0.7847360250647795,
+          "ci95_low": -1.9020095414958822,
+          "ci95_high": 1.1741556767580532
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.medium]",
+          "estimate": -0.3639257596437547,
+          "sd": 0.7847360782148297,
+          "ci95_low": -1.9020084729448208,
+          "ci95_high": 1.1741569536573115
+        },
+        {
+          "term": "condition[T.graph]:tier[T.high]",
+          "estimate": 0.7064831639013821,
+          "sd": 0.7802430781089299,
+          "ci95_low": -0.8227932691921204,
+          "ci95_high": 2.2357595969948845
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.high]",
+          "estimate": 0.7064838212063789,
+          "sd": 0.7802428612014517,
+          "ci95_low": -0.8227921867484664,
+          "ci95_high": 2.235759829161224
+        }
+      ]
+    },
+    "steps": {
+      "result": "fitted",
+      "note": "REML; task random-intercept variance 0.343",
+      "warnings": [],
+      "terms": [
+        {
+          "term": "Intercept",
+          "estimate": 6.200000000000019,
+          "sd": 0.17426771382978515,
+          "ci95_low": 5.8584415572255075,
+          "ci95_high": 6.54155844277453,
+          "p": 3.1282805649141664e-277
+        },
+        {
+          "term": "condition[T.graph]",
+          "estimate": -4.199999999999984,
+          "sd": 0.19466289582834514,
+          "ci95_low": -4.581532264949813,
+          "ci95_high": -3.8184677350501555,
+          "p": 3.0345024788821194e-103
+        },
+        {
+          "term": "condition[T.hybrid]",
+          "estimate": -3.06666666666665,
+          "sd": 0.19466289582834512,
+          "ci95_low": -3.4481989316164787,
+          "ci95_high": -2.6851344017168213,
+          "p": 6.474721334802884e-56
+        },
+        {
+          "term": "tier[T.medium]",
+          "estimate": 1.5499999999999754,
+          "sd": 0.24645176438183533,
+          "ci95_low": 1.0669634178852268,
+          "ci95_high": 2.033036582114724,
+          "p": 3.189763667970557e-10
+        },
+        {
+          "term": "tier[T.high]",
+          "estimate": 2.710714285714263,
+          "sd": 0.25081408117515697,
+          "ci95_low": 2.21912771979545,
+          "ci95_high": 3.202300851633076,
+          "p": 3.1663075227409772e-27
+        },
+        {
+          "term": "condition[T.graph]:tier[T.medium]",
+          "estimate": -0.6333333333333439,
+          "sd": 0.275294907371267,
+          "ci95_low": -1.1729014369083175,
+          "ci95_high": -0.09376522975837032,
+          "p": 0.021416333067593246
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.medium]",
+          "estimate": -1.0333333333333443,
+          "sd": 0.275294907371267,
+          "ci95_low": -1.5729014369083179,
+          "ci95_high": -0.4937652297583708,
+          "p": 0.00017434739788661208
+        },
+        {
+          "term": "condition[T.graph]:tier[T.high]",
+          "estimate": -0.3178571428571546,
+          "sd": 0.2801677619055156,
+          "ci95_low": -0.8669758658211582,
+          "ci95_high": 0.23126158010684894,
+          "p": 0.25657467328576844
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.high]",
+          "estimate": -1.0404761904762023,
+          "sd": 0.28016776190551557,
+          "ci95_low": -1.5895949134402056,
+          "ci95_high": -0.4913574675121989,
+          "p": 0.0002042014158807992
+        }
+      ]
+    },
+    "log_cost": {
+      "result": "fitted",
+      "note": "REML; task random-intercept variance 0.0336",
+      "warnings": [],
+      "terms": [
+        {
+          "term": "Intercept",
+          "estimate": -2.757381865495398,
+          "sd": 0.0457659304032118,
+          "ci95_low": -2.84708144080466,
+          "ci95_high": -2.667682290186136,
+          "p": 0.0
+        },
+        {
+          "term": "condition[T.graph]",
+          "estimate": -1.7643668687576957,
+          "sd": 0.04416597167713246,
+          "ci95_low": -1.8509305825870914,
+          "ci95_high": -1.6778031549283,
+          "p": 0.0
+        },
+        {
+          "term": "condition[T.hybrid]",
+          "estimate": -0.914605342916928,
+          "sd": 0.04416597167713246,
+          "ci95_low": -1.0011690567463236,
+          "ci95_high": -0.8280416290875323,
+          "p": 2.9113410903645315e-95
+        },
+        {
+          "term": "tier[T.medium]",
+          "estimate": 0.9730554266728307,
+          "sd": 0.06472279947084533,
+          "ci95_low": 0.8462010707313659,
+          "ci95_high": 1.0999097826142956,
+          "p": 4.38320187187236e-51
+        },
+        {
+          "term": "tier[T.high]",
+          "estimate": 1.005002624487117,
+          "sd": 0.06586842468375725,
+          "ci95_low": 0.8759028843885638,
+          "ci95_high": 1.1341023645856705,
+          "p": 1.4624862841201115e-52
+        },
+        {
+          "term": "condition[T.graph]:tier[T.medium]",
+          "estimate": -0.16218205349379813,
+          "sd": 0.062460116141186774,
+          "ci95_low": -0.2846016316007131,
+          "ci95_high": -0.039762475386883156,
+          "p": 0.009415976265126268
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.medium]",
+          "estimate": -0.6476054150271262,
+          "sd": 0.062460116141186774,
+          "ci95_low": -0.7700249931340412,
+          "ci95_high": -0.5251858369202113,
+          "p": 3.456073002807664e-25
+        },
+        {
+          "term": "condition[T.graph]:tier[T.high]",
+          "estimate": 0.5485730643566804,
+          "sd": 0.0635656907522631,
+          "ci95_low": 0.423986599829834,
+          "ci95_high": 0.6731595288835268,
+          "p": 6.134224339204723e-18
+        },
+        {
+          "term": "condition[T.hybrid]:tier[T.high]",
+          "estimate": -0.07927454909915788,
+          "sd": 0.0635656907522631,
+          "ci95_low": -0.2038610136260043,
+          "ci95_high": 0.04531191542768856,
+          "p": 0.21235058889807967
+        }
+      ]
+    }
+  }
+}
