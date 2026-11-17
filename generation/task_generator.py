@@ -183,7 +183,7 @@ def _medium(live, entities, rng, n, as_of):
         if len(leaders) == 1:
             teams = idx[("member_of", "by_subject", leaders[0]["subject"])]
             if len(teams) == 1:
-                cands.append(("chain", p, f"Which team is the current leader of project {name(p)} a member of?",
+                cands.append(("chain", p, f"Which team does the current leader of project {name(p)} belong to?",
                               [name(teams[0]["object"])], [leaders[0]["fact_id"], teams[0]["fact_id"]], 0))
     rng.shuffle(cands)
     return [make_task_candidate(f"medium_{i:02d}", "medium", meaning, answer, path, 2, constraints,

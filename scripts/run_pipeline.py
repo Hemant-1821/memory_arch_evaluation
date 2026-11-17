@@ -87,7 +87,8 @@ def write_review_sheets(docs, fidelity, tasks, triples, entities) -> None:
             facts = " | ".join(f"{f}: {fact_to_statement(by_id[f], entities)}"
                                for f in d["home_fact_ids"] + d["mention_fact_ids"])
             w.writerow([d["doc_id"], d["kind"], period_label(d["episode"]), d["doc_type"], d["status"], facts,
-                        r.get("verdicts"), "; ".join(r.get("invented_claims", [])), d["text"], "", ""])
+                        r.get("verdicts"), "; ".join(r.get("invented_claims", []) + [f"real date ({m})" for m in r.get("real_dates", [])]),
+                        d["text"], "", ""])
     with open(OUT / "review/answers.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["task_id", "check", "sample", "answer", "scored_correct", "explanation", "you_agree", "note"])
@@ -104,7 +105,8 @@ def main() -> None:
     episoded = split_into_episodes(triples, SEED, pilot=PILOT)
     save_graph(episoded, entities, out_dir=str(OUT))
 
-    docs, fidelity = write_documents(plan_documents(episoded, entities, SEED), episoded, entities)
+    specs = plan_documents(episoded, entities, SEED)
+    docs, fidelity = write_documents(specs, episoded, entities)
     save_json(OUT / "documents.json", docs)
     save_json(OUT / "fact_doc_map.json", build_fact_doc_map(docs))
     save_json(OUT / "fidelity_results.json", fidelity)
@@ -128,6 +130,7 @@ def main() -> None:
     summary = {
         "documents": len(docs), "distractors": sum(d["kind"] != "fact" for d in docs),
         "documents_flagged": sum(d["status"] == "flagged" for d in docs),
+        "distractors_dropped": sorted({s["doc_id"] for s in specs} - {d["doc_id"] for d in docs}),  # 6.25
         "document_accuracy": document_accuracy_check(fidelity),
         "extraction_precision": quality["precision"], "extraction_recall": quality["recall"],
         "tasks_by_tier": {tier: {"generated": sum(t["tier"] == tier for t in tasks),

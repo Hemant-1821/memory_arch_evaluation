@@ -9,7 +9,7 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
 
 1. Branch and clean tree (only `.claude/` may show as untracked):
    ```bash
-   git switch week-6-claude-models     # or main, once week 6 is merged
+   git switch week-7-full-run
    git status --short
    ```
 2. Disk: at least 15 GB free (Docker's disk got corrupted at 0 free in week 3).
@@ -41,7 +41,7 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
    wc -l < data/llm_calls.jsonl                      # write down as L0
    ./venv/bin/python -c "from generation.llm_client import spent_usd; print(round(spent_usd(), 2))"   # S0
    ```
-8. Check the cap (`budget.cap_usd` in `configs/llm_config.yaml`) is **100** (user, 2026-11-03:
+8. Check the cap (`budget.cap_usd` in `configs/llm_config.yaml`) is **120** (raised from 100 by the user on 2026-11-12, before the experiment; 2026-11-03:
    total logged spend capped at $100 for now). S0 + the projection ($56, ~$84 with a x1.5 margin)
    fits under it. If the cap is reached, stop and decide with the user before raising it.
 
@@ -56,10 +56,11 @@ seed); expected time: pipeline ~3 h, experiment ~4 h. Keep the terminal open.
     cat data/kg_full/summary.json
     ./venv/bin/python -c "import json; r=[json.loads(l) for l in open('data/llm_calls.jsonl')][L0:]; print(len(r), 'calls', round(sum(x['cost_usd'] for x in r), 2), 'USD, refusals:', [(x['step'], x.get('refusal_category')) for x in r if x.get('stop_reason') == 'refusal'])"
     ```
-    (replace `L0`.) Go on only if: documents 731, flagged a handful at most, document accuracy and
-    extraction precision/recall close to the pilot (0.97 / 0.94 / 0.99), kept tasks close to 30 per
-    tier, every refusal in `document_writing` and retried. Skim `data/kg_full/review/questions.csv`
-    and the flagged rows of `documents.csv`.
+    (replace `L0`.) Go on only if: documents about 705 (6.27; minus `distractors_dropped`), flagged about 2% (pilot 0 of 41), document accuracy and
+    extraction precision/recall close to the pilot (1.0 / 0.87 / 0.97), kept tasks close to 30 per
+    tier, every refusal in `document_writing` and retried. The user then reviews every question in
+    `data/kg_full/review/questions.csv` (wording only, decision 2.12) and the flagged rows of
+    `documents.csv`, before the freeze.
 10a. Freeze the dataset (decision 6.18): from here on nothing in `data/kg_full/` changes because
     of results; a problem the experiment finds is reported as a limitation, not fixed.
     ```bash
@@ -106,7 +107,9 @@ logged); that is one call, a cent or two.
 - **Crash, Ctrl-C, power or network loss, Docker down:** `docker compose up -d` if needed, rerun the
   same command. `run_experiment` rewrites `runs.jsonl` from the start; finished runs replay.
 - **Refusal while writing a document:** counted as a failed attempt and retried; nothing to do.
-- **"refused on all 3 attempts - stopping" (pipeline):** do not edit or skip the document. Note
+- **"distractor refused on all 3 attempts - dropped":** nothing to do; it carries no facts and is
+  listed in `summary.json` under `distractors_dropped` (decision 6.25).
+- **"refused on all 3 attempts - stopping" (pipeline, fact documents only):** do not edit or skip the document. Note
   the doc_id and category and tell the user. Pre-agreed fallback (user, 2026-11-02): all document
   writing moves to Haiku 4.5, never mixed; that is the user's call.
 - **Refusal in phrasing, checks, extraction or gates (pipeline stops):** stop and report (6.8).

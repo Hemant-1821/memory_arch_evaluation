@@ -7,10 +7,13 @@ text - so the old triple is tagged superseded_in_episode, never deleted.
 Run as a module: python -m generation.episode_splitter
 """
 import random
+from collections import Counter
 
+import networkx as nx
 import yaml
 
 from schema.validate_ontology import load_ontology
+from generation.graph_generator import closes_loop
 from generation.seeding import derive_seed
 
 
@@ -65,14 +68,41 @@ def split_into_episodes(triples: list[dict], seed: int, pilot: bool = False) -> 
     replaceable = [t for t in result if _is_replaceable(t["predicate"], ontology)]
     to_replace = rng.sample(replaceable, k=max(1, int(len(replaceable) * replacement_fraction))) if replaceable else []
 
+    # Every reports_to edge ever made, so no period can hold a reporting loop (decision 6.21).
+    # ponytail: also forbids a later role swap (B over A after A was over B); per-period check if needed.
+    chain = nx.DiGraph((t["subject"], t["object"]) for t in result if t["predicate"] == "reports_to")
+
+    # Projects that ever have a leader: a lead only moves to a project that never has one, so no
+    # period has two leaders on a project (decision 6.23).
+    # ponytail: also forbids handing over a project after its leader left; per-period check if needed.
+    led = {t["object"] for t in result if t["predicate"] == "leads"}
+    prefix = ontology["relation_types"]["leads"]["target_type"] + "_"
+    leaderless = sorted({x for t in result for x in (t["subject"], t["object"])
+                         if isinstance(x, str) and x.startswith(prefix)} - led)
+
     new_triples = []
     for original in to_replace:
         if original["episode_id"] >= episode_count - 1:
             continue
         later_episode = rng.randint(original["episode_id"] + 1, episode_count - 1)
-        original["superseded_in_episode"] = later_episode
         new_object = _replacement_object(original["predicate"], original["subject"], original["object"], rng, ontology,
                                          all_ids_by_predicate)
+        if original["predicate"] == "leads":
+            if not leaderless:
+                continue  # no free project: the person keeps leading the old one
+            # pick on its own random stream, so no other fact changes
+            new_object = random.Random(derive_seed(seed, f"leads:{original['subject']}")).choice(leaderless)
+            leaderless.remove(new_object)
+        original["superseded_in_episode"] = later_episode
+        if original["predicate"] == "reports_to":
+            person = original["subject"]
+            if closes_loop(chain, person, new_object):
+                # re-pick on its own random stream, so no other fact changes
+                allowed = sorted({o for o in all_ids_by_predicate["reports_to"]
+                                  if o not in (original["object"], person) and not closes_loop(chain, person, o)})
+                new_object = (random.Random(derive_seed(seed, f"reports_to:{person}")).choice(allowed)
+                              if allowed else original["object"])
+            chain.add_edge(person, new_object)
         new_triples.append({
             "subject": original["subject"], "predicate": original["predicate"],
             "object": new_object,
@@ -126,5 +156,13 @@ if __name__ == "__main__":
     for pilot in (True, False):
         facts = split_into_episodes(generate_graph(seed=7, pilot=pilot)[0], seed=7, pilot=pilot)
         assert not [t for t in facts if t["subject"] == t["object"]], f"self-loop fact (pilot={pilot})"
+        # Reporting lines never loop, in any period: every reports_to edge ever made, taken
+        # together, has no cycle (decision 6.21).
+        chain = nx.DiGraph((t["subject"], t["object"]) for t in facts if t["predicate"] == "reports_to")
+        assert nx.is_directed_acyclic_graph(chain), f"reporting loop {nx.find_cycle(chain)} (pilot={pilot})"
+        # At most one leader per project in every period (decision 6.23).
+        for ep in range(max(t["episode_id"] for t in facts) + 1):
+            leaders = Counter(t["object"] for t in current_state(facts, ep) if t["predicate"] == "leads")
+            assert max(leaders.values(), default=0) <= 1, f"period {ep}: a project has 2+ leaders (pilot={pilot})"
 
     print(f"generation/episode_splitter.py: OK ({len(superseded)} superseded triples, supersession verified)")

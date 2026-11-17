@@ -128,7 +128,8 @@ def _enrich_for_staffing_queries(triples: list[dict], entities: dict, rng: rando
     condition: a person already leads a different active project that shares
     a sponsor with the project being staffed. This function creates that
     precondition (two active projects sponsored by the same org, one led by
-    a person) so at least one real, explainable COI exists in the graph -
+    a person who holds a skill the other project needs) on one in three active
+    projects, so the conflict rule really excludes someone (decision 6.27) -
     not an arbitrary label with no underlying reason.
     """
     active_projects = [
@@ -166,17 +167,30 @@ def _enrich_for_staffing_queries(triples: list[dict], entities: dict, rng: rando
                 "object": project_id,
             })
 
-    # Derived conflict of interest: one sponsor funds two active projects,
-    # and a person already leads one of them - so that person has a
-    # competing stake if staffed on the other (see docstring above).
-    sponsor = rng.choice(orgs)
-    coi_project_a, coi_project_b = rng.sample(active_projects, 2)
-    triples.append({"subject": sponsor, "predicate": "sponsors", "object": coi_project_a})
-    triples.append({"subject": sponsor, "predicate": "sponsors", "object": coi_project_b})
-    conflicted_person = rng.choice(people)
-    # `leads` is N:1 - move any existing leadership rather than add a second one.
-    triples[:] = [t for t in triples if not (t["subject"] == conflicted_person and t["predicate"] == "leads")]
-    triples.append({"subject": conflicted_person, "predicate": "leads", "object": coi_project_a})
+    # Derived conflicts of interest (decision 6.27): for one in three active projects X, a sponsor
+    # also funds another active project Y, and Y is led by someone who holds a skill X needs - so
+    # a qualified person is excluded when staffing X. A conflict nobody qualified has tests nothing.
+    # Only skills with 2+ holders, so X stays staffable without that person.
+    holders = {s: {t["subject"] for t in triples if t["predicate"] == "has_skill" and t["object"] == s}
+               for s in skills}
+    needs = {p: sorted(t["object"] for t in triples if t["predicate"] == "requires_skill" and t["subject"] == p)
+             for p in active_projects}
+    with_needs = [p for p in active_projects if needs[p]]
+    used_leaders, used_led = set(), set()
+    for x in rng.sample(with_needs, min(len(with_needs), max(1, len(active_projects) // 3))):
+        needed = needs[x]
+        qualified = sorted({h for s in needed if len(holders[s]) >= 2 for h in holders[s]} - used_leaders)
+        free = [p for p in active_projects if p != x and p not in used_led]
+        if not qualified or not free:
+            continue
+        sponsor, y, person = rng.choice(orgs), rng.choice(free), rng.choice(qualified)
+        triples.append({"subject": sponsor, "predicate": "sponsors", "object": x})
+        triples.append({"subject": sponsor, "predicate": "sponsors", "object": y})
+        # `leads` is N:1 - move any existing leadership rather than add a second one.
+        triples[:] = [t for t in triples if not (t["subject"] == person and t["predicate"] == "leads")]
+        triples.append({"subject": person, "predicate": "leads", "object": y})
+        used_leaders.add(person)
+        used_led.add(y)
 
 
 def _min_active_projects(pilot: bool) -> int:
@@ -231,7 +245,24 @@ def generate_graph(seed: int, pilot: bool = False) -> tuple[list[dict], dict]:
     unique = {(t["subject"], t["predicate"], t["object"]): t for t in reversed(triples)}
     triples = [t for t in triples if unique.get((t["subject"], t["predicate"], t["object"])) is t
                and t["subject"] != t["object"]]
-    return triples, entities
+    # Reporting lines form a hierarchy: drop a reports_to edge that would close a loop (decision 6.21).
+    chain = nx.DiGraph()
+    kept = []
+    for t in triples:
+        if t["predicate"] == "reports_to":
+            if closes_loop(chain, t["subject"], t["object"]):
+                continue
+            chain.add_edge(t["subject"], t["object"])
+        kept.append(t)
+    # A project has at most one leader (decision 6.23): keep its last `leads` edge. The staffing
+    # enrichment appends its conflict-of-interest leader last, so that set-up survives.
+    last_lead = {t["object"]: t for t in kept if t["predicate"] == "leads"}
+    return [t for t in kept if t["predicate"] != "leads" or last_lead[t["object"]] is t], entities
+
+
+def closes_loop(chain: nx.DiGraph, person, manager) -> bool:
+    """True if `person` reporting to `manager` would make a reporting loop."""
+    return chain.has_node(manager) and chain.has_node(person) and nx.has_path(chain, manager, person)
 
 
 def _build_networkx_graph(triples: list[dict], entities: dict) -> nx.MultiDiGraph:
@@ -277,6 +308,12 @@ if __name__ == "__main__":
                 f"{rel_name} (N:1) has a subject with >1 live edge"
             )
 
+    # A project has at most one leader (decision 6.23), at pilot and full size.
+    from collections import Counter
+    for size in (True, False):
+        leaders = Counter(t["object"] for t in generate_graph(seed=7, pilot=size)[0] if t["predicate"] == "leads")
+        assert max(leaders.values()) <= 1, f"a project has {max(leaders.values())} leaders (pilot={size})"
+
     # No dangling references: every triple object that looks like an entity id
     # (matches "<EntityType>_####") resolves to a real generated entity.
     for triple in t1:
@@ -297,6 +334,16 @@ if __name__ == "__main__":
     people = [eid for eid, a in e1.items() if a["entity_type"] == "Person"]
     assert any(has_conflict_of_interest(x, p, e1, t1) for x in people for p in active_projects), \
         "enrichment did not create a derivable conflict of interest"
+
+    # A conflict of interest must exclude someone who could otherwise be picked: on at least a
+    # quarter of active projects, a person holding a required skill has one (decision 6.27).
+    for size in (True, False):
+        t, e = generate_graph(seed=7, pilot=size)
+        active = [x for x, a in e.items() if a["entity_type"] == "Project" and a["status"] == "active"]
+        needs = {(r["subject"], r["object"]) for r in t if r["predicate"] == "requires_skill"}
+        binding = [p for p in active if any(has_conflict_of_interest(h["subject"], p, e, t) for h in t
+                                            if h["predicate"] == "has_skill" and (p, h["object"]) in needs)]
+        assert len(binding) >= max(1, len(active) // 4), f"conflict binds on {len(binding)} of {len(active)} (pilot={size})"
 
     # Temp dir: scripts/run_pipeline.py is the only writer of data/kg_pilot/.
     import tempfile
